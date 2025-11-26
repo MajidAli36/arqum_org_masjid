@@ -23,7 +23,7 @@ export default function ResourcesSection() {
                     rel="noreferrer"
                     className="underline-offset-4 hover:underline"
                   >
-                    PDF
+                    PDFs
                   </a>
                   ] [
                   <a
