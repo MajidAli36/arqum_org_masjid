@@ -24,7 +24,7 @@ const resourcesMenuItems = [
   { label: "Islamic School", href: "/resources/islamic-school" },
   { label: "Elections & Nominations", href: "/resources/elections-nominations" },
   { label: "Apply/Renew Membership", href: "/resources#apply-renew-membership" },
-  { label: "By Laws", href: "/resources#by-laws" },
+  { label: "By Laws", href: "/resources/by-laws" },
   { label: "Fundraising Policy", href: "/resources#fundraising-policy" },
   { label: "Meeting Minutes", href: "/resources#meeting-minutes" },
   { label: "Financial Assistance", href: "/resources#financial-assistance" },
