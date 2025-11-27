@@ -4,8 +4,25 @@ import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
+import ApplyMembershipDrawer from "./ApplyMembershipDrawer";
+import FinancialDrawer from "./FinancialDrawer";
+import DoorAccessDrawer from "./DoorAccessDrawer";
+import ReserveBasementDrawer from "./ReserveBasementDrawer";
 
-const menuItems = [
+type MenuItem = {
+  label: string;
+  href: string;
+  isButton?: boolean;
+};
+
+type ResourceMenuItem = {
+  label: string;
+  href: string;
+  external?: boolean;
+  drawer?: "membership" | "financial" | "doorAccess" | "reserveBasement";
+};
+
+const menuItems: MenuItem[] = [
   { label: "Home", href: "/" },
   { label: "Ramadan", href: "/ramzan" },
   { label: "Donate", href: "/donate", isButton: true },
@@ -16,26 +33,38 @@ const menuItems = [
   { label: "Contact Us", href: "/contact" },
 ];
 
-const resourcesMenuItems = [
+const resourcesMenuItems: ResourceMenuItem[] = [
   { label: "Request a Speaker", href: "/resources/request-a-speaker" },
   { label: "Request a Visit", href: "/resources/request-a-visit" },
   { label: "Visitors Guide", href: "/resources/visitors-guide" },
   { label: "Islamic Prayer", href: "/resources/islamic-prayer" },
   { label: "Islamic School", href: "/resources/islamic-school" },
   { label: "Elections & Nominations", href: "/resources/elections-nominations" },
-  { label: "Apply/Renew Membership", href: "/resources#apply-renew-membership" },
-  { label: "By Laws", href: "/resources/by-laws" },
-  { label: "Fundraising Policy", href: "/resources#fundraising-policy" },
-  { label: "Meeting Minutes", href: "/resources#meeting-minutes" },
-  { label: "Financial Assistance", href: "/resources#financial-assistance" },
-  { label: "Request Door Access", href: "/resources#request-door-access" },
-  { label: "Reserve Basement", href: "/resources#reserve-basement" },
+  {
+    label: "Apply/Renew Membership",
+    href: "/resources/apply-renew-membership",
+    drawer: "membership",
+  },
+  { label: "By Laws", href: "https://drive.google.com/file/d/1xFQ6g0plhCzVIaCvglVPC1nykuICqRWL/view?usp=sharing", external: true },
+  { label: "Fundraising Policy", href: "https://drive.google.com/file/d/1byjbEt3yWlf2II2mjkHd74VzDJBDeVkD/view?usp=sharing", external: true },
+  { label: "Meeting Minutes", href: "https://drive.google.com/drive/folders/17nWT8C6jEZm5XK8oqKNEM1fzzXOcDsa0", external: true },
+  {
+    label: "Financial Assistance",
+    href: "/resources#financial-assistance",
+    drawer: "financial",
+  },
+  { label: "Request Door Access", href: "/resources#request-door-access", drawer: "doorAccess" },
+  { label: "Reserve Basement", href: "/resources#reserve-basement", drawer: "reserveBasement" },
 ];
 
 export default function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isMobileResourcesOpen, setIsMobileResourcesOpen] = useState(false);
+  const [isMembershipDrawerOpen, setIsMembershipDrawerOpen] = useState(false);
+  const [isFinancialDrawerOpen, setIsFinancialDrawerOpen] = useState(false);
+  const [isDoorAccessDrawerOpen, setIsDoorAccessDrawerOpen] = useState(false);
+  const [isReserveBasementDrawerOpen, setIsReserveBasementDrawerOpen] = useState(false);
   const pathname = usePathname();
 
   const isResourceActive = (href: string) => {
@@ -64,9 +93,11 @@ export default function Navbar() {
     return pathname?.startsWith(href);
   };
 
-  // Disable body scroll when menu is open
+  const overlayActive = isMenuOpen || isMembershipDrawerOpen || isFinancialDrawerOpen || isDoorAccessDrawerOpen || isReserveBasementDrawerOpen;
+
+  // Disable body scroll when menu or drawer is open
   useEffect(() => {
-    if (isMenuOpen) {
+    if (overlayActive) {
       // Save current scroll position
       const scrollY = window.scrollY;
       document.body.style.position = "fixed";
@@ -92,7 +123,7 @@ export default function Navbar() {
       document.body.style.width = "";
       document.body.style.overflow = "";
     };
-  }, [isMenuOpen]);
+  }, [overlayActive]);
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
@@ -111,8 +142,45 @@ export default function Navbar() {
     setIsSearchOpen(false);
   };
 
+  const openMembershipDrawer = () => {
+    setIsMembershipDrawerOpen(true);
+    setIsMenuOpen(false);
+  };
+
+  const closeMembershipDrawer = () => {
+    setIsMembershipDrawerOpen(false);
+  };
+
+  const openFinancialDrawer = () => {
+    setIsFinancialDrawerOpen(true);
+    setIsMenuOpen(false);
+  };
+
+  const closeFinancialDrawer = () => {
+    setIsFinancialDrawerOpen(false);
+  };
+
+  const openDoorAccessDrawer = () => {
+    setIsDoorAccessDrawerOpen(true);
+    setIsMenuOpen(false);
+  };
+
+  const closeDoorAccessDrawer = () => {
+    setIsDoorAccessDrawerOpen(false);
+  };
+
+  const openReserveBasementDrawer = () => {
+    setIsReserveBasementDrawerOpen(true);
+    setIsMenuOpen(false);
+  };
+
+  const closeReserveBasementDrawer = () => {
+    setIsReserveBasementDrawerOpen(false);
+  };
+
   return (
-    <nav className="sticky top-0 z-50 w-full bg-white/95 shadow-md backdrop-blur">
+    <>
+      <nav className="sticky top-0 z-50 w-full bg-white/95 shadow-md backdrop-blur">
       {/* Search Mode */}
       <div
         className={`fixed inset-x-0 top-0 z-[60] bg-white/95 transition-opacity duration-200 ${
@@ -168,7 +236,7 @@ export default function Navbar() {
       {/* Normal Navbar */}
       <div className="transition-opacity duration-200">
         <div className="px-6 py-4 flex items-center justify-between">
-          <div className="flex items-center">
+          <Link href="/" className="flex items-center hover:opacity-80 transition-opacity">
             <Image
               src="/images/aq-logo.png"
               alt="Darul Arqam Islamic Center logo"
@@ -178,7 +246,7 @@ export default function Navbar() {
               priority
             />
             <span className="font-bold text-lg">Darul Arqam Islamic Center</span>
-          </div>
+          </Link>
 
           {/* Desktop Menu */}
           <div className="hidden lg:flex flex-wrap items-center gap-x-4 gap-y-2 font-medium">
@@ -220,6 +288,20 @@ export default function Navbar() {
                           <Link
                             key={resource.href}
                             href={resource.href}
+                            onClick={(event) => {
+                              if (resource.drawer) {
+                                event.preventDefault();
+                                if (resource.drawer === "membership") {
+                                  openMembershipDrawer();
+                                } else if (resource.drawer === "financial") {
+                                  openFinancialDrawer();
+                                } else if (resource.drawer === "doorAccess") {
+                                  openDoorAccessDrawer();
+                                } else if (resource.drawer === "reserveBasement") {
+                                  openReserveBasementDrawer();
+                                }
+                              }
+                            }}
                             className={`flex items-center px-5 py-2.5 text-left text-[0.9rem] border-b border-gray-100 last:border-b-0 transition-colors hover:bg-gray-100 hover:text-gray-900`}
                           >
                             <span className="mr-2 h-1 w-1 rounded-full bg-gray-400" />
@@ -365,9 +447,9 @@ export default function Navbar() {
                       </svg>
                     </button>
                     <div
-                      className={`ml-3 flex flex-col space-y-1 overflow-hidden transition-[max-height,opacity] duration-200 ${
+                      className={`ml-3 flex flex-col space-y-1 overflow-hidden transition-[max-height,opacity] duration-300 ${
                         isMobileResourcesOpen
-                          ? "max-h-96 opacity-100"
+                          ? "max-h-[75vh] overflow-y-auto pr-1 opacity-100"
                           : "max-h-0 opacity-0"
                       }`}
                     >
@@ -384,7 +466,23 @@ export default function Navbar() {
                           <Link
                             key={resource.href}
                             href={resource.href}
-                            onClick={closeMenu}
+                            onClick={(event) => {
+                              if (resource.drawer) {
+                                event.preventDefault();
+                                if (resource.drawer === "membership") {
+                                  openMembershipDrawer();
+                                } else if (resource.drawer === "financial") {
+                                  openFinancialDrawer();
+                                } else if (resource.drawer === "doorAccess") {
+                                  openDoorAccessDrawer();
+                                } else if (resource.drawer === "reserveBasement") {
+                                  openReserveBasementDrawer();
+                                }
+                                setIsMobileResourcesOpen(false);
+                              } else {
+                                closeMenu();
+                              }
+                            }}
                             className="rounded-md px-3 py-1.5 text-sm transition-colors text-gray-700 hover:bg-gray-100"
                           >
                             <span
@@ -443,7 +541,26 @@ export default function Navbar() {
           </div>
         </div>
       </div>
-    </nav>
+      </nav>
+      <ApplyMembershipDrawer
+        isOpen={isMembershipDrawerOpen}
+        onClose={closeMembershipDrawer}
+      />
+      <FinancialDrawer
+        isOpen={isFinancialDrawerOpen}
+        onClose={closeFinancialDrawer}
+      />
+      <DoorAccessDrawer
+        isOpen={isDoorAccessDrawerOpen}
+        onClose={closeDoorAccessDrawer}
+        onOpenMembershipDrawer={openMembershipDrawer}
+      />
+      <ReserveBasementDrawer
+        isOpen={isReserveBasementDrawerOpen}
+        onClose={closeReserveBasementDrawer}
+      />
+    </>
   );
 }
+
   
