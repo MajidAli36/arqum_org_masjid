@@ -3,7 +3,7 @@ export default function JourneyIntro() {
     <section className="bg-gradient-to-b from-white via-slate-50 to-white">
       <div className="mx-auto max-w-5xl px-4 py-12 md:px-6 md:py-16">
         <div className="rounded-3xl border border-slate-200 bg-white/95 p-8 shadow-xl backdrop-blur">
-          <p className="text-xs uppercase tracking-[0.4em] text-slate-500">Darul Arqum Islamic Center</p>
+          <p className="text-xs uppercase tracking-[0.4em] text-slate-500">Fort Dodge Islamic Center</p>
           <h1 className="mt-4 text-3xl font-bold uppercase tracking-[0.15em] text-slate-900 md:text-4xl">
             Welcome to Your Islamic Journey
           </h1>

@@ -11,7 +11,7 @@ const options = [
   {
     title: "Checks",
     description:
-      "Write checks payable to Darul Arqam Islamic Center and include the designated fund in the memo line.",
+      "Write checks payable to Fort Dodge Islamic Center and include the designated fund in the memo line.",
   },
   {
     title: "MOHID Kiosk",
@@ -32,7 +32,7 @@ const options = [
   },
   {
     title: "Venmo",
-    description: "Give through Venmo at Darul Arqam Islamic Center.",
+    description: "Give through Venmo at Fort Dodge Islamic Center.",
     linkLabel: "venmo.com/DarulArqumIslamicCenter",
     linkHref: "https://venmo.com/DarulArqumIslamicCenter",
   },

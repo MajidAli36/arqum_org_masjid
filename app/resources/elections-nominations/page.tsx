@@ -3,7 +3,7 @@ import Footer from "../../components/Footer";
 import ResourcesHero from "../components/ResourcesHero";
 
 export const metadata = {
-  title: "Elections & Nominations | Darul Arqam Islamic Center",
+  title: "Elections & Nominations | Fort Dodge Islamic Center",
   description:
     "Information about the DAIC Board of Directors election, nomination process, membership requirements, and ways to renew your membership.",
 };

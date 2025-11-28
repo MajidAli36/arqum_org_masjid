@@ -3,8 +3,8 @@ import Link from "next/link";
 
 const quickLinks = [
   { label: "Home", href: "/" },
-  { label: "Ramadan", href: "/ramadan" },
-  { label: "New Muslims", href: "/new-muslims" },
+  { label: "Ramadan", href: "/ramzan" },
+  { label: "New Muslims", href: "/new-musilm" },
   { label: "Resources", href: "/resources" },
 ];
 
@@ -28,16 +28,16 @@ export default function Footer() {
         <div className="space-y-3">
           <div className="flex items-center gap-2.5">
             <Image
-              src="/images/aq-logo.png"
-              alt="Darul Arqam Islamic Center"
-              width={56}
-              height={56}
-              className="object-contain"
+              src="/images/fortlogos.png"
+              alt="Fort Dodge Islamic Center"
+              width={200}
+              height={80}
+              className=" h-16 w-auto"
             />
             <div className="text-sm">
-              <p className="uppercase tracking-wide text-[#5A6B7D]">
-                Darul Arqam Islamic Center
-              </p>
+              {/* <p className="uppercase tracking-wide text-[#5A6B7D]">
+                Fort Dodge Islamic Center
+              </p> */}
               <p className="text-[#6B7C8F]">
                 Serving the Chicago Muslim community with compassion and care.
               </p>
@@ -89,7 +89,7 @@ export default function Footer() {
 
       <div className="bg-white border-t border-[#E1E6EA]">
         <div className="max-w-6xl mx-auto px-4 py-3 flex flex-col md:flex-row items-center justify-between gap-2 text-xs text-[#6B7C8F] uppercase tracking-wide">
-          <span>© {new Date().getFullYear()} Darul Arqam Islamic Center</span>
+          <span>© {new Date().getFullYear()} Fort Dodge Islamic Center</span>
           <span>Building faith, service, and community</span>
         </div>
       </div>

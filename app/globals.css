@@ -19,8 +19,53 @@
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+/* Remove scrollbar shadow overlay and prevent right side shadows */
+html {
+  overflow-x: hidden;
+  scrollbar-gutter: stable;
+  box-shadow: none !important;
 }
+
+body {
+  overflow-x: hidden;
+  box-shadow: none !important;
+}
+
+/* Ensure no shadows on the right side */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0, 0, 0, 0.2) transparent;
+}
+
+/* Hide scrollbar shadow and styling */
+::-webkit-scrollbar {
+  width: 8px;
+  background: transparent;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+  box-shadow: none;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 4px;
+  box-shadow: none;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.3);
+}
+
+/* Prevent drawers from casting shadows when off-screen */
+aside[role="dialog"] {
+  will-change: transform;
+}
+
+aside[role="dialog"][style*="translate-x-full"],
+aside[role="dialog"].translate-x-full {
+  box-shadow: none !important;
+  filter: none !important;
+}
+

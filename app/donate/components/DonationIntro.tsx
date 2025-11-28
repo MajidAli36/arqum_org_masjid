@@ -9,7 +9,7 @@ export default function DonationIntro() {
         </span>
       </blockquote>
       <p className="text-sm leading-relaxed text-slate-600 sm:text-base">
-        Darul Arqam Islamic Center is a non-profit organization that provides a
+        Fort Dodge Islamic Center is a non-profit organization that provides a
         variety of religious, educational, and social services to the Muslim
         community in Ames, Iowa. The center is a vital part of the community,
         relying on donations from generous individuals and businesses to operate.

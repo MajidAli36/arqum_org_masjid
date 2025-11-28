@@ -10,14 +10,14 @@ interface DoorAccessDrawerProps {
 }
 
 const policyIntro = [
-  "Darul Arqum Islamic Center is committed to the safety and security of its members. In line with this commitment, we are introducing a new door security policy. Starting 2/1/2024, The doors of the Islamic Center will be unlocked during regular prayer times (15 minutes before Athan and will remain open 15 minutes past Iqama), but access will be restricted at other times for enhanced security. To access the center's premises at other times, community members are required to sign up and obtain a unique access code.",
-  "Please complete the following form accurately and thoroughly to request your access code. Once your request is approved, you will receive a confirmation email containing your unique access code. This code will be necessary for entry into the Darul Arqum Islamic Center outside prayer times.",
+  "Fort Dodge Islamic Center is committed to the safety and security of its members. In line with this commitment, we are introducing a new door security policy. Starting 2/1/2024, The doors of the Islamic Center will be unlocked during regular prayer times (15 minutes before Athan and will remain open 15 minutes past Iqama), but access will be restricted at other times for enhanced security. To access the center's premises at other times, community members are required to sign up and obtain a unique access code.",
+  "Please complete the following form accurately and thoroughly to request your access code. Once your request is approved, you will receive a confirmation email containing your unique access code. This code will be necessary for entry into the Fort Dodge Islamic Center outside prayer times.",
 ];
 
 const policyAgreement = [
   "I understand that the access code provided is for my personal use only.",
   "I agree not to share my access code with anyone else.",
-  "I will promptly report any loss or compromise of my access code to the Darul Arqum Islamic Center management.",
+  "I will promptly report any loss or compromise of my access code to the Fort Dodge Islamic Center management.",
 ];
 
 export default function DoorAccessDrawer({
@@ -47,8 +47,8 @@ export default function DoorAccessDrawer({
       />
 
       <aside
-        className={`fixed top-0 right-0 z-[70] flex h-full w-full max-w-2xl flex-col bg-white shadow-2xl transition-transform duration-300 ease-in-out ${
-          isOpen ? "translate-x-0" : "translate-x-full"
+        className={`fixed top-0 right-0 z-[70] flex h-full w-full max-w-2xl flex-col bg-white transition-transform duration-300 ease-in-out ${
+          isOpen ? "translate-x-0 shadow-2xl" : "translate-x-full shadow-none"
         }`}
         role="dialog"
         aria-modal="true"
@@ -60,7 +60,7 @@ export default function DoorAccessDrawer({
               id="door-access-drawer-title"
               className="text-xl font-semibold tracking-tight"
             >
-              Darul Arqum Islamic Center Door Security Access Code Request Form
+              Fort Dodge Islamic Center Door Security Access Code Request Form
             </h2>
             <p className="mt-1 text-sm text-white/80">
               Request your unique access code for entry outside regular prayer times.
@@ -192,7 +192,7 @@ export default function DoorAccessDrawer({
 
             <fieldset className="space-y-3 rounded-xl border border-gray-200 p-4">
               <legend className="text-sm font-semibold text-gray-900">
-                Do you want to become a member of Darul Arqum Islamic Center? We advise everyone to apply for membership. Regular membership is always free. The voting membership costs $30 per year.
+                Do you want to become a member of Fort Dodge Islamic Center? We advise everyone to apply for membership. Regular membership is always free. The voting membership costs $30 per year.
                 <span className="text-rose-600"> *</span>
               </legend>
               <div className="space-y-2 text-sm text-gray-800">
@@ -242,7 +242,7 @@ export default function DoorAccessDrawer({
 
             <div className="rounded-xl border border-gray-200 bg-slate-50/60 p-4">
               <p className="text-sm text-gray-900 mb-3">
-                By submitting this form, I confirm that all the information provided is accurate and complete and I have read and agree to abide by the following Darul Arqum Islamic Center's door security policy:
+                By submitting this form, I confirm that all the information provided is accurate and complete and I have read and agree to abide by the following Fort Dodge Islamic Center's door security policy:
               </p>
               <ul className="space-y-2 mb-4">
                 {policyAgreement.map((item, index) => (

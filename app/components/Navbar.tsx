@@ -8,6 +8,7 @@ import ApplyMembershipDrawer from "./ApplyMembershipDrawer";
 import FinancialDrawer from "./FinancialDrawer";
 import DoorAccessDrawer from "./DoorAccessDrawer";
 import ReserveBasementDrawer from "./ReserveBasementDrawer";
+import ContactDrawer from "./ContactDrawer";
 
 type MenuItem = {
   label: string;
@@ -65,6 +66,7 @@ export default function Navbar() {
   const [isFinancialDrawerOpen, setIsFinancialDrawerOpen] = useState(false);
   const [isDoorAccessDrawerOpen, setIsDoorAccessDrawerOpen] = useState(false);
   const [isReserveBasementDrawerOpen, setIsReserveBasementDrawerOpen] = useState(false);
+  const [isContactDrawerOpen, setIsContactDrawerOpen] = useState(false);
   const pathname = usePathname();
 
   const isResourceActive = (href: string) => {
@@ -93,7 +95,7 @@ export default function Navbar() {
     return pathname?.startsWith(href);
   };
 
-  const overlayActive = isMenuOpen || isMembershipDrawerOpen || isFinancialDrawerOpen || isDoorAccessDrawerOpen || isReserveBasementDrawerOpen;
+  const overlayActive = isMenuOpen || isMembershipDrawerOpen || isFinancialDrawerOpen || isDoorAccessDrawerOpen || isReserveBasementDrawerOpen || isContactDrawerOpen;
 
   // Disable body scroll when menu or drawer is open
   useEffect(() => {
@@ -178,21 +180,30 @@ export default function Navbar() {
     setIsReserveBasementDrawerOpen(false);
   };
 
+  const openContactDrawer = () => {
+    setIsContactDrawerOpen(true);
+    setIsMenuOpen(false);
+  };
+
+  const closeContactDrawer = () => {
+    setIsContactDrawerOpen(false);
+  };
+
   return (
     <>
-      <nav className="sticky top-0 z-50 w-full bg-white/95 shadow-md backdrop-blur">
+      <nav className="fixed top-0 z-50 w-full bg-white/95 shadow-md backdrop-blur">
       {/* Search Mode */}
       <div
         className={`fixed inset-x-0 top-0 z-[60] bg-white/95 transition-opacity duration-200 ${
           isSearchOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
         }`}
       >
-        <div className="px-4 py-4 flex items-center gap-4 bg-gray-50 shadow-md">
+        <div className="px-4 py-4 flex items-center justify-center gap-4 bg-gray-50 shadow-md">
           <button
             type="button"
             onClick={closeSearch}
             aria-label="Close search"
-            className="p-2 text-gray-600 hover:bg-gray-200 rounded-md transition-colors duration-200"
+            className="p-2 text-sky-900 hover:bg-gray-200 rounded-md transition-colors duration-200 absolute left-4"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -207,8 +218,8 @@ export default function Navbar() {
               <path d="M19 12H5M12 19l-7-7 7-7" />
             </svg>
           </button>
-          <div className="flex-1 relative">
-            <div className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400">
+          <div className="relative max-w-md w-full">
+            <div className="absolute left-3 top-1/2 transform -translate-y-1/2 text-sky-900">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 24 24"
@@ -226,7 +237,7 @@ export default function Navbar() {
             <input
               type="text"
               placeholder="Search this site"
-              className="w-full pl-10 pr-4 py-2.5 bg-white rounded-lg border border-gray-200 text-gray-700 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-300 focus:border-transparent transition-all duration-200"
+              className="w-full pl-10 pr-4 py-2.5 bg-white rounded-lg border border-gray-200 text-sky-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-300 focus:border-transparent transition-all duration-200"
               autoFocus={isSearchOpen}
             />
           </div>
@@ -235,21 +246,20 @@ export default function Navbar() {
 
       {/* Normal Navbar */}
       <div className="transition-opacity duration-200">
-        <div className="px-6 py-4 flex items-center justify-between">
+        <div className="px-6 py-2 flex items-center justify-between">
           <Link href="/" className="flex items-center hover:opacity-80 transition-opacity">
             <Image
-              src="/images/aq-logo.png"
-              alt="Darul Arqam Islamic Center logo"
-              width={80}
-              height={48}
-              className="mr-3 h-10 w-auto"
+              src="/images/fortlogos.png"
+              alt="Fort Dodge Islamic Center logo"
+              width={400}
+              height={100}
+              className="h-17 w-auto"
               priority
             />
-            <span className="font-bold text-lg">Darul Arqam Islamic Center</span>
           </Link>
 
           {/* Desktop Menu */}
-          <div className="hidden lg:flex flex-wrap items-center gap-x-4 gap-y-2 font-medium">
+          <div className="hidden lg:flex flex-wrap items-center gap-x-4 gap-y-2">
             {menuItems.map((item) => {
               const active = isActive(item.href);
 
@@ -259,10 +269,10 @@ export default function Navbar() {
                     <Link
                       href={item.href}
                       aria-current={active ? "page" : undefined}
-                      className={`flex items-center gap-1 cursor-pointer rounded-md px-3 py-1.5 whitespace-nowrap text-sm tracking-wide transition-colors duration-200 ${
+                      className={`flex items-center gap-1 cursor-pointer rounded-md px-3 py-1.5 whitespace-nowrap font-bold tracking-wide transition-colors duration-200 ${
                         active
-                          ? "bg-black text-white"
-                          : "text-gray-800 hover:text-gray-600"
+                          ? "bg-sky-800 text-white"
+                          : "text-sky-900 hover:text-gray-600"
                       }`}
                     >
                       <span>{item.label}</span>
@@ -308,8 +318,8 @@ export default function Navbar() {
                             <span
                               className={`truncate inline-block px-2 py-0.5 text-[0.78rem] font-semibold ${
                                 activeResource
-                                  ? "bg-black text-white"
-                                  : "bg-transparent text-gray-800"
+                                  ? "bg-sky-800 text-white"
+                                  : "bg-transparent text-sky-900"
                               }`}
                             >
                               {resource.label}
@@ -322,15 +332,33 @@ export default function Navbar() {
                 );
               }
 
+              if (item.label === "Contact Us") {
+                return (
+                  <button
+                    key={item.label}
+                    type="button"
+                    onClick={openContactDrawer}
+                    aria-current={active ? "page" : undefined}
+                    className={`cursor-pointer rounded-md px-2 py-1 whitespace-nowrap font-bold transition-colors duration-200 ${
+                      active
+                        ? "bg-sky-800 text-white"
+                        : "text-sky-900 hover:text-gray-600"
+                    }`}
+                  >
+                    {item.label}
+                  </button>
+                );
+              }
+
               return (
                 <Link
                   key={item.label}
                   href={item.href}
                   aria-current={active ? "page" : undefined}
-                  className={`cursor-pointer rounded-md px-2 py-1 whitespace-nowrap transition-colors duration-200 ${
+                  className={`cursor-pointer rounded-md px-2 py-1 whitespace-nowrap font-bold transition-colors duration-200 ${
                     active
-                      ? "bg-black text-white"
-                      : "text-gray-800 hover:text-gray-600"
+                      ? "bg-sky-800 text-white"
+                      : "text-sky-900 hover:text-gray-600"
                   }`}
                 >
                   {item.label}
@@ -342,7 +370,7 @@ export default function Navbar() {
               type="button"
               onClick={openSearch}
               aria-label="Search"
-              className="ml-4 rounded-full border border-gray-300 p-2 text-gray-600 hover:bg-gray-100 transition-all duration-200"
+              className="ml-4 rounded-full border border-gray-300 p-2 text-sky-900 hover:bg-gray-100 transition-all duration-200"
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -423,10 +451,10 @@ export default function Navbar() {
                         setIsMobileResourcesOpen((prev) => !prev)
                       }
                       aria-expanded={isMobileResourcesOpen}
-                      className={`flex w-full items-center justify-between rounded-md px-3 py-2 font-medium transition-colors ${
+                      className={`flex w-full items-center justify-between rounded-md px-3 py-2 font-bold transition-colors ${
                         active || isMobileResourcesOpen
-                          ? "bg-black text-white"
-                          : "text-gray-700 hover:text-gray-900"
+                          ? "bg-sky-800 text-white"
+                          : "text-sky-900 hover:text-gray-900"
                       }`}
                     >
                       <span>{item.label}</span>
@@ -488,8 +516,8 @@ export default function Navbar() {
                             <span
                               className={`inline-block px-2 py-0.5 text-[0.78rem] font-semibold ${
                                 activeResource
-                                  ? "bg-black text-white"
-                                  : "bg-transparent text-gray-800"
+                                  ? "bg-sky-800 text-white"
+                                  : "bg-transparent text-sky-900"
                               }`}
                             >
                               {resource.label}
@@ -502,16 +530,37 @@ export default function Navbar() {
                 );
               }
 
+              if (item.label === "Contact Us") {
+                return (
+                  <button
+                    key={item.label}
+                    type="button"
+                    onClick={() => {
+                      openContactDrawer();
+                      closeMenu();
+                    }}
+                    aria-current={active ? "page" : undefined}
+                    className={`cursor-pointer rounded-md px-3 py-2 font-bold transition-colors w-full text-left ${
+                      active
+                        ? "bg-sky-800 text-white"
+                        : "text-sky-900 hover:text-gray-900"
+                    }`}
+                  >
+                    {item.label}
+                  </button>
+                );
+              }
+
               return (
                 <Link
                   key={item.label}
                   href={item.href}
                   onClick={closeMenu}
                   aria-current={active ? "page" : undefined}
-                  className={`cursor-pointer rounded-md px-3 py-2 font-medium transition-colors ${
+                  className={`cursor-pointer rounded-md px-3 py-2 font-bold transition-colors ${
                     active
-                      ? "bg-black text-white"
-                      : "text-gray-700 hover:text-gray-900"
+                      ? "bg-sky-800 text-white"
+                      : "text-sky-900 hover:text-gray-900"
                   }`}
                 >
                   {item.label}
@@ -522,7 +571,7 @@ export default function Navbar() {
               type="button"
               onClick={openSearch}
               aria-label="Search"
-              className="mt-2 rounded-full border border-gray-300 p-2 text-gray-600 hover:bg-gray-100 transition-colors w-fit"
+              className="mt-2 rounded-full border border-gray-300 p-2 text-sky-900 hover:bg-gray-100 transition-colors w-fit"
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -558,6 +607,10 @@ export default function Navbar() {
       <ReserveBasementDrawer
         isOpen={isReserveBasementDrawerOpen}
         onClose={closeReserveBasementDrawer}
+      />
+      <ContactDrawer
+        isOpen={isContactDrawerOpen}
+        onClose={closeContactDrawer}
       />
     </>
   );

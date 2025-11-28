@@ -9,7 +9,7 @@ interface ReserveBasementDrawerProps {
 }
 
 const introCopy = [
-  "This form is intended for members and affiliates of Darul Arqum Islamic Center seeking to reserve the basement space for various activities and events. Our basement is a versatile space, ideal for gatherings, educational sessions, community events, and more. Please fill out this form to begin the reservation process. All requests are subject to review based on our policy guidelines and availability.",
+  "This form is intended for members and affiliates of Fort Dodge Islamic Center seeking to reserve the basement space for various activities and events. Our basement is a versatile space, ideal for gatherings, educational sessions, community events, and more. Please fill out this form to begin the reservation process. All requests are subject to review based on our policy guidelines and availability.",
   "Note: Please allow at least 2 days for us to process your request. We do not guarantee same-day reservations, so plan in advance.",
 ];
 
@@ -42,7 +42,7 @@ const policyItems = [
   {
     title: "5. Compliance with Islamic Center Rules and Regulations:",
     description:
-      "All activities in the basement must adhere to the overall rules and guidelines of the Darul Arqum Islamic Center. Any activities contrary to these guidelines will not be permitted.",
+      "All activities in the basement must adhere to the overall rules and guidelines of the Fort Dodge Islamic Center. Any activities contrary to these guidelines will not be permitted.",
   },
   {
     title: "6. Reservation Review and Confirmation:",
@@ -85,8 +85,8 @@ export default function ReserveBasementDrawer({
       />
 
       <aside
-        className={`fixed top-0 right-0 z-[70] flex h-full w-full max-w-2xl flex-col bg-white shadow-2xl transition-transform duration-300 ease-in-out ${
-          isOpen ? "translate-x-0" : "translate-x-full"
+        className={`fixed top-0 right-0 z-[70] flex h-full w-full max-w-2xl flex-col bg-white transition-transform duration-300 ease-in-out ${
+          isOpen ? "translate-x-0 shadow-2xl" : "translate-x-full shadow-none"
         }`}
         role="dialog"
         aria-modal="true"
@@ -98,7 +98,7 @@ export default function ReserveBasementDrawer({
               id="reserve-basement-title"
               className="text-xl font-semibold tracking-tight"
             >
-              Darul Arqum Islamic Center Basement Reservation Form
+              Fort Dodge Islamic Center Basement Reservation Form
             </h2>
             <p className="mt-1 text-sm text-white/80">
               Provide your event details to request basement usage for classes,

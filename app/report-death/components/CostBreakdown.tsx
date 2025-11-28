@@ -12,7 +12,7 @@ export default function CostBreakdown() {
       <div className="mx-auto max-w-4xl px-4 py-12 md:px-6 md:py-16">
         <div className="rounded-3xl border border-slate-200 bg-slate-50 p-6 shadow-sm md:p-10">
           <h2 className="text-2xl font-semibold uppercase tracking-wide text-slate-900 sm:text-3xl">Approximate Costs</h2>
-          <p className="mt-3 text-sm text-slate-600">Make the cashier&apos;s check payable to Darul Arqum Islamic Center.</p>
+          <p className="mt-3 text-sm text-slate-600">Make the cashier&apos;s check payable to Fort Dodge Islamic Center.</p>
 
           <div className="mt-8 overflow-hidden rounded-2xl border border-white/60 bg-white">
             <table className="min-w-full divide-y divide-slate-100 text-left text-base text-slate-800">

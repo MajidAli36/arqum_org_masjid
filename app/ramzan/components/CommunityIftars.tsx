@@ -9,23 +9,23 @@ export default function CommunityIftars() {
   return (
     <section className="rounded-2xl border border-indigo-100 bg-white p-4 shadow-lg sm:rounded-3xl sm:p-6 md:p-8">
       <div className="space-y-3 sm:space-y-4">
-        <p className="text-xs font-semibold uppercase tracking-wide text-indigo-500 sm:text-sm">
+        <p className="text-xs font-semibold uppercase tracking-wide text-sky-800 sm:text-sm">
           Community Iftars
         </p>
-        <h2 className="text-xl font-semibold text-indigo-950 sm:text-2xl md:text-3xl">
+        <h2 className="text-xl font-semibold text-sky-800 sm:text-2xl md:text-3xl">
           <span className="block sm:inline">Five Saturdays</span>
           <span className="hidden sm:inline"> • </span>
           <span className="block mt-1 text-base sm:mt-0 sm:inline sm:text-inherit">
             No open community iftar on March 1st
           </span>
         </h2>
-        <p className="text-sm text-indigo-900/80 sm:text-base">
+        <p className="text-sm text-sky-800/80 sm:text-base">
           Each Saturday features a community-led iftar. Hosts welcome everyone to
           connect, share a meal, and reflect together. To reserve a date, email
           Sr. Kylie Anderson at{" "}
           <a
             href="mailto:social@arqum.org"
-            className="font-semibold text-indigo-700 underline underline-offset-4 break-all sm:break-normal"
+            className="font-semibold text-sky-800 underline underline-offset-4 break-all sm:break-normal"
           >
             social@arqum.org
           </a>
@@ -37,10 +37,10 @@ export default function CommunityIftars() {
               key={entry.date}
               className="rounded-xl border border-indigo-50 bg-indigo-50/70 p-4 sm:rounded-2xl sm:p-5"
             >
-              <p className="text-xs font-medium uppercase tracking-wide text-indigo-500 sm:text-sm">
+              <p className="text-xs font-medium uppercase tracking-wide text-sky-800 sm:text-sm">
                 {entry.date}
               </p>
-              <p className="mt-1.5 text-lg font-semibold text-indigo-900 sm:mt-2 sm:text-xl">
+              <p className="mt-1.5 text-lg font-semibold text-sky-800 sm:mt-2 sm:text-xl">
                 {entry.community}
               </p>
             </div>

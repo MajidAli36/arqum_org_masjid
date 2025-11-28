@@ -60,8 +60,8 @@ export default function FinancialDrawer({
       />
 
       <aside
-        className={`fixed top-0 right-0 z-[70] flex h-full w-full max-w-2xl flex-col bg-white shadow-2xl transition-transform duration-300 ease-in-out ${
-          isOpen ? "translate-x-0" : "translate-x-full"
+        className={`fixed top-0 right-0 z-[70] flex h-full w-full max-w-2xl flex-col bg-white transition-transform duration-300 ease-in-out ${
+          isOpen ? "translate-x-0 shadow-2xl" : "translate-x-full shadow-none"
         }`}
         role="dialog"
         aria-modal="true"
@@ -73,7 +73,7 @@ export default function FinancialDrawer({
               id="financial-drawer-title"
               className="text-xl font-semibold tracking-tight"
             >
-              Darul Arqam Islamic Center Financial Assistance Form
+              Fort Dodge Islamic Center Financial Assistance Form
             </h2>
             <p className="mt-1 text-sm text-white/80">
               Share your information below. You will finish the official Google Form in the next

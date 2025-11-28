@@ -21,7 +21,7 @@ export default function ProcedureSection() {
           <p className="text-base leading-relaxed text-slate-700">
             Preparing the dead for burial is a <span className="font-semibold">Farḍ Kifayah</span> duty, meaning that if some Muslims properly
             carry out this duty, others are exempt. The process includes bathing the deceased, wrapping the body with a shroud, praying,
-            and burying the body. At Darul Arqum Islamic Center, the Cemetery and Burial Committee coordinates arrangements in consultation
+            and burying the body. At Fort Dodge Islamic Center, the Cemetery and Burial Committee coordinates arrangements in consultation
             with the family.
           </p>
 
@@ -61,7 +61,7 @@ export default function ProcedureSection() {
               The funeral director and staff will take the deceased to the masjid for the Janazah Prayer then to the cemetery for the burial.
             </li>
             <li className="marker:text-slate-900">
-              Approximate cost of burial (may change) [See below]. Make checks payable to <span className="font-semibold">Darul Arqum Islamic Center</span> for
+              Approximate cost of burial (may change) [See below]. Make checks payable to <span className="font-semibold">Fort Dodge Islamic Center</span> for
               the total cost of burial.
             </li>
           </ol>

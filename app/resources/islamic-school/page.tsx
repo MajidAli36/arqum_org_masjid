@@ -3,9 +3,9 @@ import Footer from "../../components/Footer";
 import ResourcesHero from "../components/ResourcesHero";
 
 export const metadata = {
-  title: "Islamic School | Darul Arqam Islamic Center",
+  title: "Islamic School | Fort Dodge Islamic Center",
   description:
-    "Vision, mission, and administration information for Darul Arqam Islamic School, including principal position details and contact information.",
+    "Vision, mission, and administration information for Fort Dodge Islamic School, including principal position details and contact information.",
 };
 
 export default function IslamicSchoolPage() {
@@ -23,7 +23,7 @@ export default function IslamicSchoolPage() {
                 Islamic School
               </h1>
               <p className="mt-3 text-sm leading-relaxed text-gray-800 sm:text-[0.95rem]">
-                Darul Arqam Islamic School (DAIS) is our weekend educational
+                Fort Dodge Islamic School (DAIS) is our weekend educational
                 program dedicated to providing quality Islamic education to
                 children in our community.
               </p>

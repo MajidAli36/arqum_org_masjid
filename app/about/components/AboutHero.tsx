@@ -1,6 +1,6 @@
 import Image from "next/image";
 
-export default function HeroSection() {
+export default function AboutHero() {
   return (
     <section className="w-full bg-white">
       <Image

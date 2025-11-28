@@ -99,7 +99,7 @@ const resourcesSections: ResourceSection[] = [
     id: "request-speaker",
     title: "Request a Speaker",
     description:
-      "Invite a qualified speaker from Darul Arqam Islamic Center for your school, organization, or community event. Share basic details about the audience, topic, and preferred date so we can best accommodate your request.",
+      "Invite a qualified speaker from Fort Dodge Islamic Center for your school, organization, or community event. Share basic details about the audience, topic, and preferred date so we can best accommodate your request.",
     icon: SpeakerIcon,
     category: "requests",
   },
@@ -147,7 +147,7 @@ const resourcesSections: ResourceSection[] = [
     id: "apply-renew-membership",
     title: "Apply/Renew Membership",
     description:
-      "Become a member or renew your membership with Darul Arqam Islamic Center. Membership helps support our operations and may grant voting rights and other member benefits.",
+      "Become a member or renew your membership with Fort Dodge Islamic Center. Membership helps support our operations and may grant voting rights and other member benefits.",
     icon: MembershipIcon,
     category: "membership",
   },
@@ -155,7 +155,7 @@ const resourcesSections: ResourceSection[] = [
     id: "by-laws",
     title: "By Laws",
     description:
-      "Access the governing by-laws of Darul Arqam Islamic Center, including organizational structure, board responsibilities, and membership guidelines.",
+      "Access the governing by-laws of Fort Dodge Islamic Center, including organizational structure, board responsibilities, and membership guidelines.",
     icon: DocumentIcon,
     category: "governance",
   },
@@ -202,9 +202,9 @@ const resourcesSections: ResourceSection[] = [
 ];
 
 export const metadata = {
-  title: "Resources | Darul Arqam Islamic Center",
+  title: "Resources | Fort Dodge Islamic Center",
   description:
-    "Central hub for visitor information, community policies, membership, facility requests, and other resources at Darul Arqam Islamic Center.",
+    "Central hub for visitor information, community policies, membership, facility requests, and other resources at Fort Dodge Islamic Center.",
 };
 
 export default function ResourcesPage() {
@@ -226,7 +226,7 @@ export default function ResourcesPage() {
               </h1>
               <p className="mt-5 max-w-3xl mx-auto text-base leading-relaxed text-gray-600 sm:text-lg">
                 Use the cards below to find visitor information, request speakers or visits,
-                review policies, and access other important documents from Darul Arqam
+                review policies, and access other important documents from Fort Dodge Islamic Center
                 Islamic Center.
               </p>
             </header>

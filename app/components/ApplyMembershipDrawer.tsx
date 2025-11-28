@@ -9,10 +9,10 @@ interface ApplyMembershipDrawerProps {
 }
 
 const overview = [
-  "Darul Arqam Islamic Center offers two types of membership: paid full membership and associate membership.",
+  "Fort Dodge Islamic Center offers two types of membership: paid full membership and associate membership.",
   "Paid full members have the right to vote in General Assembly elections and are eligible to serve on the Board of Directors. The annual membership fee is $30 and applies to members of the General Membership.",
   "Associate members do not have voting privileges, but they are still entitled to all other benefits of membership, such as access to the Center’s facilities and programs.",
-  "Please complete this form to establish or renew your membership at Darul Arqam Islamic Center. If you have any questions, please email membership@darularqam.org.",
+  "Please complete this form to establish or renew your membership at Fort Dodge Islamic Center. If you have any questions, please email membership@darularqam.org.",
 ];
 
 const membershipHighlights = [
@@ -67,8 +67,8 @@ export default function ApplyMembershipDrawer({
       />
 
       <aside
-        className={`fixed top-0 right-0 z-[70] flex h-full w-full max-w-2xl flex-col bg-white shadow-2xl transition-transform duration-300 ease-in-out ${
-          isOpen ? "translate-x-0" : "translate-x-full"
+        className={`fixed top-0 right-0 z-[70] flex h-full w-full max-w-2xl flex-col bg-white transition-transform duration-300 ease-in-out ${
+          isOpen ? "translate-x-0 shadow-2xl" : "translate-x-full shadow-none"
         }`}
         role="dialog"
         aria-modal="true"
@@ -80,7 +80,7 @@ export default function ApplyMembershipDrawer({
               id="membership-drawer-title"
               className="text-xl font-semibold tracking-tight"
             >
-              Darul Arqam Islamic Center Membership Application Form
+              Fort Dodge Islamic Center Membership Application Form
             </h2>
             <p className="mt-1 text-sm text-white/80">
               Submit the quick intake below and finish the official Google Form in the next step.
@@ -226,7 +226,7 @@ export default function ApplyMembershipDrawer({
 
             <fieldset className="space-y-3 rounded-xl border border-gray-200 p-4">
               <legend className="text-sm font-semibold text-gray-900">
-                Do you want to be added to Darul Arqam Islamic Center mailing list to receive updates and notifications?
+                Do you want to be added to Fort Dodge Islamic Center mailing list to receive updates and notifications?
                 <span className="text-rose-600"> *</span>
               </legend>
               <div className="space-y-2 text-sm text-gray-800">

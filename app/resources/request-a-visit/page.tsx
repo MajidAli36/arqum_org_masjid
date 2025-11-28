@@ -3,9 +3,9 @@ import Footer from "@/app/components/Footer";
 import Image from "next/image";
 
 export const metadata = {
-  title: "Request a Visit | Darul Arqam Islamic Center",
+  title: "Request a Visit | Fort Dodge Islamic Center",
   description:
-    "Schedule a visit to Darul Arqam Islamic Center for your school, college, faith group, or community organization to learn more about Islam and Muslims.",
+    "Schedule a visit to Fort Dodge Islamic Center for your school, college, faith group, or community organization to learn more about Islam and Muslims.",
 };
 
 export default function RequestVisitPage() {
@@ -18,7 +18,7 @@ export default function RequestVisitPage() {
         <section className="w-full bg-white">
           <Image
             src="/images/arqum.jpg"
-            alt="Darul Arqam Islamic Center exterior"
+            alt="Fort Dodge Islamic Center exterior"
             width={1920}
             height={960}
             className="w-full max-h-[420px] object-cover"
@@ -33,7 +33,7 @@ export default function RequestVisitPage() {
               <p>Peace!</p>
 
               <p>
-                The members of Darul Arqam Islamic Center are available to
+                The members of Fort Dodge Islamic Center are available to
                 present programs to you, your school or college, church or faith
                 group, or civil organization about Islam. We hope that our
                 programs about Islam and Muslims will be informative, build
@@ -53,7 +53,7 @@ export default function RequestVisitPage() {
               <p>
                 In an attempt to be informative about Islamic religious beliefs
                 and practices, we are also happy to host individuals and groups
-                at Darul Arqam. Should you be interested in visiting our mosque,
+                at Fort Dodge Islamic Center. Should you be interested in visiting our mosque,
                 please contact us to schedule your visit.
               </p>
 
@@ -82,7 +82,7 @@ export default function RequestVisitPage() {
               <p className="mt-4">
                 Public Relations Committee
                 <br />
-                Darul Arqam Islamic Center
+                Fort Dodge Islamic Center
                 <br />
                 Email:{" "}
                 <a

@@ -13,7 +13,6 @@ export default function ReportDeathPage() {
       <Navbar />
       <main className="bg-white">
         <ReportDeathHero />
-        <SectionDivider />
         <HeroIntroContent />
         <SectionDivider />
         <GuidanceSection />

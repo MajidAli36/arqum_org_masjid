@@ -8,7 +8,7 @@ import ResourcesSection from "./components/ResourcesSection";
 import ExploreFurtherSection from "./components/ExploreFurtherSection";
 
 export const metadata = {
-  title: "New Muslim Resources | Darul Arqam Islamic Center",
+  title: "New Muslim Resources | Fort Dodge Islamic Center",
   description:
     "Guidance, classes, and curated resources to help new Muslims grow in faith with confidence.",
 };

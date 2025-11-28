@@ -19,7 +19,7 @@ export default function DonationSection() {
           </h2>
           <p className="mt-2 max-w-3xl text-sm text-slate-500 sm:text-base">
             Every contribution sustains programs, outreach, and community
-            services at Darul Arqam Islamic Center.
+            services at Fort Dodge Islamic Center.
           </p>
         </div>
 

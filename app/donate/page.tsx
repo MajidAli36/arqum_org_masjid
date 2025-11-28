@@ -17,7 +17,7 @@ export default function DonatePage() {
         <DonationOptions />
         <section className="rounded-3xl bg-white p-8 shadow-lg shadow-slate-200/70 ring-1 ring-slate-100">
           <p className="text-base text-slate-600">
-            Darul Arqam Islamic Center is a vital part of the Muslim community
+            Fort Dodge Islamic Center is a vital part of the Muslim community
             in Ames, Iowa. The center relies on donations from generous
             individuals and businesses to operate. Your donation helps support
             programs and services that benefit many people. Jazakum Allah

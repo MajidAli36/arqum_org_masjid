@@ -3,7 +3,7 @@ import Footer from "../../components/Footer";
 import ResourcesHero from "../components/ResourcesHero";
 
 export const metadata = {
-  title: "Islamic Prayer | Darul Arqam Islamic Center",
+  title: "Islamic Prayer | Fort Dodge Islamic Center",
   description:
     "Overview of the daily salah (Islamic prayer), its postures, and what is recited while standing, bowing, prostrating, and sitting.",
 };

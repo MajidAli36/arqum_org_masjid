@@ -3,9 +3,9 @@ import Footer from "../../components/Footer";
 import ResourcesHero from "../components/ResourcesHero";
 
 export const metadata = {
-  title: "Visitors Guide | Darul Arqam Islamic Center",
+  title: "Visitors Guide | Fort Dodge Islamic Center",
   description:
-    "Visitor guidelines for Darul Arqam Islamic Center, including dress code, entering the center, multipurpose room etiquette, and behavior in the prayer hall.",
+    "Visitor guidelines for Fort Dodge Islamic Center, including dress code, entering the center, multipurpose room etiquette, and behavior in the prayer hall.",
 };
 
 export default function VisitorsGuidePage() {
@@ -20,7 +20,7 @@ export default function VisitorsGuidePage() {
           <div className="mx-auto max-w-5xl px-4 py-10 sm:px-6 sm:py-16">
             <div className="rounded-3xl border border-gray-200 bg-zinc-50/60 px-5 py-5 sm:px-7 sm:py-6 shadow-sm">
               <p className="text-sm leading-relaxed text-gray-800 sm:text-[0.95rem]">
-              Thank you for your interest in visiting Darul Arqam Islamic
+              Thank you for your interest in visiting Fort Dodge Islamic
               Center. Our center welcomes all visitors and request that the
               following guidelines are closely followed:
               </p>
@@ -76,7 +76,7 @@ export default function VisitorsGuidePage() {
                 THE MULTIPURPOSE ROOM
               </h2>
               <p className="mt-4 text-sm leading-relaxed text-gray-800 sm:text-[0.95rem]">
-                There are multipurpose rooms in Darul Arqam Islamic Center in
+                There are multipurpose rooms in Fort Dodge Islamic Center in
                 which community gatherings and meetings take place. Visitors are
                 welcomed in one of these rooms before being escorted to the
                 Prayer Halls.
