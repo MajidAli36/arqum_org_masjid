@@ -1,6 +1,6 @@
 import Navbar from "@/app/components/Navbar";
 import Footer from "@/app/components/Footer";
-import Image from "next/image";
+import ResourcesHero from "../components/ResourcesHero";
 
 export const metadata = {
   title: "Request a Speaker | Fort Dodge Islamic Center",
@@ -15,16 +15,7 @@ export default function RequestSpeakerPage() {
 
       <main className="bg-white">
         {/* Hero image */}
-        <section className="w-full bg-white">
-          <Image
-            src="/images/arqum.jpg"
-            alt="Fort Dodge Islamic Center exterior"
-            width={1920}
-            height={960}
-            className="w-full max-h-[420px] object-cover"
-            priority
-          />
-        </section>
+        <ResourcesHero />
 
         {/* Content */}
         <section className="bg-white">
