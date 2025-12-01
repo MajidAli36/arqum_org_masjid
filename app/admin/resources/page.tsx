@@ -146,25 +146,27 @@ export default function ResourcesPageEditor() {
       <div className="bg-white rounded-lg border border-gray-200 shadow-sm">
         {/* Tab Navigation */}
         <div className="border-b border-gray-200">
-          <nav className="flex overflow-x-auto" aria-label="Tabs">
-            {tabs.map((tab) => (
-              <button
-                key={tab.id}
-                onClick={() => setActiveTab(tab.id)}
-                className={`
-                  flex items-center gap-2 px-6 py-4 text-sm font-medium whitespace-nowrap border-b-2 transition-colors
-                  ${
-                    activeTab === tab.id
-                      ? "border-sky-600 text-sky-600 bg-sky-50"
-                      : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
-                  }
-                `}
-              >
-                <span className="text-lg">{tab.icon}</span>
-                <span>{tab.label}</span>
-              </button>
-            ))}
-          </nav>
+          <div className="w-full overflow-x-auto horizontal-scroll">
+            <nav className="inline-flex min-w-max scroll-px-4 px-8 py-2 md:px-0" aria-label="Tabs">
+              {tabs.map((tab) => (
+                <button
+                  key={tab.id}
+                  onClick={() => setActiveTab(tab.id)}
+                  className={`
+                    mr-2 flex items-center gap-2 whitespace-nowrap rounded-md px-4 py-2 text-xs sm:text-sm font-medium border-2 transition-colors last:mr-0
+                    ${
+                      activeTab === tab.id
+                        ? "border-sky-600 bg-sky-50 text-sky-700"
+                        : "border-transparent bg-gray-50 text-gray-600 hover:border-gray-300 hover:bg-white hover:text-gray-800"
+                    }
+                  `}
+                >
+                  <span className="text-base sm:text-lg">{tab.icon}</span>
+                  <span className="text-left leading-snug">{tab.label}</span>
+                </button>
+              ))}
+            </nav>
+          </div>
         </div>
 
         {/* Tab Content */}

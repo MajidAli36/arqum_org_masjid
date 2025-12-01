@@ -19,16 +19,22 @@
   }
 }
 
-/* Remove scrollbar shadow overlay and prevent right side shadows */
+/* Allow horizontal scroll when needed, but keep scrollbar behavior stable */
 html {
-  overflow-x: hidden;
+  overflow-x: auto;
   scrollbar-gutter: stable;
   box-shadow: none !important;
 }
 
 body {
-  overflow-x: hidden;
+  overflow-x: auto;
   box-shadow: none !important;
+}
+
+/* Utility class for horizontal scroll areas (tabs, carousels, etc.) */
+.horizontal-scroll {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 /* Ensure no shadows on the right side */

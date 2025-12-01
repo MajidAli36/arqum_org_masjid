@@ -39,10 +39,23 @@ const menuItems: MenuItem[] = [
   },
 ];
 
-export default function AdminSidebar() {
+type AdminSidebarProps = {
+  isOpen: boolean;
+  onClose: () => void;
+};
+
+export default function AdminSidebar({ isOpen, onClose }: AdminSidebarProps) {
   const pathname = usePathname();
+
+  // Determine if any Resources child route is currently active so that
+  // the Resources dropdown is automatically opened when editing them.
+  const isOnResourcesChildPage =
+    menuItems
+      .find((item) => item.label === "Resources")
+      ?.children?.some((child) => pathname === child.href) || false;
+
   const [openDropdowns, setOpenDropdowns] = useState<Record<string, boolean>>({
-    resources: pathname === "/admin/resources",
+    resources: pathname === "/admin/resources" || isOnResourcesChildPage,
   });
 
   const isActive = (href: string) => {
@@ -56,10 +69,36 @@ export default function AdminSidebar() {
     }));
   };
 
-
   return (
-    <aside className="w-64 bg-white border-r border-gray-200 h-[calc(100vh-4rem)] fixed left-0 top-16 overflow-y-auto">
-      <div className="p-4">
+    <aside
+      className={`fixed left-0 top-16 z-40 h-[calc(100vh-4rem)] w-64 transform border-r border-gray-200 bg-white overflow-y-auto transition-transform duration-200 ease-in-out
+      ${isOpen ? "translate-x-0" : "-translate-x-full"} lg:translate-x-0`}
+      aria-hidden={!isOpen}
+    >
+      <div className="flex items-center justify-between border-b border-gray-200 px-4 py-3 lg:hidden">
+        <h2 className="text-base font-semibold text-sky-900">Page Editors</h2>
+        <button
+          type="button"
+          onClick={onClose}
+          aria-label="Close admin menu"
+          className="rounded-md p-2 text-gray-600 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-sky-500"
+        >
+          <svg
+            className="h-4 w-4"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <line x1="18" y1="6" x2="6" y2="18" />
+            <line x1="6" y1="6" x2="18" y2="18" />
+          </svg>
+        </button>
+      </div>
+
+      <div className="p-4 pt-3 lg:pt-4">
         <h2 className="text-lg font-bold text-sky-900 mb-4">Page Editors</h2>
         <nav className="space-y-1">
           {menuItems.map((item) => {
@@ -70,24 +109,32 @@ export default function AdminSidebar() {
             if (hasChildren) {
               return (
                 <div key={item.label}>
-                  <button
-                    onClick={() => toggleDropdown(item.label)}
+                  <div
                     className={`w-full flex items-center justify-between px-4 py-2.5 rounded-md transition-colors duration-200 relative ${
                       active
                         ? "bg-blue-100 text-sky-900 font-bold border-l-4 border-blue-600"
                         : "text-sky-900 hover:bg-gray-100 font-semibold"
                     }`}
                   >
-                    <span>{item.label}</span>
-                    <svg
-                      className={`w-4 h-4 transition-transform ${isDropdownOpen ? "rotate-180" : ""}`}
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
+                    <Link href={item.href} className="flex-1 text-left">
+                      {item.label}
+                    </Link>
+                    <button
+                      type="button"
+                      onClick={() => toggleDropdown(item.label)}
+                      className="ml-2 p-1 rounded hover:bg-gray-200 text-gray-700"
+                      aria-label={`Toggle ${item.label} submenu`}
                     >
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                    </svg>
-                  </button>
+                      <svg
+                        className={`w-4 h-4 transition-transform ${isDropdownOpen ? "rotate-180" : ""}`}
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                      </svg>
+                    </button>
+                  </div>
                   {isDropdownOpen && (
                     <div className="ml-4 mt-1 space-y-1 border-l-2 border-gray-200 pl-2">
                       {item.children!.map((child) => {

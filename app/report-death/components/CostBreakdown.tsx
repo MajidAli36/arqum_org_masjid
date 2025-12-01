@@ -14,7 +14,7 @@ export default function CostBreakdown() {
           <h2 className="text-2xl font-semibold uppercase tracking-wide text-slate-900 sm:text-3xl">Approximate Costs</h2>
           <p className="mt-3 text-sm text-slate-600">Make the cashier&apos;s check payable to Fort Dodge Islamic Center.</p>
 
-          <div className="mt-8 overflow-hidden rounded-2xl border border-white/60 bg-white">
+          <div className="mt-8 overflow-x-auto rounded-2xl border border-white/60 bg-white">
             <table className="min-w-full divide-y divide-slate-100 text-left text-base text-slate-800">
               <thead className="bg-slate-900 text-white">
                 <tr>

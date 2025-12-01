@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Image from "next/image";
+import RichTextEditor from "./RichTextEditor";
 
 type SectionField = {
   id: string;
@@ -19,6 +20,11 @@ type SectionEditorProps = {
   fields: SectionField[];
   onUpdate: (sectionId: string, fields: SectionField[]) => void;
   alwaysExpanded?: boolean;
+};
+
+const isDescriptionField = (id: string, label: string) => {
+  const target = `${id} ${label}`.toLowerCase();
+  return target.includes("description");
 };
 
 export default function SectionEditor({
@@ -152,13 +158,21 @@ export default function SectionEditor({
               )}
 
               {field.type === "textarea" && (
-                <textarea
-                  value={typeof field.value === "string" ? field.value : ""}
-                  onChange={(e) => handleFieldChange(field.id, e.target.value)}
-                  placeholder={field.placeholder || `Enter ${field.label.toLowerCase()}`}
-                  rows={4}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent text-gray-900 resize-y"
-                />
+                isDescriptionField(field.id, field.label) ? (
+                  <RichTextEditor
+                    value={typeof field.value === "string" ? field.value : ""}
+                    onChange={(value) => handleFieldChange(field.id, value)}
+                    placeholder={field.placeholder || `Enter ${field.label.toLowerCase()}`}
+                  />
+                ) : (
+                  <textarea
+                    value={typeof field.value === "string" ? field.value : ""}
+                    onChange={(e) => handleFieldChange(field.id, e.target.value)}
+                    placeholder={field.placeholder || `Enter ${field.label.toLowerCase()}`}
+                    rows={4}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent text-gray-900 resize-y"
+                  />
+                )
               )}
 
               {field.type === "url" && (
@@ -182,12 +196,10 @@ export default function SectionEditor({
               )}
 
               {field.type === "rich-text" && (
-                <textarea
+                <RichTextEditor
                   value={typeof field.value === "string" ? field.value : ""}
-                  onChange={(e) => handleFieldChange(field.id, e.target.value)}
+                  onChange={(value) => handleFieldChange(field.id, value)}
                   placeholder={field.placeholder || `Enter ${field.label.toLowerCase()}`}
-                  rows={8}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent text-gray-900 resize-y font-mono text-sm"
                 />
               )}
 
@@ -250,12 +262,24 @@ export default function SectionEditor({
                               {schema.label}
                             </label>
                             {schema.type === "textarea" ? (
-                              <textarea
-                                value={item[schema.id] || ""}
-                                onChange={(e) => handleArrayItemChange(field.id, index, schema.id, e.target.value)}
-                                rows={2}
-                                className="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-sky-500"
-                              />
+                              isDescriptionField(schema.id, schema.label) ? (
+                                <RichTextEditor
+                                  value={item[schema.id] || ""}
+                                  onChange={(value) =>
+                                    handleArrayItemChange(field.id, index, schema.id, value)
+                                  }
+                                  placeholder={schema.label}
+                                />
+                              ) : (
+                                <textarea
+                                  value={item[schema.id] || ""}
+                                  onChange={(e) =>
+                                    handleArrayItemChange(field.id, index, schema.id, e.target.value)
+                                  }
+                                  rows={2}
+                                  className="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-sky-500"
+                                />
+                              )
                             ) : (
                               <input
                                 type={schema.type === "url" ? "url" : "text"}
