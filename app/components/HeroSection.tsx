@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { resolveStorageImageUrl } from "../../lib/storage.service";
 
 // Shape of the hero section data coming from Supabase.
 // All fields are optional so the component can handle partial JSON safely.
@@ -14,21 +15,28 @@ export type HeroSectionProps = {
 };
 
 export default function HeroSection({ data }: HeroSectionProps) {
-  // Graceful fallbacks if data or individual fields are missing
-  const imageSrc = data?.heroImage ?? "/images/fortdoge-masjid.jpg";
+  const resolvedImage = resolveStorageImageUrl(data?.heroImage, {
+    bucket: "Public",
+    folder: "Home",
+  });
+
+  console.log("[Hero Image URL]", resolvedImage);
+
   const imageAlt =
     data?.heroImageAlt ?? "Fort Dodge Islamic Center exterior";
 
   return (
     <section className="w-full bg-white">
-      <Image
-        src={imageSrc}
-        alt={imageAlt}
-        width={1920}
-        height={960}
-        className="w-full max-h-[750px] object-cover"
-        priority
-      />
+      {resolvedImage && (
+        <Image
+          src={resolvedImage}
+          alt={imageAlt}
+          width={1920}
+          height={960}
+          className="w-full max-h-[750px] object-cover"
+          priority
+        />
+      )}
       {(data?.title || data?.subtitle) && (
         <div className="mx-auto max-w-5xl px-4 py-6 text-center text-slate-900">
           {data?.title && (

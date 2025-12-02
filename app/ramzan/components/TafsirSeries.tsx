@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
+import { resolveStorageImageUrl } from "../../../lib/storage.service";
 
 const bulletPoints = [
   "Some sessions will be between Maghrib and Isha",
@@ -18,13 +19,23 @@ export default function TafsirSeries() {
       <div className="flex flex-col gap-6 p-5 lg:flex-row lg:items-stretch lg:gap-8 lg:p-8">
         {/* Image */}
         <div className="relative w-full flex-1 overflow-hidden rounded-xl bg-slate-100 lg:max-w-md">
-          <Image
-            src="/images/quran-aq.jpg"
-            alt="Tafsir lessons promotional poster"
-            fill
-            className="object-cover lg:object-contain"
-            priority
-          />
+          {resolveStorageImageUrl("/images/quran-aq.jpg", {
+            bucket: "Public",
+            folder: "Home",
+          }) && (
+            <Image
+              src={
+                resolveStorageImageUrl("/images/quran-aq.jpg", {
+                  bucket: "Public",
+                  folder: "Home",
+                }) as string
+              }
+              alt="Tafsir lessons promotional poster"
+              fill
+              className="object-cover lg:object-contain"
+              priority
+            />
+          )}
         </div>
 
         {/* Content */}

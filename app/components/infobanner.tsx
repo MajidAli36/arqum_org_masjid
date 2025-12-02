@@ -3,17 +3,39 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useState, useEffect, useRef } from "react";
+import { resolveStorageImageUrl } from "../../lib/storage.service";
 import ApplyMembershipDrawer from "./ApplyMembershipDrawer";
 import ContactDrawer from "./ContactDrawer";
 import ReserveBasementDrawer from "./ReserveBasementDrawer";
 import DoorAccessDrawer from "./DoorAccessDrawer";
 
-const bannerCards = [
+export type InfoBannerIcon = {
+  label?: string;
+  src?: string;
+  href?: string;
+  url?: string; // Supabase uses "url" instead of "href"
+  iconPath?: string; // Supabase uses "iconPath" instead of "src"
+  external?: boolean;
+  drawer?: "membership" | "contact" | "reserveBasement" | "doorAccess";
+};
+
+export type InfoBannerData = {
+  bannerCards?: string[] | Array<{ text?: string }>; // Supabase uses objects with "text" property
+  icons?: InfoBannerIcon[];
+  quickLinks?: InfoBannerIcon[]; // Supabase uses "quickLinks" key for icons
+};
+
+export type InfoBannerProps = {
+  data?: InfoBannerData | null;
+};
+
+const defaultBannerCards: string[] = [
   "Our Islamic Center is solely dependent on generous donations. Your support keeps every program running.",
   "Need help or know someone who needs help? Try our IhsanConnect line so we can support the community together.",
 ];
 
-const iconItems = [
+const defaultIconItems: InfoBannerIcon[] = [
+  { label: "By Laws", src: "/images/laws-aq.png", href: "https://drive.google.com/file/d/1xFQ6g0plhCzVIaCvglVPC1nykuICqRWL/view?usp=sharing", external: true },
   { label: "By Laws", src: "/images/laws-aq.png", href: "https://drive.google.com/file/d/1xFQ6g0plhCzVIaCvglVPC1nykuICqRWL/view?usp=sharing", external: true },
   { label: "Report a Death", src: "/images/phone-aq.png", href: "/report-death" },
   { label: "Financial Assistance", src: "/images/financial-aq.png", href: "/resources#financial-assistance" },
@@ -28,7 +50,7 @@ const iconItems = [
   { label: "Request Door Access", src: "/images/door-aq.png", href: "/resources#request-door-access", drawer: "doorAccess" },
 ];
 
-export default function InfoBanner() {
+export default function InfoBanner({ data }: InfoBannerProps) {
   const [isMembershipDrawerOpen, setIsMembershipDrawerOpen] = useState(false);
   const [isContactDrawerOpen, setIsContactDrawerOpen] = useState(false);
   const [isReserveBasementDrawerOpen, setIsReserveBasementDrawerOpen] = useState(false);
@@ -64,7 +86,7 @@ export default function InfoBanner() {
     };
   }, [overlayActive]);
 
-  const handleIconClick = (item: typeof iconItems[0], event: React.MouseEvent) => {
+  const handleIconClick = (item: InfoBannerIcon, event: React.MouseEvent) => {
     if (item.drawer) {
       event.preventDefault();
       if (item.drawer === "membership") {
@@ -78,13 +100,55 @@ export default function InfoBanner() {
       }
     }
   };
+  // Normalize banner cards: handle both string[] and Array<{ text: string }>
+  const bannerCards = data?.bannerCards && data.bannerCards.length
+    ? data.bannerCards.map((card) => (typeof card === "string" ? card : card?.text ?? ""))
+    : defaultBannerCards;
+
+  // Normalize icons: use quickLinks if available, otherwise icons, otherwise defaults
+  const icons = (data?.quickLinks && data.quickLinks.length
+    ? data.quickLinks
+    : data?.icons && data.icons.length
+    ? data.icons
+    : defaultIconItems
+  ).map((item) => {
+    // Map Supabase structure to component structure
+    return {
+      label: item.label,
+      src: item.iconPath ?? item.src, // Supabase uses iconPath
+      href: item.url ?? item.href, // Supabase uses url
+      external: item.external,
+      drawer: item.drawer,
+    };
+  });
+
+  // Auto-detect drawer type from URL patterns if not explicitly set
+  const iconsWithDrawers = icons.map((item) => {
+    if (item.drawer) return item;
+    
+    const href = item.href ?? "";
+    if (href.includes("apply-renew-membership") || href.includes("membership")) {
+      return { ...item, drawer: "membership" as const };
+    }
+    if (href === "/contact" || href.includes("/contact")) {
+      return { ...item, drawer: "contact" as const };
+    }
+    if (href.includes("reserve-basement") || href.includes("#reserve-basement")) {
+      return { ...item, drawer: "reserveBasement" as const };
+    }
+    if (href.includes("request-door-access") || href.includes("#request-door-access")) {
+      return { ...item, drawer: "doorAccess" as const };
+    }
+    return item;
+  });
+
   return (
     <section className="w-full mt-10">
       <div className="bg-[#5E7A8A] px-4 py-6">
         <div className="max-w-6xl mx-auto flex flex-col gap-4 md:flex-row md:gap-6">
-          {bannerCards.map((text) => (
+          {bannerCards.map((text, idx) => (
             <div
-              key={text}
+              key={idx}
               className="flex-1 rounded-md bg-[#EFF4F7] px-5 py-4 text-center text-sm text-[#355160] shadow md:text-left"
             >
               {text}
@@ -95,25 +159,38 @@ export default function InfoBanner() {
 
       <div className="bg-[#F3F3F3] px-4 py-8 sm:px-6 sm:py-10">
         <div className="mx-auto grid max-w-6xl grid-cols-2 gap-x-4 gap-y-10 sm:grid-cols-3 sm:gap-x-6 md:grid-cols-4 lg:grid-cols-6">
-          {iconItems.map((item) => (
-            <Link
-              key={item.label}
-              href={item.href}
-              target={item.external ? "_blank" : undefined}
-              rel={item.external ? "noreferrer" : undefined}
-              onClick={(e) => handleIconClick(item, e)}
-              className="flex flex-col items-center space-y-3 text-center text-xs font-semibold text-[#2E2E2E] leading-tight transition-transform hover:-translate-y-1 cursor-pointer"
-            >
-              <Image
-                src={item.src}
-                alt={item.label}
-                width={56}
-                height={56}
-                className="object-contain"
-              />
-              <span>{item.label}</span>
-            </Link>
-          ))}
+          {iconsWithDrawers.map((item) => {
+            if (!item.label || !item.href || !item.src) {
+              return null;
+            }
+
+            const iconSrc = resolveStorageImageUrl(item.src);
+
+            // If we can't resolve a Supabase URL, skip rendering the icon image
+            if (!iconSrc) {
+              return null;
+            }
+
+            return (
+              <Link
+                key={item.label}
+                href={item.href}
+                target={item.external ? "_blank" : undefined}
+                rel={item.external ? "noreferrer" : undefined}
+                onClick={(e) => handleIconClick(item, e)}
+                className="flex flex-col items-center space-y-3 text-center text-xs font-semibold text-[#2E2E2E] leading-tight transition-transform hover:-translate-y-1 cursor-pointer"
+              >
+                <Image
+                  src={iconSrc}
+                  alt={item.label}
+                  width={56}
+                  height={56}
+                  className="object-contain"
+                />
+                <span>{item.label}</span>
+              </Link>
+            );
+          })}
         </div>
       </div>
 

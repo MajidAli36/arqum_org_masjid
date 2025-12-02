@@ -1,18 +1,29 @@
 import Image from "next/image";
 import Link from "next/link";
+import { resolveStorageImageUrl } from "../../../lib/storage.service";
 
 export default function HeroBanner() {
   return (
     <header className="w-full bg-white">
       <div className="relative w-full overflow-hidden">
         <div className="relative aspect-[1925/500] w-full">
-          <Image
-            src="/images/ramzan-aq.png"
-            alt="Ramadan Kareem banner"
-            fill
-            className="object-cover"
-            priority
-          />
+          {resolveStorageImageUrl("/images/ramzan-aq.png", {
+            bucket: "Public",
+            folder: "Home",
+          }) && (
+            <Image
+              src={
+                resolveStorageImageUrl("/images/ramzan-aq.png", {
+                  bucket: "Public",
+                  folder: "Home",
+                }) as string
+              }
+              alt="Ramadan Kareem banner"
+              fill
+              className="object-cover"
+              priority
+            />
+          )}
         </div>
       </div>
       <div className="space-y-3 border-t border-gray-100 bg-gray-50 px-4 py-4 text-center text-gray-800 sm:space-y-4 sm:px-6 sm:py-6">

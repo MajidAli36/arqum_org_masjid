@@ -1,11 +1,12 @@
 import Navbar from "./components/Navbar";
 import HeroSection, { HeroSectionData } from "./components/HeroSection";
-import InfoBanner from "./components/infobanner";
+import InfoBanner, { InfoBannerData } from "./components/infobanner";
 import PrayerTimes, { PrayerTimesData } from "./components/prayertime";
 import DonationSection, { DonationSectionData } from "./components/DonationSection";
 import FridayPrayers, { FridayPrayersData } from "./components/Fridayprayer";
 import CalendarSection from "./components/calendersection";
 import Footer from "./components/Footer";
+import HomeRealtimeSubscription from "./components/HomeRealtimeSubscription";
 
 import {
   getHomeContent,
@@ -52,15 +53,19 @@ export default async function Home() {
   const prayerTimeConfig = sections.prayerTime ?? null;
   const fridayPrayersConfig = sections.fridayPrayers ?? null;
   const donationConfig = sections.donation ?? null;
+  // Supabase uses "quickLinks" key, but we also support "infoBanner" for backwards compatibility
+  const infoBannerConfig = sections.quickLinks ?? sections.infoBanner ?? null;
   const calendarConfig = sections.calendar ?? null;
 
   const heroData = (heroConfig?.data ?? null) as HeroSectionData | null;
   const prayerTimesData = (prayerTimeConfig?.data ?? null) as PrayerTimesData | null;
   const fridayPrayersData = (fridayPrayersConfig?.data ?? null) as FridayPrayersData | null;
   const donationData = (donationConfig?.data ?? null) as DonationSectionData | null;
+  const infoBannerData = (infoBannerConfig?.data ?? null) as InfoBannerData | null;
 
   return (
     <div className="min-h-screen bg-zinc-50">
+      <HomeRealtimeSubscription />
       <Navbar />
 
       {/* Dynamically rendered sections based on Supabase JSON */}
@@ -79,7 +84,7 @@ export default async function Home() {
       )}
 
       {/* Info banner and calendar sections can also be wired to JSON when needed */}
-      <InfoBanner />
+      {isSectionEnabled(infoBannerConfig) && <InfoBanner data={infoBannerData} />}
 
       {isSectionEnabled(calendarConfig) && <CalendarSection />}
 

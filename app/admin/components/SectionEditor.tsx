@@ -1,8 +1,8 @@
 "use client";
 
-import { useState } from "react";
-import Image from "next/image";
+import { useState, useEffect } from "react";
 import RichTextEditor from "./RichTextEditor";
+import { resolveStorageImageUrl } from "@/lib/storage.service";
 
 type SectionField = {
   id: string;
@@ -19,6 +19,8 @@ type SectionEditorProps = {
   sectionTitle: string;
   fields: SectionField[];
   onUpdate: (sectionId: string, fields: SectionField[]) => void;
+  onSave?: () => void;
+  saving?: boolean;
   alwaysExpanded?: boolean;
 };
 
@@ -32,10 +34,17 @@ export default function SectionEditor({
   sectionTitle,
   fields,
   onUpdate,
+  onSave,
+  saving = false,
   alwaysExpanded = false,
 }: SectionEditorProps) {
   const [localFields, setLocalFields] = useState<SectionField[]>(fields);
   const [isExpanded, setIsExpanded] = useState(true);
+
+  // Sync localFields when props.fields change (e.g., after page reload)
+  useEffect(() => {
+    setLocalFields(fields);
+  }, [fields]);
 
   const handleFieldChange = (fieldId: string, value: string | any[]) => {
     const updatedFields = localFields.map((field) =>
@@ -45,11 +54,92 @@ export default function SectionEditor({
     onUpdate(sectionId, updatedFields);
   };
 
-  const handleImageUpload = (fieldId: string, event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageUpload = async (
+    fieldId: string,
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
     const file = event.target.files?.[0];
-    if (file) {
-      const imageUrl = URL.createObjectURL(file);
-      handleFieldChange(fieldId, imageUrl);
+    if (!file) return;
+
+    // Validate file size (max 5MB)
+    const maxSize = 5 * 1024 * 1024; // 5MB in bytes
+    if (file.size > maxSize) {
+      alert(`Image size is too large. Maximum size is 5MB. Your file is ${(file.size / 1024 / 1024).toFixed(2)}MB.`);
+      return;
+    }
+
+    // Validate file type
+    if (!file.type.startsWith("image/")) {
+      alert("Please select a valid image file (JPG, PNG, WebP, etc.)");
+      return;
+    }
+
+    try {
+      console.log("[SectionEditor] Uploading image via API:", {
+        name: file.name,
+        size: file.size,
+        type: file.type,
+        fieldId,
+      });
+
+      // Use server-side API route for upload (better permissions)
+      const formData = new FormData();
+      formData.append("file", file);
+      formData.append("fieldId", fieldId);
+
+      const response = await fetch("/api/upload-image?bucket=Public&folder=Home", {
+        method: "POST",
+        body: formData,
+      });
+
+      const result = await response.json();
+
+      if (!result.ok) {
+        console.error("[SectionEditor] Image upload failed:", result);
+        
+        let errorMessage = `${result.message || "Failed to upload image"}\n\n`;
+        
+        if (result.error) {
+          errorMessage += `Error: ${result.error}\n`;
+        }
+        if (result.details) {
+          errorMessage += `${result.details}\n`;
+        }
+        if (result.help) {
+          errorMessage += result.help;
+        } else {
+          errorMessage += "\nPlease check:\n";
+          errorMessage += "1. Supabase Storage bucket 'Public' exists\n";
+          errorMessage += "2. Server has proper credentials (SUPABASE_SERVICE_ROLE_KEY in .env.local)\n";
+          errorMessage += "3. File size is under 5MB\n";
+          errorMessage += "4. Check browser console and server logs for details";
+        }
+        
+        if (result.usingServiceRole === false) {
+          errorMessage += "\n\n⚠️ WARNING: Using ANON_KEY instead of SERVICE_ROLE_KEY. Add SUPABASE_SERVICE_ROLE_KEY to .env.local";
+        }
+        
+        alert(errorMessage);
+        return;
+      }
+
+      console.log("[SectionEditor] Image uploaded successfully:", result);
+      
+      // Store just the filename (not the full path)
+      const fileName = result.fileName;
+      console.log("[SectionEditor] Storing filename in field:", fileName);
+
+      // Make sure we're storing the filename, not a blob URL
+      if (fileName && !fileName.startsWith("blob:")) {
+        handleFieldChange(fieldId, fileName);
+        console.log("[SectionEditor] Field updated with filename:", fileName);
+      } else {
+        console.error("[SectionEditor] Invalid filename from API:", fileName);
+        alert("Error: Invalid image filename received from server. Please try uploading again.");
+      }
+    } catch (err: any) {
+      console.error("[SectionEditor] Unexpected upload error:", err);
+      alert(`Unexpected error while uploading image: ${err?.message || String(err)}\n\nCheck browser console for details.`);
     }
   };
 
@@ -206,13 +296,66 @@ export default function SectionEditor({
               {field.type === "image" && (
                 <div className="space-y-3">
                   {field.value && typeof field.value === "string" && (
-                    <div className="relative w-full h-48 border border-gray-300 rounded-md overflow-hidden bg-gray-100">
-                      <Image
-                        src={field.value}
-                        alt={field.label}
-                        fill
-                        className="object-contain"
-                      />
+                    <div className="relative w-full h-48 border border-gray-300 rounded-md overflow-hidden bg-gray-100 flex items-center justify-center">
+                      {/* Use resolved public URL from Supabase Storage for preview */}
+                      {(() => {
+                        console.log("[SectionEditor] Image field value:", field.value);
+                        const previewSrc = resolveStorageImageUrl(field.value, {
+                          bucket: "Public",
+                          folder: "Home",
+                        });
+                        console.log("[SectionEditor] Resolved preview URL:", previewSrc);
+                        
+                        if (!previewSrc) {
+                          // Don't try to show blob URLs - they're temporary and invalid
+                          if (field.value.startsWith("blob:")) {
+                            return (
+                              <div className="p-4 text-center">
+                                <p className="text-sm text-red-600 font-semibold">⚠️ Invalid Image</p>
+                                <p className="text-xs text-gray-500 mt-1">Blob URL detected. Please upload the image again.</p>
+                                <p className="text-xs text-gray-400 mt-1">Value: {field.value.substring(0, 50)}...</p>
+                              </div>
+                            );
+                          }
+                          
+                          // Fallback: try to show the value as-is if it's already a valid URL
+                          if (field.value.startsWith("http://") || field.value.startsWith("https://")) {
+                            return (
+                              <img
+                                src={field.value}
+                                alt={field.label}
+                                className="max-h-full max-w-full object-contain"
+                                onError={(e) => {
+                                  console.error("[SectionEditor] Failed to load fallback image:", field.value);
+                                  e.currentTarget.style.display = "none";
+                                }}
+                              />
+                            );
+                          }
+                          
+                          // If it's a filename but couldn't resolve, show error
+                          return (
+                            <div className="p-4 text-center">
+                              <p className="text-sm text-gray-500">Image filename: {field.value}</p>
+                              <p className="text-xs text-gray-400 mt-1">Could not resolve URL. Make sure file exists in Supabase Storage.</p>
+                            </div>
+                          );
+                        }
+                        return (
+                          <img
+                            src={previewSrc}
+                            alt={field.label}
+                            className="max-h-full max-w-full object-contain"
+                            onError={(e) => {
+                              console.error("[SectionEditor] Failed to load image:", previewSrc);
+                              e.currentTarget.style.display = "none";
+                            }}
+                            onLoad={() => {
+                              console.log("[SectionEditor] Image loaded successfully:", previewSrc);
+                            }}
+                          />
+                        );
+                      })()}
                     </div>
                   )}
                   <div className="flex items-center gap-3">
@@ -360,9 +503,13 @@ export default function SectionEditor({
           <div className="pt-4 border-t border-gray-200">
             <button
               type="button"
-              className="px-6 py-2 bg-sky-800 text-white rounded-md hover:bg-sky-900 transition-colors font-semibold"
+              onClick={onSave}
+              disabled={saving}
+              className={`px-6 py-2 bg-sky-800 text-white rounded-md hover:bg-sky-900 transition-colors font-semibold ${
+                saving ? "opacity-50 cursor-not-allowed" : ""
+              }`}
             >
-              Save Changes
+              {saving ? "Saving..." : "Save Changes"}
             </button>
           </div>
         </div>
