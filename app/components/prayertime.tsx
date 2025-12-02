@@ -1,30 +1,59 @@
-const prayers = [
-  { name: "Fajr", adhan: "5:55 AM", iqama: "6:15 AM" },
-  { name: "Sunrise", adhan: "7:15 AM", iqama: "-" },
-  { name: "Dhuhr", adhan: "12:02 PM", iqama: "12:30 PM" },
-  { name: "Asr", adhan: "2:27 PM", iqama: "3:00 PM" },
-  { name: "Maghrib", adhan: "4:47 PM", iqama: "4:55 PM" },
-  { name: "Isha", adhan: "6:09 PM", iqama: "7:00 PM" },
-];
+// Each prayer row coming from Supabase (all optional).
+export type PrayerRow = {
+  name?: string;
+  adhan?: string;
+  iqama?: string;
+};
 
-export default function PrayerTimes() {
+// Data shape for the prayer times section.
+export type PrayerTimesData = {
+  heading?: string;
+  dateLabel?: string;
+  description?: string;
+  statusLabel?: string;
+  statusValue?: string;
+  prayers?: PrayerRow[];
+};
+
+export type PrayerTimesProps = {
+  data?: PrayerTimesData | null;
+};
+
+export default function PrayerTimes({ data }: PrayerTimesProps) {
+  // Temporary debug logs to verify whether data is coming from Supabase or using static defaults.
+  console.log("[PrayerTimes] Raw data prop from Supabase (or null):", data);
+
+  const prayers: PrayerRow[] =
+    data?.prayers ?? [
+      { name: "Fajr", adhan: "5:55 AM", iqama: "6:15 AM" },
+      { name: "Sunrise", adhan: "7:15 AM", iqama: "-" },
+      { name: "Dhuhr", adhan: "12:02 PM", iqama: "12:30 PM" },
+      { name: "Asr", adhan: "2:27 PM", iqama: "3:00 PM" },
+      { name: "Maghrib", adhan: "4:47 PM", iqama: "4:55 PM" },
+      { name: "Isha", adhan: "6:09 PM", iqama: "7:00 PM" },
+    ];
+
+  console.log("[PrayerTimes] Final prayers array being rendered:", prayers);
+
   return (
     <section className="mx-auto mt-16 w-full max-w-5xl px-4 sm:px-6">
       <div className="rounded-3xl border border-slate-200 bg-white/80 p-6 shadow-xl backdrop-blur sm:p-8">
         <div className="flex flex-col items-center justify-between gap-4 border-b border-slate-100 pb-6 text-center sm:flex-row sm:text-left">
           <div>
             <p className="text-xs uppercase tracking-[0.4em] text-slate-400">
-              Prayer Schedule
+              {data?.heading ?? "Prayer Schedule"}
             </p>
             <h2 className="mt-2 text-2xl font-semibold text-slate-900">
-              Monday • November 24, 2025
+              {data?.dateLabel ?? "Prayer Times"}
             </h2>
             <p className="text-sm text-slate-500">
-              Times are subject to moon sighting confirmations.
+              {data?.description ??
+                "Times are subject to moon sighting confirmations."}
             </p>
           </div>
           <div className="rounded-full border border-slate-200 px-5 py-2 text-sm font-medium text-slate-700">
-            Jamaat Status: On-Site
+            {data?.statusLabel ?? "Jamaat Status"}:{" "}
+            {data?.statusValue ?? "On-Site"}
           </div>
         </div>
 

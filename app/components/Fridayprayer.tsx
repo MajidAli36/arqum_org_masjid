@@ -1,5 +1,26 @@
-const khutbahs = [
-  { slot: "First Khutbah", time: "12:15 PM", imam: "Imam Kareem" },
+// Individual khutbah row from Supabase.
+export type KhutbahRow = {
+  slot?: string;
+  time?: string;
+  imam?: string;
+};
+
+// Data shape for the Friday prayers section.
+export type FridayPrayersData = {
+  eyebrow?: string;
+  title?: string;
+  description?: string;
+  locationLabel?: string;
+  locationValue?: string;
+  khutbahs?: KhutbahRow[];
+};
+
+export type FridayPrayersProps = {
+  data?: FridayPrayersData | null;
+};
+
+const defaultKhutbahs: KhutbahRow[] = [
+  { slot: "First Khutbahs", time: "12:15 PM", imam: "Imam Kareem" },
   { slot: "Second Khutbah", time: "1:15 PM", imam: "Guest Khateeb" },
 ];
 
@@ -33,19 +54,26 @@ const ClockIcon = () => (
   </svg>
 );
 
-export default function FridayPrayers() {
+export default function FridayPrayers({ data }: FridayPrayersProps) {
+  const khutbahs: KhutbahRow[] =
+    data?.khutbahs && data.khutbahs.length > 0
+      ? data.khutbahs
+      : defaultKhutbahs;
+
   return (
     <section className="mx-auto mt-16 w-full max-w-5xl px-6">
       <div className="overflow-hidden rounded-3xl border border-slate-200 bg-gradient-to-r from-[#152C44] via-[#1f3b56] to-[#274365] text-white shadow-2xl">
         <div className="flex flex-col gap-6 p-8 text-center sm:flex-row sm:items-center sm:justify-between sm:text-left">
           <div>
             <p className="text-xs uppercase tracking-[0.4em] text-amber-200/80">
-              Jumu'ah Services
+              {data?.eyebrow ?? "Jumu'ah Services"}
             </p>
-            <h2 className="mt-2 text-3xl font-semibold">Friday Prayers</h2>
+            <h2 className="mt-2 text-3xl font-semibold">
+              {data?.title ?? "Friday Prayers"}
+            </h2>
             <p className="mt-2 text-sm text-slate-100/90">
-              Doors open 30 minutes before each Khutbah. Please arrive early to
-              secure parking and seating.
+              {data?.description ??
+                "Doors open 30 minutes before each Khutbah. Please arrive early to secure parking and seating."}
             </p>
           </div>
           <div className="rounded-2xl border border-white/20 bg-white/10 px-6 py-4 text-sm shadow-sm">
@@ -53,7 +81,9 @@ export default function FridayPrayers() {
               <LocationIcon />
               <p className="font-semibold">Location</p>
             </div>
-            <p className="mt-1 text-slate-100/90">Main Prayer Hall</p>
+            <p className="mt-1 text-slate-100/90">
+              {data?.locationValue ?? "Main Prayer Hall"}
+            </p>
           </div>
         </div>
 
