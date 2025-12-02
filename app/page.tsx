@@ -30,10 +30,10 @@ function isSectionEnabled(section?: HomeSectionConfig | null): boolean {
 }
 
 /**
- * Safely pull out the JSON `content` object from the fetched row.
+ * Safely pull out the JSON `data` object from the fetched row.
  */
 function getSections(home: HomeContent | null): HomeContentJson {
-  return home?.content ?? {};
+  return home?.data ?? {};
 }
 
 /**

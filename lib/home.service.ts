@@ -14,7 +14,7 @@ export interface HomeSectionConfig<T = unknown> {
 }
 
 /**
- * JSON payload stored in the `content` column of the `home` / `Home` table.
+ * JSON payload stored in the `data` column of the `home` / `Home` table.
  *
  * Each key corresponds to a section on the homepage.
  * The inner `data` values will be cast to the specific
@@ -31,12 +31,12 @@ export interface HomeContentJson {
 
 /**
  * Shape of a single row in the "home" / "Home" table.
- * The important field is the `content` JSON blob.
+ * The important field is the `data` JSON blob.
  */
 export interface HomeContent {
-  id: number;
-  created_at: string;
-  content: HomeContentJson | null;
+  id: string;
+  updated_at: string;
+  data: HomeContentJson | null;
 }
 
 const HOME_TABLE_CAMEL = "Home";
@@ -69,12 +69,11 @@ async function fetchSingleHomeRow(tableName: string): Promise<HomeContent | null
 
   const normalised: HomeContent = {
     id: row.id,
-    created_at: row.created_at,
-    content:
-      row && typeof row.content === "object" ? (row.content as HomeContentJson) : null,
+    updated_at: row.updated_at,
+    data: row && typeof row.data === "object" ? (row.data as HomeContentJson) : null,
   };
 
-  console.log("[home.service] Normalised content JSON:", normalised.content);
+  console.log("[home.service] Normalised content JSON:", normalised.data);
 
   return normalised;
 }
