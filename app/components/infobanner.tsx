@@ -101,22 +101,26 @@ export default function InfoBanner({ data }: InfoBannerProps) {
     }
   };
   // Normalize banner cards: handle both string[] and Array<{ text: string }>
+  console.log("data", data);
   const bannerCards = data?.bannerCards && data.bannerCards.length
     ? data.bannerCards.map((card) => (typeof card === "string" ? card : card?.text ?? ""))
     : defaultBannerCards;
 
   // Normalize icons: use quickLinks if available, otherwise icons, otherwise defaults
-  const icons = (data?.quickLinks && data.quickLinks.length
-    ? data.quickLinks
-    : data?.icons && data.icons.length
-    ? data.icons
-    : defaultIconItems
+  
+  const icons = (
+    data?.quickLinks && data.quickLinks.length
+      ? data.quickLinks
+      : data?.icons && data.icons.length
+      ? data.icons
+      : defaultIconItems
   ).map((item) => {
-    // Map Supabase structure to component structure
+    // Map Supabase structure to component structure.
+    // Support both legacy `href` / `src` and Supabase `url` / `iconPath`.
     return {
       label: item.label,
-      src: item.iconPath ?? item.src, // Supabase uses iconPath
-      href: item.url ?? item.href, // Supabase uses url
+      src: item.iconPath ?? item.src,
+      href: item.href ?? item.url,
       external: item.external,
       drawer: item.drawer,
     };

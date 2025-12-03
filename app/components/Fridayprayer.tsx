@@ -71,10 +71,15 @@ export default function FridayPrayers({ data }: FridayPrayersProps) {
             <h2 className="mt-2 text-3xl font-semibold">
               {data?.title ?? "Friday Prayers"}
             </h2>
-            <p className="mt-2 text-sm text-slate-100/90">
-              {data?.description ??
-                "Doors open 30 minutes before each Khutbah. Please arrive early to secure parking and seating."}
-            </p>
+            <p
+              className="mt-2 text-sm text-slate-100/90"
+              // Render admin-entered HTML so bold/underline/color etc. appear on the frontend.
+              dangerouslySetInnerHTML={{
+                __html:
+                  data?.description ??
+                  "Doors open 30 minutes before each Khutbah. Please arrive early to secure parking and seating.",
+              }}
+            />
           </div>
           <div className="rounded-2xl border border-white/20 bg-white/10 px-6 py-4 text-sm shadow-sm">
             <div className="flex items-center gap-2 text-white">

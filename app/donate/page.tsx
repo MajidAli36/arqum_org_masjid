@@ -5,26 +5,83 @@ import DonationIntro from "./components/DonationIntro";
 import NeedForDonations from "./components/NeedForDonations";
 import DonationOptions from "./components/DonationOptions";
 import DonationSection from "@/app/components/DonationSection";
+import {
+  getDonateContent,
+  DonateContent,
+  DonateContentJson,
+} from "@/lib/donate.service";
 
-export default function DonatePage() {
+export const dynamic = "force-dynamic";
+
+function getSections(donate: DonateContent | null): DonateContentJson {
+  const root = (donate?.data ?? {}) as DonateContentJson;
+
+  // If there's a nested `data` object, that's where sections live.
+  if (root.data && typeof root.data === "object") {
+    return root.data as DonateContentJson;
+  }
+
+  // Otherwise, assume flat shape.
+  return root;
+}
+
+export default async function DonatePage() {
+  const donate = await getDonateContent();
+  const sections = getSections(donate);
+
+  const heroConfig = sections.hero ?? null;
+  const introConfig = sections.intro ?? null;
+  // Use need_for_donations as the primary key
+  const needConfig = (sections as any).need_for_donations ?? sections.need ?? null;
+  const optionsConfig = sections.options ?? null;
+  const closingConfig = sections.closing ?? null;
+  const giveTodayConfig = sections.giveToday ?? null;
+
+  const heroData = (heroConfig?.data ?? null) as any;
+  const introData = (introConfig?.data ?? null) as any;
+  const needData = (needConfig?.data ?? null) as any;
+  const optionsData = (optionsConfig?.data ?? null) as any;
+  const closingData = (closingConfig?.data ?? null) as any;
+  const giveTodayData = (giveTodayConfig?.data ?? null) as any;
+
   return (
     <div className="min-h-screen bg-slate-50">
       <Navbar />
-      <DonationHero />
+      <DonationHero data={heroData} />
       <main className="mx-auto w-full max-w-5xl space-y-8 px-4 py-10 sm:space-y-10 sm:px-6 lg:space-y-12 lg:px-8 lg:py-14">
-        <DonationIntro />
-        <NeedForDonations />
-        <DonationOptions />
-        <section className="rounded-3xl bg-white p-8 shadow-lg shadow-slate-200/70 ring-1 ring-slate-100">
-          <p className="text-base text-slate-600">
-            Fort Dodge Islamic Center is a vital part of the Muslim community
-            in Ames, Iowa. The center relies on donations from generous
-            individuals and businesses to operate. Your donation helps support
-            programs and services that benefit many people. Jazakum Allah
-            Khairan for your generosity.
-          </p>
-        </section>
-        <DonationSection />
+        <DonationIntro data={introData} />
+        <NeedForDonations data={needData} />
+        <DonationOptions data={optionsData} />
+        {closingData?.["closing-content"] && (
+          <section className="rounded-3xl bg-white p-8 shadow-lg shadow-slate-200/70 ring-1 ring-slate-100">
+            <div
+              className="text-base text-slate-600"
+              // Render HTML from the admin rich text editor
+              dangerouslySetInnerHTML={{ __html: closingData["closing-content"] }}
+            />
+          </section>
+        )}
+        <DonationSection 
+          data={giveTodayData ? {
+            subtitle: giveTodayData["give-subtitle"] || giveTodayData.giveSubtitle || undefined,
+            title: giveTodayData["give-title"] || giveTodayData.giveTitle || undefined,
+            description: giveTodayData["give-description"] || giveTodayData.giveDescription || undefined,
+            qrCodeImage: giveTodayData["qr-image"] || giveTodayData.qrImage || undefined,
+            paymentLinks: Array.isArray(giveTodayData["quick-links"]) 
+              ? giveTodayData["quick-links"].map((link: any) => ({
+                  label: link.label || "",
+                  href: link.href || "",
+                  accent: "text-sky-600"
+                }))
+              : (Array.isArray(giveTodayData.quickLinks)
+                  ? giveTodayData.quickLinks.map((link: any) => ({
+                      label: link.label || "",
+                      href: link.href || "",
+                      accent: "text-sky-600"
+                    }))
+                  : undefined)
+          } : undefined}
+        />
       </main>
       <Footer />
     </div>

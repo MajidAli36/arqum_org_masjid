@@ -2,20 +2,28 @@ import Image from "next/image";
 import Link from "next/link";
 import { resolveStorageImageUrl } from "../../../lib/storage.service";
 
-export default function HeroBanner() {
+type HeroBannerProps = {
+  data?: {
+    heroImage?: string | null;
+  } | null;
+};
+
+export default function HeroBanner({ data }: HeroBannerProps) {
+  const imageValue = data?.heroImage || "/images/ramzan-aq.png";
+
   return (
     <header className="w-full bg-white">
       <div className="relative w-full overflow-hidden">
         <div className="relative aspect-[1925/500] w-full">
-          {resolveStorageImageUrl("/images/ramzan-aq.png", {
+          {resolveStorageImageUrl(imageValue, {
             bucket: "Public",
-            folder: "Home",
+            folder: "ramzan",
           }) && (
             <Image
               src={
-                resolveStorageImageUrl("/images/ramzan-aq.png", {
+                resolveStorageImageUrl(imageValue, {
                   bucket: "Public",
-                  folder: "Home",
+                  folder: "ramzan",
                 }) as string
               }
               alt="Ramadan Kareem banner"

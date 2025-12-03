@@ -22,6 +22,8 @@ type SectionEditorProps = {
   onSave?: () => void;
   saving?: boolean;
   alwaysExpanded?: boolean;
+  bucket?: string;
+  folder?: string;
 };
 
 const isDescriptionField = (id: string, label: string) => {
@@ -37,6 +39,8 @@ export default function SectionEditor({
   onSave,
   saving = false,
   alwaysExpanded = false,
+  bucket = "Public",
+  folder = "Home",
 }: SectionEditorProps) {
   const [localFields, setLocalFields] = useState<SectionField[]>(fields);
   const [isExpanded, setIsExpanded] = useState(true);
@@ -52,6 +56,59 @@ export default function SectionEditor({
     );
     setLocalFields(updatedFields);
     onUpdate(sectionId, updatedFields);
+  };
+
+  const deleteImageFromStorage = async (fieldId: string, value: string) => {
+    if (!value || typeof value !== "string") return;
+
+    // Don't try to delete legacy /public or /images assets or blob URLs
+    if (
+      value.startsWith("blob:") ||
+      value.startsWith("/images/") ||
+      value.startsWith("images/") ||
+      value.startsWith("/public/") ||
+      value.startsWith("public/")
+    ) {
+      console.log(
+        "[SectionEditor] Skipping storage delete for non-storage image value:",
+        { fieldId, value }
+      );
+      return;
+    }
+
+    try {
+      console.log("[SectionEditor] Deleting image from storage:", {
+        fieldId,
+        value,
+      });
+
+      const response = await fetch(
+        `/api/delete-image?bucket=${encodeURIComponent(
+          bucket
+        )}&folder=${encodeURIComponent(folder)}`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ pathOrName: value }),
+        }
+      );
+
+      const result = await response.json();
+
+      if (!result.ok) {
+        console.error("[SectionEditor] Storage delete failed:", result);
+      } else {
+        console.log("[SectionEditor] Storage delete successful:", result);
+      }
+    } catch (error: any) {
+      console.error("[SectionEditor] Error deleting image from storage:", {
+        fieldId,
+        value,
+        error,
+      });
+    }
   };
 
   const handleImageUpload = async (
@@ -87,10 +144,15 @@ export default function SectionEditor({
       formData.append("file", file);
       formData.append("fieldId", fieldId);
 
-      const response = await fetch("/api/upload-image?bucket=Public&folder=Home", {
-        method: "POST",
-        body: formData,
-      });
+      const response = await fetch(
+        `/api/upload-image?bucket=${encodeURIComponent(
+          bucket
+        )}&folder=${encodeURIComponent(folder)}`,
+        {
+          method: "POST",
+          body: formData,
+        }
+      );
 
       const result = await response.json();
 
@@ -125,16 +187,16 @@ export default function SectionEditor({
 
       console.log("[SectionEditor] Image uploaded successfully:", result);
       
-      // Store just the filename (not the full path)
-      const fileName = result.fileName;
-      console.log("[SectionEditor] Storing filename in field:", fileName);
+      // Prefer storing the storage path (e.g. "Home/abc.jpg"); fall back to filename
+      const storedValue: string = result.path || result.fileName;
+      console.log("[SectionEditor] Storing storage path/filename in field:", storedValue);
 
-      // Make sure we're storing the filename, not a blob URL
-      if (fileName && !fileName.startsWith("blob:")) {
-        handleFieldChange(fieldId, fileName);
-        console.log("[SectionEditor] Field updated with filename:", fileName);
+      // Make sure we're storing a real storage path / filename, not a blob URL
+      if (storedValue && !storedValue.startsWith("blob:")) {
+        handleFieldChange(fieldId, storedValue);
+        console.log("[SectionEditor] Field updated with storage value:", storedValue);
       } else {
-        console.error("[SectionEditor] Invalid filename from API:", fileName);
+        console.error("[SectionEditor] Invalid image value from API:", storedValue);
         alert("Error: Invalid image filename received from server. Please try uploading again.");
       }
     } catch (err: any) {
@@ -301,8 +363,8 @@ export default function SectionEditor({
                       {(() => {
                         console.log("[SectionEditor] Image field value:", field.value);
                         const previewSrc = resolveStorageImageUrl(field.value, {
-                          bucket: "Public",
-                          folder: "Home",
+                          bucket,
+                          folder,
                         });
                         console.log("[SectionEditor] Resolved preview URL:", previewSrc);
                         
@@ -371,7 +433,14 @@ export default function SectionEditor({
                     {field.value && (
                       <button
                         type="button"
-                        onClick={() => handleFieldChange(field.id, "")}
+                        onClick={async () => {
+                          const currentValue =
+                            typeof field.value === "string" ? field.value : "";
+                          if (currentValue) {
+                            await deleteImageFromStorage(field.id, currentValue);
+                          }
+                          handleFieldChange(field.id, "");
+                        }}
                         className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors font-semibold text-sm"
                       >
                         Remove Image

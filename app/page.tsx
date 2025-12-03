@@ -15,8 +15,8 @@ import {
   HomeSectionConfig,
 } from "../lib/home.service";
 
-// Enable ISR-style static regeneration every 60 seconds (app router equivalent of getStaticProps + revalidate).
-export const revalidate = 60;
+// Always fetch fresh data from Supabase on each request so admin updates show immediately.
+export const dynamic = "force-dynamic";
 
 /**
  * Helper to determine if a section should be rendered, with sensible defaults.
@@ -38,6 +38,26 @@ function getSections(home: HomeContent | null): HomeContentJson {
 }
 
 /**
+ * Decide which config to use for the info banner / quick links section.
+ *
+ * FINAL RULE:
+ * - Always prefer the `quickLinks` key (this is what admin + DB use now).
+ * - Only if `quickLinks` is missing entirely, fall back to `infoBanner`.
+ *
+ * This guarantees that the links you edit in the admin (stored under
+ * `data.quickLinks`) are what the frontend will render, even if old
+ * `infoBanner` data still exists in the row.
+ */
+function pickInfoBannerConfig(
+  sections: HomeContentJson
+): HomeSectionConfig | null {
+  const quickLinksConfig = sections.quickLinks ?? null;
+  const infoBannerConfig = sections.infoBanner ?? null;
+
+  return quickLinksConfig ?? infoBannerConfig ?? null;
+}
+
+/**
  * Home page (server component).
  *
  * - Fetches home content from Supabase on the server.
@@ -53,8 +73,8 @@ export default async function Home() {
   const prayerTimeConfig = sections.prayerTime ?? null;
   const fridayPrayersConfig = sections.fridayPrayers ?? null;
   const donationConfig = sections.donation ?? null;
-  // Supabase uses "quickLinks" key, but we also support "infoBanner" for backwards compatibility
-  const infoBannerConfig = sections.quickLinks ?? sections.infoBanner ?? null;
+  // Pick the best available config for the info banner / quick links section.
+  const infoBannerConfig = pickInfoBannerConfig(sections);
   const calendarConfig = sections.calendar ?? null;
 
   const heroData = (heroConfig?.data ?? null) as HeroSectionData | null;

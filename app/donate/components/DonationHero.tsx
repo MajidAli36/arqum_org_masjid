@@ -1,12 +1,21 @@
 import Image from "next/image";
 import { resolveStorageImageUrl } from "../../../lib/storage.service";
 
-export default function HeroSection() {
-  const resolvedImage =
-    resolveStorageImageUrl("/images/fortdoge-masjid.jpg", {
-      bucket: "Public",
-      folder: "Home",
-    }) ?? null;
+type DonationHeroProps = {
+  data?: {
+    "hero-image"?: string | null;
+    heroImage?: string | null;
+  } | null;
+};
+
+export default function DonationHero({ data }: DonationHeroProps) {
+  // Support both field name formats: "hero-image" (from admin) or "heroImage" (legacy)
+  const imageValue = data?.["hero-image"] || data?.heroImage || "";
+
+  const resolvedImage = resolveStorageImageUrl(imageValue, {
+    bucket: "Public",
+    folder: "donate",
+  });
 
   return (
     <section className="w-full bg-white">

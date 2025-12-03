@@ -50,22 +50,48 @@ const HOME_TABLE = "Home";
 /**
  * Fetch the single "Home" row from Supabase.
  *
- * This is used by the main home page and by the `/api/test-home` endpoint.
- * If anything goes wrong or the row is missing, we return `null` and let the
- * caller handle defaults.
+ * IMPORTANT:
+ * - Table `Home` can now contain multiple rows (e.g. Ramzan page row with page: "ramzan").
+ * - This function should only return the row that belongs to the main Home page.
+ *
+ * Strategy:
+ * 1. Prefer a row where `data.page === "home"`.
+ * 2. If none exists, fall back to a row where `data.page` is null / missing
+ *    (backwards compatibility with the original schema).
  */
 export async function getHomeContent(): Promise<HomeContent | null> {
-  const { data, error } = await supabase
+  // First try to find an explicit Home row.
+  let { data, error } = await supabase
     .from(HOME_TABLE)
     .select("*")
-    .single();
+    .eq("data->>page", "home")
+    .maybeSingle();
 
   if (error) {
-    console.error("[home.service] Failed to fetch Home content:", error);
+    console.error("[home.service] Failed to fetch explicit Home row:", error);
     return null;
   }
 
-  return data ?? null;
+  if (data) {
+    return data as HomeContent;
+  }
+
+  // Fallback: original behavior – take the row where page is null / missing.
+  const fallback = await supabase
+    .from(HOME_TABLE)
+    .select("*")
+    .is("data->page", null)
+    .single();
+
+  if (fallback.error) {
+    console.error(
+      "[home.service] Failed to fetch legacy Home row (page null):",
+      fallback.error
+    );
+    return null;
+  }
+
+  return (fallback.data as HomeContent) ?? null;
 }
 
 /**
@@ -88,6 +114,7 @@ export async function updateHomeSection(
     if (!current) {
       // If no row exists, create one
       const newData: HomeContentJson = {
+        page: "home", // Explicitly set page identifier to prevent mixing with Ramzan data
         [sectionKey]: sectionData,
       };
       
@@ -111,6 +138,7 @@ export async function updateHomeSection(
     // Merge the new section with existing data
     const updatedData: HomeContentJson = {
       ...(current.data || {}),
+      page: "home", // Ensure page identifier is always set to prevent mixing with Ramzan data
       [sectionKey]: sectionData,
     };
 

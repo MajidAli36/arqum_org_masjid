@@ -1,11 +1,25 @@
-const iftarDates = [
+type CommunityIftarsProps = {
+  data?: {
+    intro?: string | null;
+    iftarDates?: { date: string; community: string }[] | null;
+  } | null;
+};
+
+const defaultIftarDates = [
   { date: "Saturday 3/8/2024", community: "The Sudanese Community" },
   { date: "Saturday 3/15/2024", community: "The Arab Community" },
-  { date: "Saturday 3/22/2024", community: "The Indian & Pakistani Communities" },
+  {
+    date: "Saturday 3/22/2024",
+    community: "The Indian & Pakistani Communities",
+  },
   { date: "Saturday 3/29/2024", community: "The Bangladeshi Community" },
 ];
 
-export default function CommunityIftars() {
+export default function CommunityIftars({ data }: CommunityIftarsProps) {
+  const intro =
+    data?.intro ||
+    "Each Saturday features a community-led iftar. Hosts welcome everyone to connect, share a meal, and reflect together.";
+  const iftarDates = data?.iftarDates || defaultIftarDates;
   return (
     <section className="rounded-2xl border border-indigo-100 bg-white p-4 shadow-lg sm:rounded-3xl sm:p-6 md:p-8">
       <div className="space-y-3 sm:space-y-4">
@@ -20,9 +34,11 @@ export default function CommunityIftars() {
           </span>
         </h2>
         <p className="text-sm text-sky-800/80 sm:text-base">
-          Each Saturday features a community-led iftar. Hosts welcome everyone to
-          connect, share a meal, and reflect together. To reserve a date, email
-          Sr. Kylie Anderson at{" "}
+          <span
+            // Render HTML from the admin rich text editor for the intro text.
+            dangerouslySetInnerHTML={{ __html: intro }}
+          />{" "}
+          To reserve a date, email Sr. Kylie Anderson at{" "}
           <a
             href="mailto:social@arqum.org"
             className="font-semibold text-sky-800 underline underline-offset-4 break-all sm:break-normal"

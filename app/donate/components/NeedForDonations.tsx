@@ -1,4 +1,14 @@
-const needs = [
+type NeedForDonationsProps = {
+  data?: {
+    "need-subtitle"?: string | null;
+    needSubtitle?: string | null;
+    "need-title"?: string | null;
+    needTitle?: string | null;
+    funds?: Array<{ title: string; description: string }> | null;
+  } | null;
+};
+
+const defaultNeeds = [
   {
     title: "General Fund",
     description:
@@ -21,28 +31,36 @@ const needs = [
   },
 ];
 
-export default function NeedForDonations() {
+export default function NeedForDonations({ data }: NeedForDonationsProps) {
+  const subtitle = data?.["need-subtitle"] || data?.needSubtitle || "NEED FOR DONATIONS";
+  const title = data?.["need-title"] || data?.needTitle || "Your support sustains vital programs and services";
+  const funds = Array.isArray(data?.funds) && data.funds.length > 0 ? data.funds : defaultNeeds;
+
   return (
     <section className="space-y-6 rounded-3xl bg-white p-6 shadow-lg shadow-slate-200/70 ring-1 ring-slate-100 sm:p-8">
       <div>
         <p className="text-xs font-semibold uppercase tracking-[0.3em] text-sky-700 sm:text-sm">
-          Need for Donations
+          {subtitle}
         </p>
         <h2 className="mt-2 text-xl font-semibold text-slate-900 sm:mt-3 sm:text-3xl">
-          Your support sustains vital programs and services
+          {title}
         </h2>
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2">
-        {needs.map(({ title, description }) => (
+        {funds.map(({ title: fundTitle, description }) => (
           <div
-            key={title}
+            key={fundTitle}
             className="flex h-full flex-col rounded-2xl border border-slate-100 p-5 shadow-md shadow-slate-200/60"
           >
             <h3 className="text-base font-semibold text-slate-900 sm:text-lg">
-              {title}
+              {fundTitle}
             </h3>
-            <p className="mt-2 text-sm text-slate-600">{description}</p>
+            <div
+              className="mt-2 text-sm text-slate-600"
+              // Render HTML from rich text editor for description
+              dangerouslySetInnerHTML={{ __html: description }}
+            />
           </div>
         ))}
       </div>

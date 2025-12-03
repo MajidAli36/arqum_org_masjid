@@ -15,6 +15,8 @@ export type DonationSectionData = {
   title?: string;
   subtitle?: string;
   description?: string;
+  quickActionsTitle?: string;
+  quickActionsDescription?: string;
   heroImage?: string;
   heroImageAlt?: string;
   // Backwards‑compat fields based on your Supabase JSON
@@ -59,10 +61,15 @@ export default function DonationSection({ data }: DonationSectionProps) {
           <h2 className="mt-3 text-3xl font-semibold text-slate-900">
             {data?.title ?? "Click or Scan QR to Donate Now"}
           </h2>
-          <p className="mt-2 max-w-3xl text-sm text-slate-500 sm:text-base">
-            {data?.description ??
-              "Every contribution sustains programs, outreach, and community services at Fort Dodge Islamic Center."}
-          </p>
+          <p
+            className="mt-2 max-w-3xl text-sm text-slate-500 sm:text-base"
+            // Render admin-entered HTML so bold/underline/color etc. appear on the frontend.
+            dangerouslySetInnerHTML={{
+              __html:
+                data?.description ??
+                "Every contribution sustains programs, outreach, and community services at Fort Dodge Islamic Center.",
+            }}
+          />
         </div>
 
         <div className="mt-8 flex flex-col items-center gap-10 lg:flex-row lg:items-start lg:gap-12">
@@ -87,11 +94,17 @@ export default function DonationSection({ data }: DonationSectionProps) {
                 Quick Actions
               </p>
               <h3 className="mt-2 text-xl font-semibold text-slate-900">
-                Prefer a direct link?
+                {data?.quickActionsTitle ?? "Prefer a direct link?"}
               </h3>
-              <p className="mt-1 text-sm">
-                Tap below to open your preferred donation platform instantly.
-              </p>
+              <p
+                className="mt-1 text-sm"
+                // Allow HTML formatting from the admin editor for the quick actions description.
+                dangerouslySetInnerHTML={{
+                  __html:
+                    data?.quickActionsDescription ??
+                    "Tap below to open your preferred donation platform instantly.",
+                }}
+              />
             </div>
             {links.map(({ label, href, accent, description }) => {
               if (!label && !href) return null;
