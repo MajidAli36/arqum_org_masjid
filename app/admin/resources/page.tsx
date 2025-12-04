@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import PageEditorLayout from "../components/PageEditorLayout";
 import SectionEditor from "../components/SectionEditor";
+import { ResourcesSectionConfig } from "@/lib/resources.service";
 
 type SectionField = {
   id: string;
@@ -22,63 +23,65 @@ export default function ResourcesPageEditor() {
     mainContent: [
       { id: "content-subtitle", label: "Section Subtitle", type: "text", value: "Community Resources" },
       { id: "content-title", label: "Section Title", type: "text", value: "Helpful information, forms, and policies in one place" },
-      { id: "content-description", label: "Description", type: "textarea", value: "Use the cards below to find visitor information, request speakers or visits, review policies, and access other important documents from Fort Dodge Islamic Center Islamic Center." },
+      { id: "content-description", label: "Description", type: "rich-text", value: "Use the cards below to find visitor information, request speakers or visits, review policies, and access other important documents from Fort Dodge Islamic Center Islamic Center." },
     ],
     requestSpeaker: [
       { id: "title", label: "Title", type: "text", value: "Request a Speaker" },
-      { id: "description", label: "Description", type: "textarea", value: "Invite a qualified speaker from Fort Dodge Islamic Center for your school, organization, or community event. Share basic details about the audience, topic, and preferred date so we can best accommodate your request." },
+      { id: "description", label: "Description", type: "rich-text", value: "Invite a qualified speaker from Fort Dodge Islamic Center for your school, organization, or community event. Share basic details about the audience, topic, and preferred date so we can best accommodate your request." },
     ],
     requestVisit: [
       { id: "title", label: "Title", type: "text", value: "Request a Visit" },
-      { id: "description", label: "Description", type: "textarea", value: "Plan a guided visit to our center for classes, faith groups, or community organizations. We offer tours of the prayer area, a short presentation on Islam, and time for Q&A, tailored to your group's needs." },
+      { id: "description", label: "Description", type: "rich-text", value: "Plan a guided visit to our center for classes, faith groups, or community organizations. We offer tours of the prayer area, a short presentation on Islam, and time for Q&A, tailored to your group's needs." },
     ],
     visitorsGuide: [
       { id: "title", label: "Title", type: "text", value: "Visitors Guide" },
-      { id: "description", label: "Description", type: "textarea", value: "Learn what to expect when visiting the masjid for the first time, including dress guidelines, prayer times, etiquette in the prayer hall, and tips for school and community groups." },
+      { id: "description", label: "Description", type: "rich-text", value: "Learn what to expect when visiting the masjid for the first time, including dress guidelines, prayer times, etiquette in the prayer hall, and tips for school and community groups." },
     ],
     islamicPrayer: [
       { id: "title", label: "Title", type: "text", value: "Islamic Prayer" },
-      { id: "description", label: "Description", type: "textarea", value: "Overview of the daily prayers, how they are performed, and how visitors can respectfully observe. This section can link to printable guides, videos, or recommended beginner resources." },
+      { id: "description", label: "Description", type: "rich-text", value: "Overview of the daily prayers, how they are performed, and how visitors can respectfully observe. This section can link to printable guides, videos, or recommended beginner resources." },
     ],
     islamicSchool: [
       { id: "title", label: "Title", type: "text", value: "Islamic School" },
-      { id: "description", label: "Description", type: "textarea", value: "Information about our weekend or full-time Islamic school programs, class times, curriculum focus, and how to enroll your child or volunteer as a teacher or helper." },
+      { id: "description", label: "Description", type: "rich-text", value: "Information about our weekend or full-time Islamic school programs, class times, curriculum focus, and how to enroll your child or volunteer as a teacher or helper." },
     ],
     electionsNominations: [
       { id: "title", label: "Title", type: "text", value: "Elections & Nominations" },
-      { id: "description", label: "Description", type: "textarea", value: "Details on community leadership elections, eligibility requirements, the nomination process, and important dates for upcoming elections at the center." },
+      { id: "description", label: "Description", type: "rich-text", value: "Details on community leadership elections, eligibility requirements, the nomination process, and important dates for upcoming elections at the center." },
     ],
     applyRenewMembership: [
       { id: "title", label: "Title", type: "text", value: "Apply/Renew Membership" },
-      { id: "description", label: "Description", type: "textarea", value: "Become a member or renew your membership with Fort Dodge Islamic Center. Membership helps support our operations and may grant voting rights and other member benefits." },
+      { id: "description", label: "Description", type: "rich-text", value: "Become a member or renew your membership with Fort Dodge Islamic Center. Membership helps support our operations and may grant voting rights and other member benefits." },
     ],
     byLaws: [
       { id: "title", label: "Title", type: "text", value: "By Laws" },
-      { id: "description", label: "Description", type: "textarea", value: "Access the governing by-laws of Fort Dodge Islamic Center, including organizational structure, board responsibilities, and membership guidelines." },
+      { id: "description", label: "Description", type: "rich-text", value: "Access the governing by-laws of Fort Dodge Islamic Center, including organizational structure, board responsibilities, and membership guidelines." },
     ],
     fundraisingPolicy: [
       { id: "title", label: "Title", type: "text", value: "Fundraising Policy" },
-      { id: "description", label: "Description", type: "textarea", value: "Review our policies for fundraising and solicitation at the masjid, including how to request approval for campaigns and what is and is not permitted on site." },
+      { id: "description", label: "Description", type: "rich-text", value: "Review our policies for fundraising and solicitation at the masjid, including how to request approval for campaigns and what is and is not permitted on site." },
     ],
     meetingMinutes: [
       { id: "title", label: "Title", type: "text", value: "Meeting Minutes" },
-      { id: "description", label: "Description", type: "textarea", value: "Browse archived minutes from board and general body meetings so community members can stay informed about key decisions and ongoing initiatives." },
+      { id: "description", label: "Description", type: "rich-text", value: "Browse archived minutes from board and general body meetings so community members can stay informed about key decisions and ongoing initiatives." },
     ],
     financialAssistance: [
       { id: "title", label: "Title", type: "text", value: "Financial Assistance" },
-      { id: "description", label: "Description", type: "textarea", value: "Learn about local zakat and sadaqah assistance programs, eligibility criteria, and how to confidentially request financial support." },
+      { id: "description", label: "Description", type: "rich-text", value: "Learn about local zakat and sadaqah assistance programs, eligibility criteria, and how to confidentially request financial support." },
     ],
     requestDoorAccess: [
       { id: "title", label: "Title", type: "text", value: "Request Door Access" },
-      { id: "description", label: "Description", type: "textarea", value: "Submit a request for electronic door access (key fob or code) for approved volunteers, teachers, and regular attendees, subject to center policies." },
+      { id: "description", label: "Description", type: "rich-text", value: "Submit a request for electronic door access (key fob or code) for approved volunteers, teachers, and regular attendees, subject to center policies." },
     ],
     reserveBasement: [
       { id: "title", label: "Title", type: "text", value: "Reserve Basement" },
-      { id: "description", label: "Description", type: "textarea", value: "Request use of the basement or social hall for classes, meetings, or small events. Include your event type, expected attendance, and preferred dates." },
+      { id: "description", label: "Description", type: "rich-text", value: "Request use of the basement or social hall for classes, meetings, or small events. Include your event type, expected attendance, and preferred dates." },
     ],
   });
 
   const [activeTab, setActiveTab] = useState<string>("hero");
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState<Record<string, boolean>>({});
 
   useEffect(() => {
     // Check if there's a tab ID stored in sessionStorage from sidebar navigation
@@ -92,11 +95,185 @@ export default function ResourcesPageEditor() {
     }
   }, []);
 
+  useEffect(() => {
+    async function fetchResourcesData() {
+      try {
+        const response = await fetch("/api/resources");
+        const result = await response.json();
+
+        if (result.ok && result.resources?.data) {
+          const data = result.resources.data;
+
+          // Support both shapes:
+          // 1) { page, hero, ... }
+          // 2) { page, data: { hero, ... } }
+          const sectionsSource =
+            data.data && typeof data.data === "object" ? data.data : data;
+
+          const transformed = { ...sections };
+
+          // Hero
+          if (sectionsSource.hero?.data) {
+            const heroData = sectionsSource.hero.data as any;
+            transformed.hero = [
+              {
+                id: "hero-image",
+                label: "Hero Image",
+                type: "image",
+                value:
+                  heroData["hero-image"] ||
+                  heroData.heroImage ||
+                  transformed.hero[0].value,
+              },
+            ];
+          }
+
+          // Main Content
+          if (sectionsSource.mainContent?.data) {
+            const mainContentData = sectionsSource.mainContent.data as any;
+            transformed.mainContent = transformed.mainContent.map((field) => {
+              switch (field.id) {
+                case "content-subtitle":
+                  return {
+                    ...field,
+                    value:
+                      mainContentData["content-subtitle"] ||
+                      mainContentData.subtitle ||
+                      field.value,
+                  };
+                case "content-title":
+                  return {
+                    ...field,
+                    value:
+                      mainContentData["content-title"] ||
+                      mainContentData.title ||
+                      field.value,
+                  };
+                case "content-description":
+                  return {
+                    ...field,
+                    value:
+                      mainContentData["content-description"] ||
+                      mainContentData.description ||
+                      field.value,
+                  };
+                default:
+                  return field;
+              }
+            });
+          }
+
+          // Resource sections (requestSpeaker, requestVisit, etc.)
+          const resourceSectionIds = [
+            "requestSpeaker",
+            "requestVisit",
+            "visitorsGuide",
+            "islamicPrayer",
+            "islamicSchool",
+            "electionsNominations",
+            "applyRenewMembership",
+            "byLaws",
+            "fundraisingPolicy",
+            "meetingMinutes",
+            "financialAssistance",
+            "requestDoorAccess",
+            "reserveBasement",
+          ];
+
+          resourceSectionIds.forEach((sectionId) => {
+            if (sectionsSource[sectionId]?.data) {
+              const sectionData = sectionsSource[sectionId].data as any;
+              transformed[sectionId] = transformed[sectionId].map((field) => {
+                switch (field.id) {
+                  case "title":
+                    return {
+                      ...field,
+                      value: sectionData.title || field.value,
+                    };
+                  case "description":
+                    return {
+                      ...field,
+                      value: sectionData.description || field.value,
+                    };
+                  default:
+                    return field;
+                }
+              });
+            }
+          });
+
+          setSections(transformed);
+        }
+      } catch (error) {
+        console.error("Failed to fetch resources data:", error);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchResourcesData();
+  }, []);
+
   const handleSectionUpdate = (sectionId: string, fields: SectionField[]) => {
     setSections((prev) => ({
       ...prev,
       [sectionId]: fields,
     }));
+  };
+
+  const transformFieldsToSupabase = (
+    sectionId: string,
+    fields: SectionField[]
+  ): any => {
+    const data: any = {};
+    fields.forEach((field) => {
+      if (field.type === "array") {
+        data[field.id] = Array.isArray(field.value) ? field.value : [];
+      } else {
+        data[field.id] = typeof field.value === "string" ? field.value : "";
+      }
+    });
+
+    // No special mapping needed for resources sections - use field IDs as-is
+    return data;
+  };
+
+  const handleSave = async (sectionId: string) => {
+    setSaving((prev) => ({ ...prev, [sectionId]: true }));
+
+    try {
+      const fields = sections[sectionId];
+      const sectionData = transformFieldsToSupabase(sectionId, fields);
+
+      const requestBody = {
+        sectionKey: sectionId,
+        sectionData: {
+          enabled: true,
+          data: sectionData,
+        } as ResourcesSectionConfig,
+      };
+
+      const response = await fetch("/api/resources/update-section", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(requestBody),
+      });
+
+      const result = await response.json();
+
+      if (result.ok) {
+        alert(`${getSectionTitle(sectionId)} saved successfully!`);
+        window.location.reload();
+      } else {
+        alert(result.message || "Failed to save");
+      }
+    } catch (error: any) {
+      alert(error?.message || "Failed to save");
+    } finally {
+      setSaving((prev) => ({ ...prev, [sectionId]: false }));
+    }
   };
 
   const tabs = [
@@ -171,154 +348,222 @@ export default function ResourcesPageEditor() {
 
         {/* Tab Content */}
         <div className="p-6">
-          {activeTab === "hero" && (
-            <SectionEditor
-              sectionId="hero"
-              sectionTitle={getSectionTitle("hero")}
-              fields={sections.hero}
-              onUpdate={handleSectionUpdate}
-              alwaysExpanded={true}
-            />
-          )}
+          {loading ? (
+            <div className="text-center py-8">
+              <p className="text-gray-600">Loading...</p>
+            </div>
+          ) : (
+            <>
+              {activeTab === "hero" && (
+                <SectionEditor
+                  sectionId="hero"
+                  sectionTitle={getSectionTitle("hero")}
+                  fields={sections.hero}
+                  onUpdate={handleSectionUpdate}
+                  onSave={() => handleSave("hero")}
+                  saving={saving["hero"] || false}
+                  alwaysExpanded={true}
+                  bucket="Public"
+                  folder="resources"
+                />
+              )}
 
-          {activeTab === "mainContent" && (
-            <SectionEditor
-              sectionId="mainContent"
-              sectionTitle={getSectionTitle("mainContent")}
-              fields={sections.mainContent}
-              onUpdate={handleSectionUpdate}
-              alwaysExpanded={true}
-            />
-          )}
+              {activeTab === "mainContent" && (
+                <SectionEditor
+                  sectionId="mainContent"
+                  sectionTitle={getSectionTitle("mainContent")}
+                  fields={sections.mainContent}
+                  onUpdate={handleSectionUpdate}
+                  onSave={() => handleSave("mainContent")}
+                  saving={saving["mainContent"] || false}
+                  alwaysExpanded={true}
+                  bucket="Public"
+                  folder="resources"
+                />
+              )}
 
-          {activeTab === "requestSpeaker" && (
-            <SectionEditor
-              sectionId="requestSpeaker"
-              sectionTitle={getSectionTitle("requestSpeaker")}
-              fields={sections.requestSpeaker}
-              onUpdate={handleSectionUpdate}
-              alwaysExpanded={true}
-            />
-          )}
+              {activeTab === "requestSpeaker" && (
+                <SectionEditor
+                  sectionId="requestSpeaker"
+                  sectionTitle={getSectionTitle("requestSpeaker")}
+                  fields={sections.requestSpeaker}
+                  onUpdate={handleSectionUpdate}
+                  onSave={() => handleSave("requestSpeaker")}
+                  saving={saving["requestSpeaker"] || false}
+                  alwaysExpanded={true}
+                  bucket="Public"
+                  folder="resources"
+                />
+              )}
 
-          {activeTab === "requestVisit" && (
-            <SectionEditor
-              sectionId="requestVisit"
-              sectionTitle={getSectionTitle("requestVisit")}
-              fields={sections.requestVisit}
-              onUpdate={handleSectionUpdate}
-              alwaysExpanded={true}
-            />
-          )}
+              {activeTab === "requestVisit" && (
+                <SectionEditor
+                  sectionId="requestVisit"
+                  sectionTitle={getSectionTitle("requestVisit")}
+                  fields={sections.requestVisit}
+                  onUpdate={handleSectionUpdate}
+                  onSave={() => handleSave("requestVisit")}
+                  saving={saving["requestVisit"] || false}
+                  alwaysExpanded={true}
+                  bucket="Public"
+                  folder="resources"
+                />
+              )}
 
-          {activeTab === "visitorsGuide" && (
-            <SectionEditor
-              sectionId="visitorsGuide"
-              sectionTitle={getSectionTitle("visitorsGuide")}
-              fields={sections.visitorsGuide}
-              onUpdate={handleSectionUpdate}
-              alwaysExpanded={true}
-            />
-          )}
+              {activeTab === "visitorsGuide" && (
+                <SectionEditor
+                  sectionId="visitorsGuide"
+                  sectionTitle={getSectionTitle("visitorsGuide")}
+                  fields={sections.visitorsGuide}
+                  onUpdate={handleSectionUpdate}
+                  onSave={() => handleSave("visitorsGuide")}
+                  saving={saving["visitorsGuide"] || false}
+                  alwaysExpanded={true}
+                  bucket="Public"
+                  folder="resources"
+                />
+              )}
 
-          {activeTab === "islamicPrayer" && (
-            <SectionEditor
-              sectionId="islamicPrayer"
-              sectionTitle={getSectionTitle("islamicPrayer")}
-              fields={sections.islamicPrayer}
-              onUpdate={handleSectionUpdate}
-              alwaysExpanded={true}
-            />
-          )}
+              {activeTab === "islamicPrayer" && (
+                <SectionEditor
+                  sectionId="islamicPrayer"
+                  sectionTitle={getSectionTitle("islamicPrayer")}
+                  fields={sections.islamicPrayer}
+                  onUpdate={handleSectionUpdate}
+                  onSave={() => handleSave("islamicPrayer")}
+                  saving={saving["islamicPrayer"] || false}
+                  alwaysExpanded={true}
+                  bucket="Public"
+                  folder="resources"
+                />
+              )}
 
-          {activeTab === "islamicSchool" && (
-            <SectionEditor
-              sectionId="islamicSchool"
-              sectionTitle={getSectionTitle("islamicSchool")}
-              fields={sections.islamicSchool}
-              onUpdate={handleSectionUpdate}
-              alwaysExpanded={true}
-            />
-          )}
+              {activeTab === "islamicSchool" && (
+                <SectionEditor
+                  sectionId="islamicSchool"
+                  sectionTitle={getSectionTitle("islamicSchool")}
+                  fields={sections.islamicSchool}
+                  onUpdate={handleSectionUpdate}
+                  onSave={() => handleSave("islamicSchool")}
+                  saving={saving["islamicSchool"] || false}
+                  alwaysExpanded={true}
+                  bucket="Public"
+                  folder="resources"
+                />
+              )}
 
-          {activeTab === "electionsNominations" && (
-            <SectionEditor
-              sectionId="electionsNominations"
-              sectionTitle={getSectionTitle("electionsNominations")}
-              fields={sections.electionsNominations}
-              onUpdate={handleSectionUpdate}
-              alwaysExpanded={true}
-            />
-          )}
+              {activeTab === "electionsNominations" && (
+                <SectionEditor
+                  sectionId="electionsNominations"
+                  sectionTitle={getSectionTitle("electionsNominations")}
+                  fields={sections.electionsNominations}
+                  onUpdate={handleSectionUpdate}
+                  onSave={() => handleSave("electionsNominations")}
+                  saving={saving["electionsNominations"] || false}
+                  alwaysExpanded={true}
+                  bucket="Public"
+                  folder="resources"
+                />
+              )}
 
-          {activeTab === "applyRenewMembership" && (
-            <SectionEditor
-              sectionId="applyRenewMembership"
-              sectionTitle={getSectionTitle("applyRenewMembership")}
-              fields={sections.applyRenewMembership}
-              onUpdate={handleSectionUpdate}
-              alwaysExpanded={true}
-            />
-          )}
+              {activeTab === "applyRenewMembership" && (
+                <SectionEditor
+                  sectionId="applyRenewMembership"
+                  sectionTitle={getSectionTitle("applyRenewMembership")}
+                  fields={sections.applyRenewMembership}
+                  onUpdate={handleSectionUpdate}
+                  onSave={() => handleSave("applyRenewMembership")}
+                  saving={saving["applyRenewMembership"] || false}
+                  alwaysExpanded={true}
+                  bucket="Public"
+                  folder="resources"
+                />
+              )}
 
-          {activeTab === "byLaws" && (
-            <SectionEditor
-              sectionId="byLaws"
-              sectionTitle={getSectionTitle("byLaws")}
-              fields={sections.byLaws}
-              onUpdate={handleSectionUpdate}
-              alwaysExpanded={true}
-            />
-          )}
+              {activeTab === "byLaws" && (
+                <SectionEditor
+                  sectionId="byLaws"
+                  sectionTitle={getSectionTitle("byLaws")}
+                  fields={sections.byLaws}
+                  onUpdate={handleSectionUpdate}
+                  onSave={() => handleSave("byLaws")}
+                  saving={saving["byLaws"] || false}
+                  alwaysExpanded={true}
+                  bucket="Public"
+                  folder="resources"
+                />
+              )}
 
-          {activeTab === "fundraisingPolicy" && (
-            <SectionEditor
-              sectionId="fundraisingPolicy"
-              sectionTitle={getSectionTitle("fundraisingPolicy")}
-              fields={sections.fundraisingPolicy}
-              onUpdate={handleSectionUpdate}
-              alwaysExpanded={true}
-            />
-          )}
+              {activeTab === "fundraisingPolicy" && (
+                <SectionEditor
+                  sectionId="fundraisingPolicy"
+                  sectionTitle={getSectionTitle("fundraisingPolicy")}
+                  fields={sections.fundraisingPolicy}
+                  onUpdate={handleSectionUpdate}
+                  onSave={() => handleSave("fundraisingPolicy")}
+                  saving={saving["fundraisingPolicy"] || false}
+                  alwaysExpanded={true}
+                  bucket="Public"
+                  folder="resources"
+                />
+              )}
 
-          {activeTab === "meetingMinutes" && (
-            <SectionEditor
-              sectionId="meetingMinutes"
-              sectionTitle={getSectionTitle("meetingMinutes")}
-              fields={sections.meetingMinutes}
-              onUpdate={handleSectionUpdate}
-              alwaysExpanded={true}
-            />
-          )}
+              {activeTab === "meetingMinutes" && (
+                <SectionEditor
+                  sectionId="meetingMinutes"
+                  sectionTitle={getSectionTitle("meetingMinutes")}
+                  fields={sections.meetingMinutes}
+                  onUpdate={handleSectionUpdate}
+                  onSave={() => handleSave("meetingMinutes")}
+                  saving={saving["meetingMinutes"] || false}
+                  alwaysExpanded={true}
+                  bucket="Public"
+                  folder="resources"
+                />
+              )}
 
-          {activeTab === "financialAssistance" && (
-            <SectionEditor
-              sectionId="financialAssistance"
-              sectionTitle={getSectionTitle("financialAssistance")}
-              fields={sections.financialAssistance}
-              onUpdate={handleSectionUpdate}
-              alwaysExpanded={true}
-            />
-          )}
+              {activeTab === "financialAssistance" && (
+                <SectionEditor
+                  sectionId="financialAssistance"
+                  sectionTitle={getSectionTitle("financialAssistance")}
+                  fields={sections.financialAssistance}
+                  onUpdate={handleSectionUpdate}
+                  onSave={() => handleSave("financialAssistance")}
+                  saving={saving["financialAssistance"] || false}
+                  alwaysExpanded={true}
+                  bucket="Public"
+                  folder="resources"
+                />
+              )}
 
-          {activeTab === "requestDoorAccess" && (
-            <SectionEditor
-              sectionId="requestDoorAccess"
-              sectionTitle={getSectionTitle("requestDoorAccess")}
-              fields={sections.requestDoorAccess}
-              onUpdate={handleSectionUpdate}
-              alwaysExpanded={true}
-            />
-          )}
+              {activeTab === "requestDoorAccess" && (
+                <SectionEditor
+                  sectionId="requestDoorAccess"
+                  sectionTitle={getSectionTitle("requestDoorAccess")}
+                  fields={sections.requestDoorAccess}
+                  onUpdate={handleSectionUpdate}
+                  onSave={() => handleSave("requestDoorAccess")}
+                  saving={saving["requestDoorAccess"] || false}
+                  alwaysExpanded={true}
+                  bucket="Public"
+                  folder="resources"
+                />
+              )}
 
-          {activeTab === "reserveBasement" && (
-            <SectionEditor
-              sectionId="reserveBasement"
-              sectionTitle={getSectionTitle("reserveBasement")}
-              fields={sections.reserveBasement}
-              onUpdate={handleSectionUpdate}
-              alwaysExpanded={true}
-            />
+              {activeTab === "reserveBasement" && (
+                <SectionEditor
+                  sectionId="reserveBasement"
+                  sectionTitle={getSectionTitle("reserveBasement")}
+                  fields={sections.reserveBasement}
+                  onUpdate={handleSectionUpdate}
+                  onSave={() => handleSave("reserveBasement")}
+                  saving={saving["reserveBasement"] || false}
+                  alwaysExpanded={true}
+                  bucket="Public"
+                  folder="resources"
+                />
+              )}
+            </>
           )}
         </div>
       </div>

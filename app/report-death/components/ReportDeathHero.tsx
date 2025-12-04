@@ -1,11 +1,21 @@
 import Image from "next/image";
 import { resolveStorageImageUrl } from "../../../lib/storage.service";
 
-export default function ReportDeathHero() {
+type ReportDeathHeroProps = {
+  data?: {
+    "hero-image"?: string;
+    heroImage?: string;
+  } | null;
+};
+
+export default function ReportDeathHero({ data }: ReportDeathHeroProps) {
+  const imagePath =
+    data?.["hero-image"] || data?.heroImage || "/images/fortdoge-masjid.jpg";
+
   const resolvedImage =
-    resolveStorageImageUrl("/images/fortdoge-masjid.jpg", {
+    resolveStorageImageUrl(imagePath, {
       bucket: "Public",
-      folder: "Home",
+      folder: "report-death",
     }) ?? null;
 
   return (
@@ -24,4 +34,4 @@ export default function ReportDeathHero() {
     </section>
   );
 }
-
+ 

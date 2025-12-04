@@ -1,11 +1,21 @@
 import Image from "next/image";
 import { resolveStorageImageUrl } from "../../../lib/storage.service";
 
-export default function AboutHero() {
+type AboutHeroProps = {
+  data?: {
+    heroImage?: string | null;
+    "hero-image"?: string | null;
+  } | null;
+};
+
+export default function AboutHero({ data }: AboutHeroProps) {
+  const imagePath =
+    data?.["hero-image"] || data?.heroImage || "/images/fortdoge-masjid.jpg";
+  
   const resolvedImage =
-    resolveStorageImageUrl("/images/fortdoge-masjid.jpg", {
+    resolveStorageImageUrl(imagePath, {
       bucket: "Public",
-      folder: "Home",
+      folder: "about",
     }) ?? null;
 
   return (

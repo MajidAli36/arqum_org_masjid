@@ -1,8 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import PageEditorLayout from "../components/PageEditorLayout";
 import SectionEditor from "../components/SectionEditor";
+import { RequestVisitSectionConfig } from "@/lib/request-visit.service";
 
 type SectionField = {
   id: string;
@@ -17,7 +18,6 @@ type SectionField = {
 export default function RequestVisitPageEditor() {
   const [sections, setSections] = useState<Record<string, SectionField[]>>({
     hero: [
-    
       { id: "hero-image", label: "Hero Image", type: "image", value: "/images/fortdoge-masjid.jpg" },
     ],
     content: [
@@ -35,6 +35,122 @@ export default function RequestVisitPageEditor() {
     ],
   });
 
+  const [activeTab, setActiveTab] = useState<string>("hero");
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState<Record<string, boolean>>({});
+
+  useEffect(() => {
+    async function fetchRequestVisitData() {
+      try {
+        const response = await fetch("/api/request-a-visit");
+        const result = await response.json();
+
+        if (result.ok && result.requestVisit?.data) {
+          const data = result.requestVisit.data;
+
+          // Support both shapes:
+          // 1) { page, hero, content, ... }
+          // 2) { page, data: { hero, content, ... } }
+          const sectionsSource =
+            data.data && typeof data.data === "object" ? data.data : data;
+
+          const transformed = { ...sections };
+
+          // Hero
+          if (sectionsSource.hero?.data) {
+            const heroData = sectionsSource.hero.data as any;
+            transformed.hero = [
+              {
+                id: "hero-image",
+                label: "Hero Image",
+                type: "image",
+                value:
+                  heroData["hero-image"] ||
+                  heroData.heroImage ||
+                  transformed.hero[0].value,
+              },
+            ];
+          }
+
+          // Content
+          if (sectionsSource.content?.data) {
+            const contentData = sectionsSource.content.data as any;
+            transformed.content = transformed.content.map((field) => {
+              switch (field.id) {
+                case "greeting":
+                  return {
+                    ...field,
+                    value: contentData.greeting || field.value,
+                  };
+                case "intro-paragraph":
+                  return {
+                    ...field,
+                    value: contentData["intro-paragraph"] || contentData.introParagraph || field.value,
+                  };
+                case "programs-paragraph":
+                  return {
+                    ...field,
+                    value: contentData["programs-paragraph"] || contentData.programsParagraph || field.value,
+                  };
+                case "visit-paragraph":
+                  return {
+                    ...field,
+                    value: contentData["visit-paragraph"] || contentData.visitParagraph || field.value,
+                  };
+                case "contact-paragraph":
+                  return {
+                    ...field,
+                    value: contentData["contact-paragraph"] || contentData.contactParagraph || field.value,
+                  };
+                case "closing-paragraph":
+                  return {
+                    ...field,
+                    value: contentData["closing-paragraph"] || contentData.closingParagraph || field.value,
+                  };
+                case "thank-you":
+                  return {
+                    ...field,
+                    value: contentData["thank-you"] || contentData.thankYou || field.value,
+                  };
+                case "signature":
+                  return {
+                    ...field,
+                    value: contentData.signature || field.value,
+                  };
+                case "organization":
+                  return {
+                    ...field,
+                    value: contentData.organization || field.value,
+                  };
+                case "email-label":
+                  return {
+                    ...field,
+                    value: contentData["email-label"] || contentData.emailLabel || field.value,
+                  };
+                case "email":
+                  return {
+                    ...field,
+                    value: contentData.email || field.value,
+                  };
+                default:
+                  return field;
+              }
+            });
+          }
+
+          setSections(transformed);
+        }
+      } catch (error) {
+        console.error("Failed to fetch request visit data:", error);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchRequestVisitData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   const handleSectionUpdate = (sectionId: string, fields: SectionField[]) => {
     setSections((prev) => ({
       ...prev,
@@ -42,27 +158,164 @@ export default function RequestVisitPageEditor() {
     }));
   };
 
+  const transformFieldsToSupabase = (
+    sectionId: string,
+    fields: SectionField[]
+  ): any => {
+    const data: any = {};
+
+    fields.forEach((field) => {
+      if (field.type === "array" || field.type === "table") {
+        data[field.id] = Array.isArray(field.value) ? field.value : [];
+      } else {
+        data[field.id] = typeof field.value === "string" ? field.value : "";
+      }
+    });
+
+    const mapping: Record<string, (d: any) => any> = {
+      hero: (d) => ({
+        heroImage: d["hero-image"] || "",
+      }),
+      content: (d) => ({
+        greeting: d.greeting || "",
+        "intro-paragraph": d["intro-paragraph"] || "",
+        "programs-paragraph": d["programs-paragraph"] || "",
+        "visit-paragraph": d["visit-paragraph"] || "",
+        "contact-paragraph": d["contact-paragraph"] || "",
+        "closing-paragraph": d["closing-paragraph"] || "",
+        "thank-you": d["thank-you"] || "",
+        signature: d.signature || "",
+        organization: d.organization || "",
+        "email-label": d["email-label"] || "",
+        email: d.email || "",
+      }),
+    };
+
+    const mapper = mapping[sectionId];
+    return mapper ? mapper(data) : data;
+  };
+
+  const handleSave = async (sectionId: string) => {
+    setSaving((prev) => ({ ...prev, [sectionId]: true }));
+
+    try {
+      const fields = sections[sectionId];
+      const sectionData = transformFieldsToSupabase(sectionId, fields);
+
+      const requestBody = {
+        sectionKey: sectionId,
+        sectionData: {
+          enabled: true,
+          data: sectionData,
+        } as RequestVisitSectionConfig,
+      };
+
+      const response = await fetch("/api/request-a-visit/update-section", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(requestBody),
+      });
+
+      const result = await response.json();
+
+      if (result.ok) {
+        alert(`${getSectionTitle(sectionId)} saved successfully!`);
+        window.location.reload();
+      } else {
+        alert(result.message || "Failed to save");
+      }
+    } catch (error: any) {
+      alert(error?.message || "Failed to save");
+    } finally {
+      setSaving((prev) => ({ ...prev, [sectionId]: false }));
+    }
+  };
+
+  const tabs = [
+    { id: "hero", label: "Hero Section", icon: "🖼️" },
+    { id: "content", label: "Content Section", icon: "📝" },
+  ];
+
+  const getSectionTitle = (sectionId: string) => {
+    const titles: Record<string, string> = {
+      hero: "Hero Section",
+      content: "Content Section",
+    };
+    return titles[sectionId] || sectionId;
+  };
+
   return (
     <PageEditorLayout
       pageTitle="Edit Request a Visit Page"
       pageDescription="Edit all sections of the request a visit page including hero and content sections."
     >
-      <div className="space-y-6">
-        <SectionEditor
-          sectionId="hero"
-          sectionTitle="Hero Section"
-          fields={sections.hero}
-          onUpdate={handleSectionUpdate}
-        />
+      <div className="bg-white rounded-lg border border-gray-200 shadow-sm">
+        {/* Tab Navigation */}
+        <div className="border-b border-gray-200">
+          <div className="w-full overflow-x-auto horizontal-scroll">
+            <nav className="inline-flex min-w-max scroll-px-4 px-8 py-2 md:px-0" aria-label="Tabs">
+              {tabs.map((tab) => (
+                <button
+                  key={tab.id}
+                  onClick={() => setActiveTab(tab.id)}
+                  className={`
+                    mr-2 flex items-center gap-2 whitespace-nowrap rounded-md px-4 py-2 text-xs sm:text-sm font-medium border-2 transition-colors last:mr-0
+                    ${
+                      activeTab === tab.id
+                        ? "border-sky-600 bg-sky-50 text-sky-700"
+                        : "border-transparent bg-gray-50 text-gray-600 hover:border-gray-300 hover:bg-white hover:text-gray-800"
+                    }
+                  `}
+                >
+                  <span className="text-base sm:text-lg">{tab.icon}</span>
+                  <span className="text-left leading-snug">{tab.label}</span>
+                </button>
+              ))}
+            </nav>
+          </div>
+        </div>
 
-        <SectionEditor
-          sectionId="content"
-          sectionTitle="Content Section"
-          fields={sections.content}
-          onUpdate={handleSectionUpdate}
-        />
+        {/* Tab Content */}
+        <div className="p-6">
+          {loading ? (
+            <div className="text-center py-8">
+              <p className="text-gray-600">Loading...</p>
+            </div>
+          ) : (
+            <>
+              {activeTab === "hero" && (
+                <SectionEditor
+                  sectionId="hero"
+                  sectionTitle={getSectionTitle("hero")}
+                  fields={sections.hero}
+                  onUpdate={handleSectionUpdate}
+                  onSave={() => handleSave("hero")}
+                  saving={saving["hero"] || false}
+                  alwaysExpanded={true}
+                  bucket="Public"
+                  folder="request-a-visit"
+                />
+              )}
+
+              {activeTab === "content" && (
+                <SectionEditor
+                  sectionId="content"
+                  sectionTitle={getSectionTitle("content")}
+                  fields={sections.content}
+                  onUpdate={handleSectionUpdate}
+                  onSave={() => handleSave("content")}
+                  saving={saving["content"] || false}
+                  alwaysExpanded={true}
+                  bucket="Public"
+                  folder="request-a-visit"
+                />
+              )}
+            </>
+          )}
+        </div>
       </div>
     </PageEditorLayout>
   );
 }
-

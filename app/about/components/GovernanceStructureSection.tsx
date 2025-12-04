@@ -1,12 +1,36 @@
-export default function GovernanceStructureSection() {
+type GovernanceStructureSectionProps = {
+  data?: {
+    subtitle?: string | null;
+    title?: string | null;
+    directorsTitle?: string | null;
+    directorsDescription?: string | null;
+    trusteesTitle?: string | null;
+    trusteesDescription?: string | null;
+    "governance-subtitle"?: string | null;
+    "governance-title"?: string | null;
+    "directors-title"?: string | null;
+    "directors-description"?: string | null;
+    "trustees-title"?: string | null;
+    "trustees-description"?: string | null;
+  } | null;
+};
+
+export default function GovernanceStructureSection({ data }: GovernanceStructureSectionProps) {
+  const subtitle = data?.["governance-subtitle"] || data?.subtitle || "Leadership";
+  const title = data?.["governance-title"] || data?.title || "Governance Structure";
+  const directorsTitle = data?.["directors-title"] || data?.directorsTitle || "Board of Directors";
+  const directorsDescription = data?.["directors-description"] || data?.directorsDescription || "Responsible for overall management and day-to-day operations of the center. The board of directors is elected annually and works diligently to ensure the center serves the community effectively.";
+  const trusteesTitle = data?.["trustees-title"] || data?.trusteesTitle || "Board of Trustees";
+  const trusteesDescription = data?.["trustees-description"] || data?.trusteesDescription || "Responsible for overseeing finances and assets of the center. The board of trustees is elected every two years and ensures the financial stability and long-term sustainability of the center.";
+
   return (
     <section className="mb-12 sm:mb-16">
       <div className="mb-6">
         <p className="text-sm font-semibold uppercase tracking-[0.2em] text-sky-700">
-          Leadership
+          {subtitle}
         </p>
         <h2 className="mt-3 text-2xl font-bold text-gray-900 sm:text-3xl">
-          Governance Structure
+          {title}
         </h2>
       </div>
 
@@ -29,13 +53,12 @@ export default function GovernanceStructureSection() {
                 />
               </svg>
             </div>
-            <h3 className="text-xl font-bold text-gray-900">Board of Directors</h3>
+            <h3 className="text-xl font-bold text-gray-900">{directorsTitle}</h3>
           </div>
-          <p className="text-base leading-relaxed text-gray-700">
-            Responsible for overall management and day-to-day operations of the
-            center. The board of directors is elected annually and works
-            diligently to ensure the center serves the community effectively.
-          </p>
+          <div
+            className="text-base leading-relaxed text-gray-700"
+            dangerouslySetInnerHTML={{ __html: directorsDescription }}
+          />
         </div>
 
         <div className="rounded-xl border border-gray-200 bg-gradient-to-br from-blue-50 to-white p-6 shadow-sm transition-all duration-300 hover:shadow-md sm:p-8">
@@ -56,13 +79,12 @@ export default function GovernanceStructureSection() {
                 />
               </svg>
             </div>
-            <h3 className="text-xl font-bold text-gray-900">Board of Trustees</h3>
+            <h3 className="text-xl font-bold text-gray-900">{trusteesTitle}</h3>
           </div>
-          <p className="text-base leading-relaxed text-gray-700">
-            Responsible for overseeing finances and assets of the center. The
-            board of trustees is elected every two years and ensures the
-            financial stability and long-term sustainability of the center.
-          </p>
+          <div
+            className="text-base leading-relaxed text-gray-700"
+            dangerouslySetInnerHTML={{ __html: trusteesDescription }}
+          />
         </div>
       </div>
     </section>

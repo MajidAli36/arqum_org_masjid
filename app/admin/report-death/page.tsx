@@ -1,8 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import PageEditorLayout from "../components/PageEditorLayout";
 import SectionEditor from "../components/SectionEditor";
+import { ReportDeathSectionConfig } from "@/lib/report-death.service";
 
 type SectionField = {
   id: string;
@@ -126,12 +127,357 @@ export default function ReportDeathPageEditor() {
   });
 
   const [activeTab, setActiveTab] = useState<string>("hero");
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState<Record<string, boolean>>({});
+
+  useEffect(() => {
+    async function fetchReportDeathData() {
+      try {
+        const response = await fetch("/api/report-death");
+        const result = await response.json();
+
+        if (result.ok && result.reportDeath?.data) {
+          const data = result.reportDeath.data;
+
+          // Support both shapes:
+          // 1) { page, hero, ... }
+          // 2) { page, data: { hero, ... } }
+          const sectionsSource =
+            data.data && typeof data.data === "object" ? data.data : data;
+
+          const transformed = { ...sections };
+
+          if (sectionsSource.hero?.data) {
+            const heroData = sectionsSource.hero.data as any;
+            transformed.hero = [
+              {
+                id: "hero-image",
+                label: "Hero Image",
+                type: "image",
+                value:
+                  heroData["hero-image"] ||
+                  heroData.heroImage ||
+                  transformed.hero[0].value,
+              },
+            ];
+          }
+
+          if (sectionsSource.intro?.data) {
+            const intro = sectionsSource.intro.data as any;
+            transformed.intro = transformed.intro.map((field) => {
+              switch (field.id) {
+                case "intro-subtitle":
+                  return {
+                    ...field,
+                    value:
+                      intro["intro-subtitle"] ||
+                      intro.subtitle ||
+                      field.value,
+                  };
+                case "intro-title":
+                  return {
+                    ...field,
+                    value: intro["intro-title"] || intro.title || field.value,
+                  };
+                case "intro-quote":
+                  return {
+                    ...field,
+                    value: intro["intro-quote"] || intro.quote || field.value,
+                  };
+                case "intro-quote-reference":
+                  return {
+                    ...field,
+                    value:
+                      intro["intro-quote-reference"] ||
+                      intro.quoteReference ||
+                      field.value,
+                  };
+                case "intro-content":
+                  return {
+                    ...field,
+                    value:
+                      intro["intro-content"] ||
+                      intro.content ||
+                      field.value,
+                  };
+                default:
+                  return field;
+              }
+            });
+          }
+
+          if (sectionsSource.guidance?.data) {
+            const g = sectionsSource.guidance.data as any;
+            transformed.guidance = transformed.guidance.map((field) => {
+              switch (field.id) {
+                case "dying-title":
+                  return {
+                    ...field,
+                    value: g["dying-title"] || g.dyingTitle || field.value,
+                  };
+                case "dying-guidance":
+                  return {
+                    ...field,
+                    value: Array.isArray(g["dying-guidance"])
+                      ? g["dying-guidance"]
+                      : field.value,
+                  };
+                case "death-title":
+                  return {
+                    ...field,
+                    value: g["death-title"] || g.deathTitle || field.value,
+                  };
+                case "death-steps":
+                  return {
+                    ...field,
+                    value: Array.isArray(g["death-steps"])
+                      ? g["death-steps"]
+                      : field.value,
+                  };
+                default:
+                  return field;
+              }
+            });
+          }
+
+          if (sectionsSource.procedure?.data) {
+            const p = sectionsSource.procedure.data as any;
+            transformed.procedure = transformed.procedure.map((field) => {
+              switch (field.id) {
+                case "procedure-title":
+                  return {
+                    ...field,
+                    value:
+                      p["procedure-title"] ||
+                      p.title ||
+                      field.value,
+                  };
+                case "procedure-description":
+                  return {
+                    ...field,
+                    value:
+                      p["procedure-description"] ||
+                      p.description ||
+                      field.value,
+                  };
+                case "contact-name":
+                  return {
+                    ...field,
+                    value: p["contact-name"] || p.contactName || field.value,
+                  };
+                case "contact-phone":
+                  return {
+                    ...field,
+                    value:
+                      p["contact-phone"] ||
+                      p.contactPhone ||
+                      field.value,
+                  };
+                case "funeral-home-name":
+                  return {
+                    ...field,
+                    value:
+                      p["funeral-home-name"] ||
+                      p.funeralHomeName ||
+                      field.value,
+                  };
+                case "funeral-home-phone":
+                  return {
+                    ...field,
+                    value:
+                      p["funeral-home-phone"] ||
+                      p.funeralHomePhone ||
+                      field.value,
+                  };
+                case "funeral-home-address":
+                  return {
+                    ...field,
+                    value:
+                      p["funeral-home-address"] ||
+                      p.funeralHomeAddress ||
+                      field.value,
+                  };
+                case "information-needed":
+                  return {
+                    ...field,
+                    value: Array.isArray(p["information-needed"])
+                      ? p["information-needed"]
+                      : field.value,
+                  };
+                case "funeral-services":
+                  return {
+                    ...field,
+                    value: Array.isArray(p["funeral-services"])
+                      ? p["funeral-services"]
+                      : field.value,
+                  };
+                case "ritual-bathing-note":
+                  return {
+                    ...field,
+                    value:
+                      p["ritual-bathing-note"] ||
+                      p.ritualBathingNote ||
+                      field.value,
+                  };
+                case "janazah-note":
+                  return {
+                    ...field,
+                    value:
+                      p["janazah-note"] ||
+                      p.janazahNote ||
+                      field.value,
+                  };
+                case "payment-note":
+                  return {
+                    ...field,
+                    value:
+                      p["payment-note"] ||
+                      p.paymentNote ||
+                      field.value,
+                  };
+                case "source":
+                  return {
+                    ...field,
+                    value: p["source"] || field.value,
+                  };
+                default:
+                  return field;
+              }
+            });
+          }
+
+          if (sectionsSource.costBreakdown?.data) {
+            const c = sectionsSource.costBreakdown.data as any;
+            transformed.costBreakdown = transformed.costBreakdown.map(
+              (field) => {
+                switch (field.id) {
+                  case "cost-title":
+                    return {
+                      ...field,
+                      value:
+                        c["cost-title"] ||
+                        c.title ||
+                        field.value,
+                    };
+                  case "cost-note":
+                    return {
+                      ...field,
+                      value:
+                        c["cost-note"] ||
+                        c.note ||
+                        field.value,
+                    };
+                  case "costs-table":
+                    return {
+                      ...field,
+                      value: Array.isArray(c["costs-table"])
+                        ? c["costs-table"]
+                        : field.value,
+                    };
+                  case "total-label":
+                    return {
+                      ...field,
+                      value:
+                        c["total-label"] ||
+                        c.totalLabel ||
+                        field.value,
+                    };
+                  case "total-cost":
+                    return {
+                      ...field,
+                      value:
+                        c["total-cost"] ||
+                        c.totalCost ||
+                        field.value,
+                    };
+                  case "non-resident-note":
+                    return {
+                      ...field,
+                      value:
+                        c["non-resident-note"] ||
+                        c.nonResidentNote ||
+                        field.value,
+                    };
+                  default:
+                    return field;
+                }
+              }
+            );
+          }
+
+          setSections(transformed);
+        }
+      } catch (error) {
+        console.error("Failed to fetch report-death data:", error);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchReportDeathData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const handleSectionUpdate = (sectionId: string, fields: SectionField[]) => {
     setSections((prev) => ({
       ...prev,
       [sectionId]: fields,
     }));
+  };
+
+  const transformFieldsToSupabase = (
+    sectionId: string,
+    fields: SectionField[]
+  ): any => {
+    const data: any = {};
+
+    fields.forEach((field) => {
+      if (field.type === "array" || field.type === "table") {
+        data[field.id] = Array.isArray(field.value) ? field.value : [];
+      } else {
+        data[field.id] = typeof field.value === "string" ? field.value : "";
+      }
+    });
+
+    return data;
+  };
+
+  const handleSave = async (sectionId: string) => {
+    setSaving((prev) => ({ ...prev, [sectionId]: true }));
+
+    try {
+      const fields = sections[sectionId];
+      const sectionData = transformFieldsToSupabase(sectionId, fields);
+
+      const requestBody = {
+        sectionKey: sectionId,
+        sectionData: {
+          enabled: true,
+          data: sectionData,
+        } as ReportDeathSectionConfig,
+      };
+
+      const response = await fetch("/api/report-death/update-section", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(requestBody),
+      });
+
+      const result = await response.json();
+
+      if (result.ok) {
+        alert(`${getSectionTitle(sectionId)} saved successfully!`);
+        window.location.reload();
+      } else {
+        alert(result.message || "Failed to save");
+      }
+    } catch (error: any) {
+      alert(error?.message || "Failed to save");
+    } finally {
+      setSaving((prev) => ({ ...prev, [sectionId]: false }));
+    }
   };
 
   const tabs = [
@@ -186,54 +532,74 @@ export default function ReportDeathPageEditor() {
 
         {/* Tab Content */}
         <div className="p-6">
-          {activeTab === "hero" && (
-            <SectionEditor
-              sectionId="hero"
-              sectionTitle={getSectionTitle("hero")}
-              fields={sections.hero}
-              onUpdate={handleSectionUpdate}
-              alwaysExpanded={true}
-            />
-          )}
+          {loading ? (
+            <div className="text-center py-8">
+              <p className="text-gray-600">Loading...</p>
+            </div>
+          ) : (
+            <>
+              {activeTab === "hero" && (
+                <SectionEditor
+                  sectionId="hero"
+                  sectionTitle={getSectionTitle("hero")}
+                  fields={sections.hero}
+                  onUpdate={handleSectionUpdate}
+                  onSave={() => handleSave("hero")}
+                  saving={saving["hero"] || false}
+                  alwaysExpanded={true}
+                  bucket="Public"
+                  folder="report-death"
+                />
+              )}
 
-          {activeTab === "intro" && (
-            <SectionEditor
-              sectionId="intro"
-              sectionTitle={getSectionTitle("intro")}
-              fields={sections.intro}
-              onUpdate={handleSectionUpdate}
-              alwaysExpanded={true}
-            />
-          )}
+              {activeTab === "intro" && (
+                <SectionEditor
+                  sectionId="intro"
+                  sectionTitle={getSectionTitle("intro")}
+                  fields={sections.intro}
+                  onUpdate={handleSectionUpdate}
+                  onSave={() => handleSave("intro")}
+                  saving={saving["intro"] || false}
+                  alwaysExpanded={true}
+                />
+              )}
 
-          {activeTab === "guidance" && (
-            <SectionEditor
-              sectionId="guidance"
-              sectionTitle={getSectionTitle("guidance")}
-              fields={sections.guidance}
-              onUpdate={handleSectionUpdate}
-              alwaysExpanded={true}
-            />
-          )}
+              {activeTab === "guidance" && (
+                <SectionEditor
+                  sectionId="guidance"
+                  sectionTitle={getSectionTitle("guidance")}
+                  fields={sections.guidance}
+                  onUpdate={handleSectionUpdate}
+                  onSave={() => handleSave("guidance")}
+                  saving={saving["guidance"] || false}
+                  alwaysExpanded={true}
+                />
+              )}
 
-          {activeTab === "procedure" && (
-            <SectionEditor
-              sectionId="procedure"
-              sectionTitle={getSectionTitle("procedure")}
-              fields={sections.procedure}
-              onUpdate={handleSectionUpdate}
-              alwaysExpanded={true}
-            />
-          )}
+              {activeTab === "procedure" && (
+                <SectionEditor
+                  sectionId="procedure"
+                  sectionTitle={getSectionTitle("procedure")}
+                  fields={sections.procedure}
+                  onUpdate={handleSectionUpdate}
+                  onSave={() => handleSave("procedure")}
+                  saving={saving["procedure"] || false}
+                  alwaysExpanded={true}
+                />
+              )}
 
-          {activeTab === "costBreakdown" && (
-            <SectionEditor
-              sectionId="costBreakdown"
-              sectionTitle={getSectionTitle("costBreakdown")}
-              fields={sections.costBreakdown}
-              onUpdate={handleSectionUpdate}
-              alwaysExpanded={true}
-            />
+              {activeTab === "costBreakdown" && (
+                <SectionEditor
+                  sectionId="costBreakdown"
+                  sectionTitle={getSectionTitle("costBreakdown")}
+                  fields={sections.costBreakdown}
+                  onUpdate={handleSectionUpdate}
+                  onSave={() => handleSave("costBreakdown")}
+                  saving={saving["costBreakdown"] || false}
+                  alwaysExpanded={true}
+                />
+              )}
+            </>
           )}
         </div>
       </div>

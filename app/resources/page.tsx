@@ -2,6 +2,12 @@ import Link from "next/link";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import ResourcesHero from "./components/ResourcesHero";
+import {
+  getResourcesContent,
+  ResourcesContent,
+  ResourcesContentJson,
+  ResourcesSectionConfig,
+} from "@/lib/resources.service";
 
 // Icon components for visual enhancement
 const SpeakerIcon = () => (
@@ -201,39 +207,115 @@ const resourcesSections: ResourceSection[] = [
   },
 ];
 
+export const dynamic = "force-dynamic";
+
 export const metadata = {
   title: "Resources | Fort Dodge Islamic Center",
   description:
     "Central hub for visitor information, community policies, membership, facility requests, and other resources at Fort Dodge Islamic Center.",
 };
 
-export default function ResourcesPage() {
+function getSections(resources: ResourcesContent | null): ResourcesContentJson {
+  const root = (resources?.data ?? {}) as ResourcesContentJson;
+
+  if (root.data && typeof root.data === "object") {
+    return root.data as ResourcesContentJson;
+  }
+
+  return root;
+}
+
+export default async function ResourcesPage() {
+  const resources = await getResourcesContent();
+  const sections = getSections(resources);
+
+  const heroConfig = sections.hero ?? null;
+  const mainContentConfig = sections.mainContent ?? null;
+
+  const heroData = (heroConfig?.data ?? null) as any;
+  const mainContentData = (mainContentConfig?.data ?? null) as any;
+
+  // Map kebab-case section IDs to camelCase database keys
+  const sectionKeyMap: Record<string, string> = {
+    "request-speaker": "requestSpeaker",
+    "request-visit": "requestVisit",
+    "visitors-guide": "visitorsGuide",
+    "islamic-prayer": "islamicPrayer",
+    "islamic-school": "islamicSchool",
+    "elections-nominations": "electionsNominations",
+    "apply-renew-membership": "applyRenewMembership",
+    "by-laws": "byLaws",
+    "fundraising-policy": "fundraisingPolicy",
+    "meeting-minutes": "meetingMinutes",
+    "financial-assistance": "financialAssistance",
+    "request-door-access": "requestDoorAccess",
+    "reserve-basement": "reserveBasement",
+  };
+
+  // Get dynamic data for each resource section
+  const getSectionData = (sectionId: string) => {
+    const camelCaseKey = sectionKeyMap[sectionId];
+    if (!camelCaseKey) return null;
+    
+    const config = (sections[camelCaseKey as keyof ResourcesContentJson] ?? null) as ResourcesSectionConfig | null;
+    return (config?.data ?? null) as any;
+  };
+
+  // Map section IDs to their data
+  const sectionDataMap: Record<string, any> = {};
+  Object.keys(sectionKeyMap).forEach((sectionId) => {
+    sectionDataMap[sectionId] = getSectionData(sectionId);
+  });
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
       <Navbar />
 
       <main className="bg-transparent">
-        <ResourcesHero />
+        <ResourcesHero data={heroData} />
 
         <section className="bg-transparent">
           <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 sm:py-20">
             <header className="mb-12 text-center sm:mb-16">
               <p className="text-sm font-semibold uppercase tracking-[0.2em] text-sky-600">
-                Community Resources
+                {mainContentData?.["content-subtitle"] ||
+                  mainContentData?.subtitle ||
+                  "Community Resources"}
               </p>
               <h1 className="mt-4 text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl lg:text-5xl">
-                Helpful information, forms, and policies in one place
+                {mainContentData?.["content-title"] ||
+                  mainContentData?.title ||
+                  "Helpful information, forms, and policies in one place"}
               </h1>
-              <p className="mt-5 max-w-3xl mx-auto text-base leading-relaxed text-gray-600 sm:text-lg">
-                Use the cards below to find visitor information, request speakers or visits,
-                review policies, and access other important documents from Fort Dodge Islamic Center
-                Islamic Center.
-              </p>
+              {mainContentData?.["content-description"] ||
+                mainContentData?.description ? (
+                <div
+                  className="mt-5 max-w-3xl mx-auto text-base leading-relaxed text-gray-600 sm:text-lg prose prose-gray max-w-none"
+                  dangerouslySetInnerHTML={{
+                    __html:
+                      mainContentData?.["content-description"] ||
+                      mainContentData?.description ||
+                      "",
+                  }}
+                />
+              ) : (
+                <p className="mt-5 max-w-3xl mx-auto text-base leading-relaxed text-gray-600 sm:text-lg">
+                  Use the cards below to find visitor information, request speakers or visits,
+                  review policies, and access other important documents from Fort Dodge Islamic Center
+                  Islamic Center.
+                </p>
+              )}
             </header>
 
             <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 lg:gap-6">
               {resourcesSections.map((section) => {
                 const Icon = section.icon;
+                const sectionData = sectionDataMap[section.id];
+                const title =
+                  sectionData?.title || section.title;
+                const description =
+                  sectionData?.description || section.description;
+
                 const content = (
                   <article
                     key={section.id}
@@ -248,11 +330,18 @@ export default function ResourcesPage() {
                       </div>
                       <div className="flex-1 min-w-0">
                         <h2 className="text-lg font-bold tracking-tight text-gray-900 sm:text-xl group-hover:text-sky-700 transition-colors">
-                          {section.title}
+                          {title}
                         </h2>
-                        <p className="mt-3 text-sm leading-relaxed text-gray-600 sm:text-base">
-                          {section.description}
-                        </p>
+                        {description ? (
+                          <div
+                            className="mt-3 text-sm leading-relaxed text-gray-600 sm:text-base prose prose-sm max-w-none"
+                            dangerouslySetInnerHTML={{ __html: description }}
+                          />
+                        ) : (
+                          <p className="mt-3 text-sm leading-relaxed text-gray-600 sm:text-base">
+                            {section.description}
+                          </p>
+                        )}
                       </div>
                     </div>
                     {section.href && (

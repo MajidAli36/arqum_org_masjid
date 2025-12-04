@@ -42,7 +42,9 @@ export async function getRamzanContent(): Promise<RamzanContent | null> {
   const { data, error } = await supabase
     .from(HOME_TABLE)
     .select("*")
-    .eq("data->>page", "ramzan")
+    // Prefer the new dedicated `page_name` column, but fall back to JSON `data->>page`
+    // for backwards compatibility with older rows.
+    .or("page_name.eq.ramzan,data->>page.eq.ramzan")
     .single();
 
   if (error) {
@@ -77,7 +79,8 @@ export async function updateRamzanSection(
 
       const { data: insertData, error: insertError } = await supabase
         .from(HOME_TABLE)
-        .insert({ data: newData })
+        // Also persist the page identifier in the dedicated column for easier querying.
+        .insert({ data: newData, page_name: "ramzan" })
         .select()
         .single();
 

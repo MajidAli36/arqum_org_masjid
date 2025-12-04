@@ -1,17 +1,89 @@
-export default function FoundationsSection() {
+type FoundationsSectionProps = {
+  data?: {
+    subtitle?: string | null;
+    title?: string | null;
+    description?: string | null;
+    "quranic-resources"?: {
+      title?: string;
+      webUrl?: string;
+      mobileUrl?: string;
+      description?: string;
+    }[];
+    "sunnah-resources"?: {
+      title?: string;
+      url?: string;
+      description?: string;
+    }[];
+  } | null;
+};
+
+export default function FoundationsSection({ data }: FoundationsSectionProps) {
+  const quranic =
+    data?.["quranic-resources"] && data["quranic-resources"].length
+      ? data["quranic-resources"]
+      : [
+          {
+            title: "The Clear Quran by Dr. Mustafa Khattab",
+            webUrl: "https://online.theclearquran.org/surah",
+            mobileUrl: "https://theclearquran.org/tcq-app/",
+            description: "",
+          },
+          {
+            title: "Quran translation",
+            webUrl: "http://www.islamicstudies.info/quran/saheeh/",
+            mobileUrl: "",
+            description: "",
+          },
+          {
+            title:
+              "An annotated linguistic resource which shows the Arabic grammar, syntax, and morphology for each word in the Holy Quran",
+            webUrl: "http://corpus.quran.com/wordbyword.jsp",
+            mobileUrl: "",
+            description: "",
+          },
+          {
+            title: "Quran recitation/memorizing – various reciters",
+            webUrl: "https://quranexplorer.com",
+            mobileUrl: "",
+            description: "",
+          },
+        ];
+
+  const sunnah =
+    data?.["sunnah-resources"] && data["sunnah-resources"].length
+      ? data["sunnah-resources"]
+      : [
+          {
+            title:
+              "The Sealed Nectar [PDF]– book on the biography of the Prophet",
+            url: "",
+            description: "",
+          },
+          {
+            title: "Riyad us Saleheen",
+            url: "https://sunnah.com/riyadussalihin",
+            description: "A comprehensive list of says of the Prophet",
+          },
+        ];
+
   return (
     <section className="bg-zinc-50">
       <div className="mx-auto max-w-6xl px-4 py-12 sm:px-6 sm:py-16">
         <div className="mb-10 text-center md:text-left">
           <p className="text-sm font-semibold uppercase tracking-[0.2em] text-sky-700">
-            The Foundations
+            {data?.subtitle || "The Foundations"}
           </p>
           <h2 className="mt-3 text-2xl font-bold text-gray-900 sm:text-3xl">
-            Build steady knowledge roots
+            {data?.title || "Build steady knowledge roots"}
           </h2>
-          <p className="mt-4 max-w-3xl text-base text-gray-600 sm:text-lg">
-            Start with reliable resources covering the Quran, the Sunnah, and the shining example of Prophet Muhammad ﷺ.
-          </p>
+          <p
+            className="mt-4 max-w-3xl text-base text-gray-600 sm:text-lg"
+            dangerouslySetInnerHTML={{
+              __html:
+                data?.description ||
+                "Start with reliable resources covering the Quran, the Sunnah, and the shining example of Prophet Muhammad ﷺ.",
+            }}
+          />
         </div>
 
         <div className="grid gap-6 md:grid-cols-2">
@@ -27,74 +99,46 @@ export default function FoundationsSection() {
               </div>
             </div>
             <ul className="mt-6 space-y-4 text-sm text-gray-700">
-              <li className="rounded-2xl bg-slate-50 p-4">
-                <p className="text-base font-medium text-gray-900">
-                  The Clear Quran by Dr. Mustafa Khattab
-                </p>
-                <p className="mt-1 text-sm text-gray-600">
-                  (Web:{" "}
-                  <a
-                    href="https://online.theclearquran.org/surah"
-                    target="_blank"
-                    rel="noreferrer"
-                    className="text-sky-700 underline-offset-4 hover:underline"
-                  >
-                    https://online.theclearquran.org/surah
-                  </a>
-                  , Mobile App:{" "}
-                  <a
-                    href="https://theclearquran.org/tcq-app/"
-                    target="_blank"
-                    rel="noreferrer"
-                    className="text-sky-700 underline-offset-4 hover:underline"
-                  >
-                    https://theclearquran.org/tcq-app/
-                  </a>
-                  )
-                </p>
-              </li>
-              <li className="rounded-2xl bg-slate-50 p-4">
-                <p className="text-sm text-gray-700">
-                  Quran translation:{" "}
-                  <a
-                    href="http://www.islamicstudies.info/quran/saheeh/"
-                    target="_blank"
-                    rel="noreferrer"
-                    className="text-sky-700 underline-offset-4 hover:underline"
-                  >
-                    http://www.islamicstudies.info/quran/saheeh/
-                  </a>
-                </p>
-              </li>
-              <li className="rounded-2xl bg-slate-50 p-4">
-                <p className="text-sm text-gray-700">
-                  An annotated linguistic resource which shows the Arabic grammar, syntax, and morphology for each word in the Holy
-                  Quran (
-                  <a
-                    href="http://corpus.quran.com/wordbyword.jsp"
-                    target="_blank"
-                    rel="noreferrer"
-                    className="text-sky-700 underline-offset-4 hover:underline"
-                  >
-                    http://corpus.quran.com/wordbyword.jsp
-                  </a>
-                  )
-                </p>
-              </li>
-              <li className="rounded-2xl bg-slate-50 p-4">
-                <p className="text-sm text-gray-700">
-                  Quran recitation/memorizing – various reciters (
-                  <a
-                    href="https://quranexplorer.com"
-                    target="_blank"
-                    rel="noreferrer"
-                    className="text-sky-700 underline-offset-4 hover:underline"
-                  >
-                    Quranexplorer.com
-                  </a>
-                  )
-                </p>
-              </li>
+              {quranic.map((item, idx) => (
+                <li key={idx} className="rounded-2xl bg-slate-50 p-4">
+                  <p className="text-base font-medium text-gray-900">
+                    {item.title}
+                  </p>
+                  <p className="mt-1 text-sm text-gray-600">
+                    {item.webUrl && (
+                      <>
+                        Web:{" "}
+                        <a
+                          href={item.webUrl}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="text-sky-700 underline-offset-4 hover:underline"
+                        >
+                          {item.webUrl}
+                        </a>
+                      </>
+                    )}
+                    {item.mobileUrl && (
+                      <>
+                        {item.webUrl && ", "}Mobile App:{" "}
+                        <a
+                          href={item.mobileUrl}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="text-sky-700 underline-offset-4 hover:underline"
+                        >
+                          {item.mobileUrl}
+                        </a>
+                      </>
+                    )}
+                  </p>
+                  {item.description && (
+                    <p className="mt-1 text-xs text-gray-500">
+                      {item.description}
+                    </p>
+                  )}
+                </li>
+              ))}
             </ul>
           </article>
 
@@ -113,25 +157,30 @@ export default function FoundationsSection() {
               </div>
             </div>
             <ul className="mt-6 space-y-4 text-sm text-gray-700">
-              <li className="rounded-2xl bg-slate-50 p-4">
-                <p className="text-base font-medium text-gray-900">
-                  The Sealed Nectar [PDF]– book on the biography of the Prophet
-                </p>
-              </li>
-              <li className="rounded-2xl bg-slate-50 p-4">
-                <p className="text-sm text-gray-700">
-                  Riyad us Saleheen [
-                  <a
-                    href="https://sunnah.com/riyadussalihin"
-                    target="_blank"
-                    rel="noreferrer"
-                    className="text-sky-700 underline-offset-4 hover:underline"
-                  >
-                    https://sunnah.com/riyadussalihin
-                  </a>
-                  ] – A comprehensive list of says of the Prophet
-                </p>
-              </li>
+              {sunnah.map((item, idx) => (
+                <li key={idx} className="rounded-2xl bg-slate-50 p-4">
+                  <p className="text-base font-medium text-gray-900">
+                    {item.title}
+                  </p>
+                  {item.url && (
+                    <p className="mt-1 text-sm text-gray-700">
+                      <a
+                        href={item.url}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="text-sky-700 underline-offset-4 hover:underline"
+                      >
+                        {item.url}
+                      </a>
+                    </p>
+                  )}
+                  {item.description && (
+                    <p className="mt-1 text-xs text-gray-500">
+                      {item.description}
+                    </p>
+                  )}
+                </li>
+              ))}
             </ul>
           </article>
         </div>

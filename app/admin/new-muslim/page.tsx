@@ -1,13 +1,22 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import PageEditorLayout from "../components/PageEditorLayout";
 import SectionEditor from "../components/SectionEditor";
+import { NewMuslimSectionConfig } from "@/lib/new-muslim.service";
 
 type SectionField = {
   id: string;
   label: string;
-  type: "text" | "textarea" | "image" | "rich-text" | "url" | "time" | "array" | "table";
+  type:
+    | "text"
+    | "textarea"
+    | "image"
+    | "rich-text"
+    | "url"
+    | "time"
+    | "array"
+    | "table";
   value: string | any[];
   placeholder?: string;
   arrayItemSchema?: { id: string; label: string; type: string }[];
@@ -227,12 +236,359 @@ export default function NewMuslimPageEditor() {
   });
 
   const [activeTab, setActiveTab] = useState<string>("hero");
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState<Record<string, boolean>>({});
+
+  useEffect(() => {
+    async function fetchNewMuslimData() {
+      try {
+        const response = await fetch("/api/new-muslim");
+        const result = await response.json();
+
+        if (result.ok && result.newMuslim?.data) {
+          const data = result.newMuslim.data;
+
+          // Support both shapes:
+          // 1) { page, hero, ... }
+          // 2) { page, data: { hero, ... } }
+          const sectionsSource =
+            data.data && typeof data.data === "object" ? data.data : data;
+
+          const transformed = { ...sections };
+
+          // Hero
+          if (sectionsSource.hero?.data) {
+            const heroData = sectionsSource.hero.data as any;
+            transformed.hero = [
+              {
+                id: "hero-image",
+                label: "Hero Image",
+                type: "image",
+                value:
+                  heroData["hero-image"] ||
+                  heroData.heroImage ||
+                  transformed.hero[0].value,
+              },
+            ];
+          }
+
+          // Journey Intro
+          if (sectionsSource.journeyIntro?.data) {
+            const intro = sectionsSource.journeyIntro.data as any;
+            transformed.journeyIntro = transformed.journeyIntro.map((field) => {
+              switch (field.id) {
+                case "intro-subtitle":
+                  return {
+                    ...field,
+                    value:
+                      intro["intro-subtitle"] || intro.subtitle || field.value,
+                  };
+                case "intro-title":
+                  return {
+                    ...field,
+                    value: intro["intro-title"] || intro.title || field.value,
+                  };
+                case "intro-quote":
+                  return {
+                    ...field,
+                    value: intro["intro-quote"] || intro.quote || field.value,
+                  };
+                case "intro-quote-source":
+                  return {
+                    ...field,
+                    value:
+                      intro["intro-quote-source"] ||
+                      intro.quoteSource ||
+                      field.value,
+                  };
+                case "intro-content-1":
+                  return {
+                    ...field,
+                    value:
+                      intro["intro-content-1"] || intro.content1 || field.value,
+                  };
+                case "intro-content-2":
+                  return {
+                    ...field,
+                    value:
+                      intro["intro-content-2"] || intro.content2 || field.value,
+                  };
+                default:
+                  return field;
+              }
+            });
+          }
+
+          // Foundations
+          if (sectionsSource.foundations?.data) {
+            const f = sectionsSource.foundations.data as any;
+            transformed.foundations = transformed.foundations.map((field) => {
+              switch (field.id) {
+                case "foundations-subtitle":
+                  return {
+                    ...field,
+                    value:
+                      f["foundations-subtitle"] || f.subtitle || field.value,
+                  };
+                case "foundations-title":
+                  return {
+                    ...field,
+                    value: f["foundations-title"] || f.title || field.value,
+                  };
+                case "foundations-description":
+                  return {
+                    ...field,
+                    value:
+                      f["foundations-description"] ||
+                      f.description ||
+                      field.value,
+                  };
+                case "quranic-resources":
+                  return {
+                    ...field,
+                    value: Array.isArray(f["quranic-resources"])
+                      ? f["quranic-resources"]
+                      : field.value,
+                  };
+                case "sunnah-resources":
+                  return {
+                    ...field,
+                    value: Array.isArray(f["sunnah-resources"])
+                      ? f["sunnah-resources"]
+                      : field.value,
+                  };
+                default:
+                  return field;
+              }
+            });
+          }
+
+          // Support
+          if (sectionsSource.support?.data) {
+            const s = sectionsSource.support.data as any;
+            transformed.support = transformed.support.map((field) => {
+              switch (field.id) {
+                case "support-subtitle":
+                  return {
+                    ...field,
+                    value:
+                      s["support-subtitle"] || s.subtitle || field.value,
+                  };
+                case "support-items":
+                  return {
+                    ...field,
+                    value: Array.isArray(s["support-items"])
+                      ? s["support-items"]
+                      : field.value,
+                  };
+                case "community-subtitle":
+                  return {
+                    ...field,
+                    value:
+                      s["community-subtitle"] ||
+                      s.communitySubtitle ||
+                      field.value,
+                  };
+                case "community-text":
+                  return {
+                    ...field,
+                    value:
+                      s["community-text"] || s.communityText || field.value,
+                  };
+                default:
+                  return field;
+              }
+            });
+          }
+
+          // Resources
+          if (sectionsSource.resources?.data) {
+            const r = sectionsSource.resources.data as any;
+            transformed.resources = transformed.resources.map((field) => {
+              switch (field.id) {
+                case "resources-subtitle":
+                  return {
+                    ...field,
+                    value:
+                      r["resources-subtitle"] || r.subtitle || field.value,
+                  };
+                case "resources-title":
+                  return {
+                    ...field,
+                    value: r["resources-title"] || r.title || field.value,
+                  };
+                case "resource-items":
+                  return {
+                    ...field,
+                    value: Array.isArray(r["resource-items"])
+                      ? r["resource-items"]
+                      : field.value,
+                  };
+                default:
+                  return field;
+              }
+            });
+          }
+
+          // Explore
+          if (sectionsSource.explore?.data) {
+            const e = sectionsSource.explore.data as any;
+            transformed.explore = transformed.explore.map((field) => {
+              switch (field.id) {
+                case "explore-subtitle":
+                  return {
+                    ...field,
+                    value:
+                      e["explore-subtitle"] || e.subtitle || field.value,
+                  };
+                case "explore-title":
+                  return {
+                    ...field,
+                    value: e["explore-title"] || e.title || field.value,
+                  };
+                case "explore-description":
+                  return {
+                    ...field,
+                    value:
+                      e["explore-description"] ||
+                      e.description ||
+                      field.value,
+                  };
+                case "explore-items":
+                  return {
+                    ...field,
+                    value: Array.isArray(e["explore-items"])
+                      ? e["explore-items"]
+                      : field.value,
+                  };
+                default:
+                  return field;
+              }
+            });
+          }
+
+          setSections(transformed);
+        }
+      } catch (error) {
+        console.error("Failed to fetch new-muslim data:", error);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchNewMuslimData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const handleSectionUpdate = (sectionId: string, fields: SectionField[]) => {
     setSections((prev) => ({
       ...prev,
       [sectionId]: fields,
     }));
+  };
+
+  const transformFieldsToSupabase = (
+    sectionId: string,
+    fields: SectionField[]
+  ): any => {
+    const data: any = {};
+
+    fields.forEach((field) => {
+      if (field.type === "array" || field.type === "table") {
+        data[field.id] = Array.isArray(field.value) ? field.value : [];
+      } else {
+        data[field.id] = typeof field.value === "string" ? field.value : "";
+      }
+    });
+
+    const mapping: Record<string, (d: any) => any> = {
+      hero: (d) => ({
+        heroImage: d["hero-image"] || "",
+      }),
+      journeyIntro: (d) => ({
+        subtitle: d["intro-subtitle"] || "",
+        title: d["intro-title"] || "",
+        quote: d["intro-quote"] || "",
+        quoteSource: d["intro-quote-source"] || "",
+        content1: d["intro-content-1"] || "",
+        content2: d["intro-content-2"] || "",
+      }),
+      foundations: (d) => ({
+        subtitle: d["foundations-subtitle"] || "",
+        title: d["foundations-title"] || "",
+        description: d["foundations-description"] || "",
+        "quranic-resources": Array.isArray(d["quranic-resources"])
+          ? d["quranic-resources"]
+          : [],
+        "sunnah-resources": Array.isArray(d["sunnah-resources"])
+          ? d["sunnah-resources"]
+          : [],
+      }),
+      support: (d) => ({
+        "support-subtitle": d["support-subtitle"] || "",
+        "support-items": Array.isArray(d["support-items"])
+          ? d["support-items"]
+          : [],
+        "community-subtitle": d["community-subtitle"] || "",
+        "community-text": d["community-text"] || "",
+      }),
+      resources: (d) => ({
+        "resources-subtitle": d["resources-subtitle"] || "",
+        "resources-title": d["resources-title"] || "",
+        "resource-items": Array.isArray(d["resource-items"])
+          ? d["resource-items"]
+          : [],
+      }),
+      explore: (d) => ({
+        "explore-subtitle": d["explore-subtitle"] || "",
+        "explore-title": d["explore-title"] || "",
+        "explore-description": d["explore-description"] || "",
+        "explore-items": Array.isArray(d["explore-items"])
+          ? d["explore-items"]
+          : [],
+      }),
+    };
+
+    const mapper = mapping[sectionId];
+    return mapper ? mapper(data) : data;
+  };
+
+  const handleSave = async (sectionId: string) => {
+    setSaving((prev) => ({ ...prev, [sectionId]: true }));
+
+    try {
+      const fields = sections[sectionId];
+      const sectionData = transformFieldsToSupabase(sectionId, fields);
+
+      const requestBody = {
+        sectionKey: sectionId,
+        sectionData: {
+          enabled: true,
+          data: sectionData,
+        } as NewMuslimSectionConfig,
+      };
+
+      const response = await fetch("/api/new-muslim/update-section", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(requestBody),
+      });
+
+      const result = await response.json();
+
+      if (result.ok) {
+        alert(`${getSectionTitle(sectionId)} saved successfully!`);
+        window.location.reload();
+      } else {
+        alert(result.message || "Failed to save");
+      }
+    } catch (error: any) {
+      alert(error?.message || "Failed to save");
+    } finally {
+      setSaving((prev) => ({ ...prev, [sectionId]: false }));
+    }
   };
 
   const tabs = [
@@ -289,13 +645,23 @@ export default function NewMuslimPageEditor() {
 
         {/* Tab Content */}
         <div className="p-6">
-          {activeTab === "hero" && (
+          {loading ? (
+            <div className="text-center py-8">
+              <p className="text-gray-600">Loading...</p>
+            </div>
+          ) : (
+            <>
+              {activeTab === "hero" && (
             <SectionEditor
               sectionId="hero"
               sectionTitle={getSectionTitle("hero")}
               fields={sections.hero}
               onUpdate={handleSectionUpdate}
+              onSave={() => handleSave("hero")}
+              saving={saving["hero"] || false}
               alwaysExpanded={true}
+              bucket="Public"
+              folder="newmuslim"
             />
           )}
 
@@ -305,7 +671,11 @@ export default function NewMuslimPageEditor() {
               sectionTitle={getSectionTitle("journeyIntro")}
               fields={sections.journeyIntro}
               onUpdate={handleSectionUpdate}
+              onSave={() => handleSave("journeyIntro")}
+              saving={saving["journeyIntro"] || false}
               alwaysExpanded={true}
+              bucket="Public"
+              folder="newmuslim"
             />
           )}
 
@@ -315,7 +685,11 @@ export default function NewMuslimPageEditor() {
               sectionTitle={getSectionTitle("foundations")}
               fields={sections.foundations}
               onUpdate={handleSectionUpdate}
+              onSave={() => handleSave("foundations")}
+              saving={saving["foundations"] || false}
               alwaysExpanded={true}
+              bucket="Public"
+              folder="newmuslim"
             />
           )}
 
@@ -325,7 +699,11 @@ export default function NewMuslimPageEditor() {
               sectionTitle={getSectionTitle("support")}
               fields={sections.support}
               onUpdate={handleSectionUpdate}
+              onSave={() => handleSave("support")}
+              saving={saving["support"] || false}
               alwaysExpanded={true}
+              bucket="Public"
+              folder="newmuslim"
             />
           )}
 
@@ -335,7 +713,11 @@ export default function NewMuslimPageEditor() {
               sectionTitle={getSectionTitle("resources")}
               fields={sections.resources}
               onUpdate={handleSectionUpdate}
+              onSave={() => handleSave("resources")}
+              saving={saving["resources"] || false}
               alwaysExpanded={true}
+              bucket="Public"
+              folder="newmuslim"
             />
           )}
 
@@ -345,8 +727,14 @@ export default function NewMuslimPageEditor() {
               sectionTitle={getSectionTitle("explore")}
               fields={sections.explore}
               onUpdate={handleSectionUpdate}
+              onSave={() => handleSave("explore")}
+              saving={saving["explore"] || false}
               alwaysExpanded={true}
+              bucket="Public"
+              folder="newmuslim"
             />
+          )}
+            </>
           )}
         </div>
       </div>

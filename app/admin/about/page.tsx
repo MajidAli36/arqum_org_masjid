@@ -1,8 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import PageEditorLayout from "../components/PageEditorLayout";
 import SectionEditor from "../components/SectionEditor";
+import { AboutSectionConfig } from "@/lib/about.service";
 
 type SectionField = {
   id: string;
@@ -111,12 +112,356 @@ export default function AboutPageEditor() {
   });
 
   const [activeTab, setActiveTab] = useState<string>("hero");
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState<Record<string, boolean>>({});
+
+  useEffect(() => {
+    async function fetchAboutData() {
+      try {
+        const response = await fetch("/api/about");
+        const result = await response.json();
+
+        if (result.ok && result.about?.data) {
+          const data = result.about.data;
+
+          // Support both shapes:
+          // 1) { page, hero, ... }
+          // 2) { page, data: { hero, ... } }
+          const sectionsSource =
+            data.data && typeof data.data === "object" ? data.data : data;
+
+          const transformed = { ...sections };
+
+          // Hero
+          if (sectionsSource.hero?.data) {
+            const heroData = sectionsSource.hero.data as any;
+            transformed.hero = [
+              {
+                id: "hero-image",
+                label: "Hero Image",
+                type: "image",
+                value:
+                  heroData["hero-image"] ||
+                  heroData.heroImage ||
+                  transformed.hero[0].value,
+              },
+            ];
+          }
+
+          // Introduction
+          if (sectionsSource.introduction?.data) {
+            const intro = sectionsSource.introduction.data as any;
+            transformed.introduction = transformed.introduction.map((field) => {
+              switch (field.id) {
+                case "intro-subtitle":
+                  return {
+                    ...field,
+                    value: intro["intro-subtitle"] || intro.subtitle || field.value,
+                  };
+                case "intro-title":
+                  return {
+                    ...field,
+                    value: intro["intro-title"] || intro.title || field.value,
+                  };
+                case "intro-content":
+                  return {
+                    ...field,
+                    value: intro["intro-content"] || intro.content || field.value,
+                  };
+                case "by-laws-text":
+                  return {
+                    ...field,
+                    value: intro["by-laws-text"] || intro.byLawsText || field.value,
+                  };
+                case "by-laws-link":
+                  return {
+                    ...field,
+                    value: intro["by-laws-link"] || intro.byLawsLink || field.value,
+                  };
+                default:
+                  return field;
+              }
+            });
+          }
+
+          // Programs
+          if (sectionsSource.programs?.data) {
+            const p = sectionsSource.programs.data as any;
+            transformed.programs = transformed.programs.map((field) => {
+              switch (field.id) {
+                case "programs-subtitle":
+                  return {
+                    ...field,
+                    value: p["programs-subtitle"] || p.subtitle || field.value,
+                  };
+                case "programs-title":
+                  return {
+                    ...field,
+                    value: p["programs-title"] || p.title || field.value,
+                  };
+                case "services":
+                  return {
+                    ...field,
+                    value: Array.isArray(p.services) ? p.services : field.value,
+                  };
+                default:
+                  return field;
+              }
+            });
+          }
+
+          // Governance
+          if (sectionsSource.governance?.data) {
+            const g = sectionsSource.governance.data as any;
+            transformed.governance = transformed.governance.map((field) => {
+              switch (field.id) {
+                case "governance-subtitle":
+                  return {
+                    ...field,
+                    value: g["governance-subtitle"] || g.subtitle || field.value,
+                  };
+                case "governance-title":
+                  return {
+                    ...field,
+                    value: g["governance-title"] || g.title || field.value,
+                  };
+                case "directors-title":
+                  return {
+                    ...field,
+                    value: g["directors-title"] || g.directorsTitle || field.value,
+                  };
+                case "directors-description":
+                  return {
+                    ...field,
+                    value: g["directors-description"] || g.directorsDescription || field.value,
+                  };
+                case "trustees-title":
+                  return {
+                    ...field,
+                    value: g["trustees-title"] || g.trusteesTitle || field.value,
+                  };
+                case "trustees-description":
+                  return {
+                    ...field,
+                    value: g["trustees-description"] || g.trusteesDescription || field.value,
+                  };
+                default:
+                  return field;
+              }
+            });
+          }
+
+          // Board Directors
+          if (sectionsSource.boardDirectors?.data) {
+            const bd = sectionsSource.boardDirectors.data as any;
+            transformed.boardDirectors = transformed.boardDirectors.map((field) => {
+              switch (field.id) {
+                case "directors-section-subtitle":
+                  return {
+                    ...field,
+                    value: bd["directors-section-subtitle"] || bd.subtitle || field.value,
+                  };
+                case "directors-section-title":
+                  return {
+                    ...field,
+                    value: bd["directors-section-title"] || bd.title || field.value,
+                  };
+                case "board-members":
+                  return {
+                    ...field,
+                    value: Array.isArray(bd["board-members"]) ? bd["board-members"] : field.value,
+                  };
+                default:
+                  return field;
+              }
+            });
+          }
+
+          // Board Trustees
+          if (sectionsSource.boardTrustees?.data) {
+            const bt = sectionsSource.boardTrustees.data as any;
+            transformed.boardTrustees = transformed.boardTrustees.map((field) => {
+              switch (field.id) {
+                case "trustees-section-subtitle":
+                  return {
+                    ...field,
+                    value: bt["trustees-section-subtitle"] || bt.subtitle || field.value,
+                  };
+                case "trustees-section-title":
+                  return {
+                    ...field,
+                    value: bt["trustees-section-title"] || bt.title || field.value,
+                  };
+                case "trustees":
+                  return {
+                    ...field,
+                    value: Array.isArray(bt.trustees) ? bt.trustees : field.value,
+                  };
+                default:
+                  return field;
+              }
+            });
+          }
+
+          // Formation
+          if (sectionsSource.formation?.data) {
+            const f = sectionsSource.formation.data as any;
+            transformed.formation = transformed.formation.map((field) => {
+              switch (field.id) {
+                case "formation-subtitle":
+                  return {
+                    ...field,
+                    value: f["formation-subtitle"] || f.subtitle || field.value,
+                  };
+                case "formation-title":
+                  return {
+                    ...field,
+                    value: f["formation-title"] || f.title || field.value,
+                  };
+                case "election-title":
+                  return {
+                    ...field,
+                    value: f["election-title"] || f.electionTitle || field.value,
+                  };
+                case "election-content":
+                  return {
+                    ...field,
+                    value: f["election-content"] || f.electionContent || field.value,
+                  };
+                case "volunteers-title":
+                  return {
+                    ...field,
+                    value: f["volunteers-title"] || f.volunteersTitle || field.value,
+                  };
+                case "volunteers-content":
+                  return {
+                    ...field,
+                    value: f["volunteers-content"] || f.volunteersContent || field.value,
+                  };
+                default:
+                  return field;
+              }
+            });
+          }
+
+          setSections(transformed);
+        }
+      } catch (error) {
+        console.error("Failed to fetch about data:", error);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchAboutData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const handleSectionUpdate = (sectionId: string, fields: SectionField[]) => {
     setSections((prev) => ({
       ...prev,
       [sectionId]: fields,
     }));
+  };
+
+  const transformFieldsToSupabase = (
+    sectionId: string,
+    fields: SectionField[]
+  ): any => {
+    const data: any = {};
+
+    fields.forEach((field) => {
+      if (field.type === "array" || field.type === "table") {
+        data[field.id] = Array.isArray(field.value) ? field.value : [];
+      } else {
+        data[field.id] = typeof field.value === "string" ? field.value : "";
+      }
+    });
+
+    const mapping: Record<string, (d: any) => any> = {
+      hero: (d) => ({
+        heroImage: d["hero-image"] || "",
+      }),
+      introduction: (d) => ({
+        subtitle: d["intro-subtitle"] || "",
+        title: d["intro-title"] || "",
+        content: d["intro-content"] || "",
+        byLawsText: d["by-laws-text"] || "",
+        byLawsLink: d["by-laws-link"] || "",
+      }),
+      programs: (d) => ({
+        subtitle: d["programs-subtitle"] || "",
+        title: d["programs-title"] || "",
+        services: Array.isArray(d.services) ? d.services : [],
+      }),
+      governance: (d) => ({
+        subtitle: d["governance-subtitle"] || "",
+        title: d["governance-title"] || "",
+        directorsTitle: d["directors-title"] || "",
+        directorsDescription: d["directors-description"] || "",
+        trusteesTitle: d["trustees-title"] || "",
+        trusteesDescription: d["trustees-description"] || "",
+      }),
+      boardDirectors: (d) => ({
+        subtitle: d["directors-section-subtitle"] || "",
+        title: d["directors-section-title"] || "",
+        "board-members": Array.isArray(d["board-members"]) ? d["board-members"] : [],
+      }),
+      boardTrustees: (d) => ({
+        subtitle: d["trustees-section-subtitle"] || "",
+        title: d["trustees-section-title"] || "",
+        trustees: Array.isArray(d.trustees) ? d.trustees : [],
+      }),
+      formation: (d) => ({
+        subtitle: d["formation-subtitle"] || "",
+        title: d["formation-title"] || "",
+        electionTitle: d["election-title"] || "",
+        electionContent: d["election-content"] || "",
+        volunteersTitle: d["volunteers-title"] || "",
+        volunteersContent: d["volunteers-content"] || "",
+      }),
+    };
+
+    const mapper = mapping[sectionId];
+    return mapper ? mapper(data) : data;
+  };
+
+  const handleSave = async (sectionId: string) => {
+    setSaving((prev) => ({ ...prev, [sectionId]: true }));
+
+    try {
+      const fields = sections[sectionId];
+      const sectionData = transformFieldsToSupabase(sectionId, fields);
+
+      const requestBody = {
+        sectionKey: sectionId,
+        sectionData: {
+          enabled: true,
+          data: sectionData,
+        } as AboutSectionConfig,
+      };
+
+      const response = await fetch("/api/about/update-section", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(requestBody),
+      });
+
+      const result = await response.json();
+
+      if (result.ok) {
+        alert(`${getSectionTitle(sectionId)} saved successfully!`);
+        window.location.reload();
+      } else {
+        alert(result.message || "Failed to save");
+      }
+    } catch (error: any) {
+      alert(error?.message || "Failed to save");
+    } finally {
+      setSaving((prev) => ({ ...prev, [sectionId]: false }));
+    }
   };
 
   const tabs = [
@@ -175,74 +520,110 @@ export default function AboutPageEditor() {
 
         {/* Tab Content */}
         <div className="p-6">
-          {activeTab === "hero" && (
-            <SectionEditor
-              sectionId="hero"
-              sectionTitle={getSectionTitle("hero")}
-              fields={sections.hero}
-              onUpdate={handleSectionUpdate}
-              alwaysExpanded={true}
-            />
-          )}
+          {loading ? (
+            <div className="text-center py-8">
+              <p className="text-gray-600">Loading...</p>
+            </div>
+          ) : (
+            <>
+              {activeTab === "hero" && (
+                <SectionEditor
+                  sectionId="hero"
+                  sectionTitle={getSectionTitle("hero")}
+                  fields={sections.hero}
+                  onUpdate={handleSectionUpdate}
+                  onSave={() => handleSave("hero")}
+                  saving={saving["hero"] || false}
+                  alwaysExpanded={true}
+                  bucket="Public"
+                  folder="about"
+                />
+              )}
 
-          {activeTab === "introduction" && (
-            <SectionEditor
-              sectionId="introduction"
-              sectionTitle={getSectionTitle("introduction")}
-              fields={sections.introduction}
-              onUpdate={handleSectionUpdate}
-              alwaysExpanded={true}
-            />
-          )}
+              {activeTab === "introduction" && (
+                <SectionEditor
+                  sectionId="introduction"
+                  sectionTitle={getSectionTitle("introduction")}
+                  fields={sections.introduction}
+                  onUpdate={handleSectionUpdate}
+                  onSave={() => handleSave("introduction")}
+                  saving={saving["introduction"] || false}
+                  alwaysExpanded={true}
+                  bucket="Public"
+                  folder="about"
+                />
+              )}
 
-          {activeTab === "programs" && (
-            <SectionEditor
-              sectionId="programs"
-              sectionTitle={getSectionTitle("programs")}
-              fields={sections.programs}
-              onUpdate={handleSectionUpdate}
-              alwaysExpanded={true}
-            />
-          )}
+              {activeTab === "programs" && (
+                <SectionEditor
+                  sectionId="programs"
+                  sectionTitle={getSectionTitle("programs")}
+                  fields={sections.programs}
+                  onUpdate={handleSectionUpdate}
+                  onSave={() => handleSave("programs")}
+                  saving={saving["programs"] || false}
+                  alwaysExpanded={true}
+                  bucket="Public"
+                  folder="about"
+                />
+              )}
 
-          {activeTab === "governance" && (
-            <SectionEditor
-              sectionId="governance"
-              sectionTitle={getSectionTitle("governance")}
-              fields={sections.governance}
-              onUpdate={handleSectionUpdate}
-              alwaysExpanded={true}
-            />
-          )}
+              {activeTab === "governance" && (
+                <SectionEditor
+                  sectionId="governance"
+                  sectionTitle={getSectionTitle("governance")}
+                  fields={sections.governance}
+                  onUpdate={handleSectionUpdate}
+                  onSave={() => handleSave("governance")}
+                  saving={saving["governance"] || false}
+                  alwaysExpanded={true}
+                  bucket="Public"
+                  folder="about"
+                />
+              )}
 
-          {activeTab === "boardDirectors" && (
-            <SectionEditor
-              sectionId="boardDirectors"
-              sectionTitle={getSectionTitle("boardDirectors")}
-              fields={sections.boardDirectors}
-              onUpdate={handleSectionUpdate}
-              alwaysExpanded={true}
-            />
-          )}
+              {activeTab === "boardDirectors" && (
+                <SectionEditor
+                  sectionId="boardDirectors"
+                  sectionTitle={getSectionTitle("boardDirectors")}
+                  fields={sections.boardDirectors}
+                  onUpdate={handleSectionUpdate}
+                  onSave={() => handleSave("boardDirectors")}
+                  saving={saving["boardDirectors"] || false}
+                  alwaysExpanded={true}
+                  bucket="Public"
+                  folder="about"
+                />
+              )}
 
-          {activeTab === "boardTrustees" && (
-            <SectionEditor
-              sectionId="boardTrustees"
-              sectionTitle={getSectionTitle("boardTrustees")}
-              fields={sections.boardTrustees}
-              onUpdate={handleSectionUpdate}
-              alwaysExpanded={true}
-            />
-          )}
+              {activeTab === "boardTrustees" && (
+                <SectionEditor
+                  sectionId="boardTrustees"
+                  sectionTitle={getSectionTitle("boardTrustees")}
+                  fields={sections.boardTrustees}
+                  onUpdate={handleSectionUpdate}
+                  onSave={() => handleSave("boardTrustees")}
+                  saving={saving["boardTrustees"] || false}
+                  alwaysExpanded={true}
+                  bucket="Public"
+                  folder="about"
+                />
+              )}
 
-          {activeTab === "formation" && (
-            <SectionEditor
-              sectionId="formation"
-              sectionTitle={getSectionTitle("formation")}
-              fields={sections.formation}
-              onUpdate={handleSectionUpdate}
-              alwaysExpanded={true}
-            />
+              {activeTab === "formation" && (
+                <SectionEditor
+                  sectionId="formation"
+                  sectionTitle={getSectionTitle("formation")}
+                  fields={sections.formation}
+                  onUpdate={handleSectionUpdate}
+                  onSave={() => handleSave("formation")}
+                  saving={saving["formation"] || false}
+                  alwaysExpanded={true}
+                  bucket="Public"
+                  folder="about"
+                />
+              )}
+            </>
           )}
         </div>
       </div>

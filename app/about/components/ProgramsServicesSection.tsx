@@ -1,5 +1,17 @@
-export default function ProgramsServicesSection() {
-  const services = [
+type ProgramsServicesSectionProps = {
+  data?: {
+    subtitle?: string | null;
+    title?: string | null;
+    services?: Array<{ title: string; description: string }> | null;
+    "programs-subtitle"?: string | null;
+    "programs-title"?: string | null;
+  } | null;
+};
+
+export default function ProgramsServicesSection({ data }: ProgramsServicesSectionProps) {
+  const subtitle = data?.["programs-subtitle"] || data?.subtitle || "What We Offer";
+  const title = data?.["programs-title"] || data?.title || "Programs and Services";
+  const services = data?.services || [
     {
       title: "Five daily prayers",
       description: "Regular prayer services throughout the day",
@@ -26,10 +38,10 @@ export default function ProgramsServicesSection() {
     <section className="mb-12 sm:mb-16">
       <div className="mb-6">
         <p className="text-sm font-semibold uppercase tracking-[0.2em] text-sky-700">
-          What We Offer
+          {subtitle}
         </p>
         <h2 className="mt-3 text-2xl font-bold text-gray-900 sm:text-3xl">
-          Programs and Services
+          {title}
         </h2>
       </div>
 
@@ -49,9 +61,12 @@ export default function ProgramsServicesSection() {
                 <h3 className="text-base font-semibold text-gray-900 group-hover:text-sky-700 transition-colors sm:text-lg">
                   {service.title}
                 </h3>
-                <p className="mt-2 text-sm text-gray-600 sm:text-base">
-                  {service.description}
-                </p>
+                {service.description && (
+                  <p
+                    className="mt-2 text-sm text-gray-600 sm:text-base"
+                    dangerouslySetInnerHTML={{ __html: service.description }}
+                  />
+                )}
               </div>
             </div>
           </div>

@@ -1,12 +1,24 @@
 import Image from "next/image";
 import { resolveStorageImageUrl } from "../../../lib/storage.service";
 
-export default function HeroSection() {
-  const resolvedImage =
-    resolveStorageImageUrl("/images/fortdoge-masjid.jpg", {
-      bucket: "Public",
-      folder: "Home",
-    }) ?? null;
+type ResourcesHeroProps = {
+  data?: {
+    "hero-image"?: string;
+    heroImage?: string;
+  } | null;
+  folder?: string;
+};
+
+export default function ResourcesHero({ data, folder = "resources" }: ResourcesHeroProps) {
+  const heroImage =
+    data?.["hero-image"] ||
+    data?.heroImage ||
+    "/images/fortdoge-masjid.jpg";
+
+  const resolvedImage = resolveStorageImageUrl(heroImage, {
+    bucket: "Public",
+    folder: folder,
+  }) ?? null;
 
   return (
     <section className="w-full bg-white">

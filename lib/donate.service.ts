@@ -44,7 +44,9 @@ export async function getDonateContent(): Promise<DonateContent | null> {
   const { data, error } = await supabase
     .from(HOME_TABLE)
     .select("*")
-    .eq("data->>page", "donate")
+    // Prefer the new dedicated `page_name` column, but fall back to JSON `data->>page`
+    // for backwards compatibility with older rows.
+    .or("page_name.eq.donate,data->>page.eq.donate")
     .single();
 
   if (error) {
@@ -93,7 +95,8 @@ export async function updateDonateSection(
 
       const { data: insertData, error: insertError } = await supabase
         .from(HOME_TABLE)
-        .insert({ data: newData })
+        // Also persist the page identifier in the dedicated column for easier querying.
+        .insert({ data: newData, page_name: "donate" })
         .select()
         .single();
 
