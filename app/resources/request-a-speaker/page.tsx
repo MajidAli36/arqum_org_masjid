@@ -3,11 +3,21 @@ import Footer from "@/app/components/Footer";
 import ResourcesHero from "../components/ResourcesHero";
 import { getRequestSpeakerContent, RequestSpeakerContent } from "@/lib/request-speaker.service";
 
-export const metadata = {
-  title: "Request a Speaker | Fort Dodge Islamic Center",
+import { generateMetadata as generateSEOMetadata } from "@/lib/seo";
+
+export const metadata = generateSEOMetadata({
+  title: "Request a Speaker",
   description:
-    "Invite a qualified speaker from Fort Dodge Islamic Center for your school, college, faith group, or community organization.",
-};
+    "Invite a qualified speaker from Fort Dodge Islamic Center for your school, college, faith group, or community organization. Learn about Islam and Muslims from experienced community members.",
+  path: "/resources/request-a-speaker",
+  keywords: [
+    "Islamic speaker request",
+    "speaker for school",
+    "Islam presentation",
+    "Muslim community speaker",
+    "interfaith dialogue",
+  ],
+});
 
 type RequestSpeakerContentJson = {
   page?: string;

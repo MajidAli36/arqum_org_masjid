@@ -7,11 +7,21 @@ import {
   type ElectionNominationContentJson,
 } from "@/lib/election-nomination.service";
 
-export const metadata = {
-  title: "Elections & Nominations | Fort Dodge Islamic Center",
+import { generateMetadata as generateSEOMetadata } from "@/lib/seo";
+
+export const metadata = generateSEOMetadata({
+  title: "Elections & Nominations",
   description:
-    "Information about the DAIC Board of Directors election, nomination process, membership requirements, and ways to renew your membership.",
-};
+    "Information about the DAIC Board of Directors election, nomination process, membership requirements, and ways to renew your membership at Fort Dodge Islamic Center.",
+  path: "/resources/elections-nominations",
+  keywords: [
+    "board of directors election",
+    "nomination process",
+    "membership renewal",
+    "voting eligibility",
+    "community elections",
+  ],
+});
 
 function getSections(
   electionNomination: ElectionNominationContent | null

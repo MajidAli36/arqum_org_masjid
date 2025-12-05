@@ -10,8 +10,25 @@ import {
   DonateContent,
   DonateContentJson,
 } from "@/lib/donate.service";
+import { generateMetadata as generateSEOMetadata } from "@/lib/seo";
 
 export const dynamic = "force-dynamic";
+
+export const metadata = generateSEOMetadata({
+  title: "Donate",
+  description:
+    "Support Fort Dodge Islamic Center through donations. Accepting donations via donation box, checks, MOHID kiosk, MOHID online, Venmo, PayPal, and direct bank transfer. Your contributions help maintain our facilities and programs.",
+  path: "/donate",
+  keywords: [
+    "donate to Fort Dodge Islamic Center",
+    "Islamic center donations",
+    "zakat",
+    "sadaqah",
+    "charity Fort Dodge",
+    "Muslim donations",
+    "support Islamic center",
+  ],
+});
 
 function getSections(donate: DonateContent | null): DonateContentJson {
   const root = (donate?.data ?? {}) as DonateContentJson;

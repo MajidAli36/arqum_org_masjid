@@ -7,11 +7,22 @@ import {
   type VisitorGuideContentJson,
 } from "@/lib/visitor-guide.service";
 
-export const metadata = {
-  title: "Visitors Guide | Fort Dodge Islamic Center",
+import { generateMetadata as generateSEOMetadata } from "@/lib/seo";
+
+export const metadata = generateSEOMetadata({
+  title: "Visitors Guide",
   description:
-    "Visitor guidelines for Fort Dodge Islamic Center, including dress code, entering the center, multipurpose room etiquette, and behavior in the prayer hall.",
-};
+    "Complete visitor guide for Fort Dodge Islamic Center. Learn about dress code, entering the center, prayer hall etiquette, and what to expect during your visit.",
+  path: "/resources/visitors-guide",
+  keywords: [
+    "visitor guide",
+    "mosque etiquette",
+    "visiting Islamic center",
+    "dress code for mosque",
+    "prayer hall guidelines",
+    "first time visiting mosque",
+  ],
+});
 
 function getSections(
   visitorGuide: VisitorGuideContent | null

@@ -209,11 +209,23 @@ const resourcesSections: ResourceSection[] = [
 
 export const dynamic = "force-dynamic";
 
-export const metadata = {
-  title: "Resources | Fort Dodge Islamic Center",
+import { generateMetadata as generateSEOMetadata } from "@/lib/seo";
+
+export const metadata = generateSEOMetadata({
+  title: "Resources",
   description:
-    "Central hub for visitor information, community policies, membership, facility requests, and other resources at Fort Dodge Islamic Center.",
-};
+    "Central hub for visitor information, community policies, membership, facility requests, Islamic school, prayer guidance, and other resources at Fort Dodge Islamic Center.",
+  path: "/resources",
+  keywords: [
+    "Fort Dodge Islamic Center resources",
+    "visitor information",
+    "membership application",
+    "Islamic school",
+    "prayer guidance",
+    "community policies",
+    "facility requests",
+  ],
+});
 
 function getSections(resources: ResourcesContent | null): ResourcesContentJson {
   const root = (resources?.data ?? {}) as ResourcesContentJson;

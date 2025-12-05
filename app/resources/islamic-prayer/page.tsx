@@ -7,11 +7,22 @@ import {
   type IslamicPrayerContentJson,
 } from "@/lib/islamic-prayer.service";
 
-export const metadata = {
-  title: "Islamic Prayer | Fort Dodge Islamic Center",
+import { generateMetadata as generateSEOMetadata } from "@/lib/seo";
+
+export const metadata = generateSEOMetadata({
+  title: "Islamic Prayer",
   description:
-    "Overview of the daily salah (Islamic prayer), its postures, and what is recited while standing, bowing, prostrating, and sitting.",
-};
+    "Learn about the daily salah (Islamic prayer) - what is recited while standing, bowing, prostrating, and sitting. A guide to understanding Muslim prayer practices at Fort Dodge Islamic Center.",
+  path: "/resources/islamic-prayer",
+  keywords: [
+    "Islamic prayer",
+    "salah",
+    "Muslim prayer guide",
+    "how Muslims pray",
+    "prayer postures",
+    "Quran recitation in prayer",
+  ],
+});
 
 function getSections(
   islamicPrayer: IslamicPrayerContent | null
