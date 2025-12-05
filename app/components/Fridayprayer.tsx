@@ -60,6 +60,12 @@ export default function FridayPrayers({ data }: FridayPrayersProps) {
       ? data.khutbahs
       : defaultKhutbahs;
 
+  // Normalize description to prevent hydration mismatch
+  // Always ensure we have a non-empty string value
+  const descriptionHtml = (data?.description && data.description.trim())
+    ? data.description.trim()
+    : "Doors open 30 minutes before each Khutbah. Please arrive early to secure parking and seating.";
+
   return (
     <section className="mx-auto mt-16 w-full max-w-5xl px-6">
       <div className="overflow-hidden rounded-3xl border border-slate-200 bg-gradient-to-r from-[#152C44] via-[#1f3b56] to-[#274365] text-white shadow-2xl">
@@ -75,9 +81,7 @@ export default function FridayPrayers({ data }: FridayPrayersProps) {
               className="mt-2 text-sm text-slate-100/90"
               // Render admin-entered HTML so bold/underline/color etc. appear on the frontend.
               dangerouslySetInnerHTML={{
-                __html:
-                  data?.description ??
-                  "Doors open 30 minutes before each Khutbah. Please arrive early to secure parking and seating.",
+                __html: descriptionHtml,
               }}
             />
           </div>

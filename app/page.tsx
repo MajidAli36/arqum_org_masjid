@@ -4,7 +4,7 @@ import InfoBanner, { InfoBannerData } from "./components/infobanner";
 import PrayerTimes, { PrayerTimesData } from "./components/prayertime";
 import DonationSection, { DonationSectionData } from "./components/DonationSection";
 import FridayPrayers, { FridayPrayersData } from "./components/Fridayprayer";
-import CalendarSection from "./components/calendersection";
+import CalendarSection, { CalendarSectionData } from "./components/calendersection";
 import Footer from "./components/Footer";
 import HomeRealtimeSubscription from "./components/HomeRealtimeSubscription";
 
@@ -54,6 +54,8 @@ function pickInfoBannerConfig(
   const quickLinksConfig = sections.quickLinks ?? null;
   const infoBannerConfig = sections.infoBanner ?? null;
 
+  // Prefer quickLinks over infoBanner because quickLinks has the updated src field
+  // infoBanner only has iconPath (old format)
   return quickLinksConfig ?? infoBannerConfig ?? null;
 }
 
@@ -82,6 +84,7 @@ export default async function Home() {
   const fridayPrayersData = (fridayPrayersConfig?.data ?? null) as FridayPrayersData | null;
   const donationData = (donationConfig?.data ?? null) as DonationSectionData | null;
   const infoBannerData = (infoBannerConfig?.data ?? null) as InfoBannerData | null;
+  const calendarData = (calendarConfig?.data ?? null) as CalendarSectionData | null;
 
   return (
     <div className="min-h-screen bg-zinc-50">
@@ -106,7 +109,7 @@ export default async function Home() {
       {/* Info banner and calendar sections can also be wired to JSON when needed */}
       {isSectionEnabled(infoBannerConfig) && <InfoBanner data={infoBannerData} />}
 
-      {isSectionEnabled(calendarConfig) && <CalendarSection />}
+      {isSectionEnabled(calendarConfig) && <CalendarSection data={calendarData} />}
 
       <Footer />
     </div>

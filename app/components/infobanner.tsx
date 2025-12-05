@@ -8,6 +8,7 @@ import ApplyMembershipDrawer from "./ApplyMembershipDrawer";
 import ContactDrawer from "./ContactDrawer";
 import ReserveBasementDrawer from "./ReserveBasementDrawer";
 import DoorAccessDrawer from "./DoorAccessDrawer";
+import FinancialDrawer from "./FinancialDrawer";
 
 export type InfoBannerIcon = {
   label?: string;
@@ -16,7 +17,7 @@ export type InfoBannerIcon = {
   url?: string; // Supabase uses "url" instead of "href"
   iconPath?: string; // Supabase uses "iconPath" instead of "src"
   external?: boolean;
-  drawer?: "membership" | "contact" | "reserveBasement" | "doorAccess";
+  drawer?: "membership" | "contact" | "reserveBasement" | "doorAccess" | "financialAssistance";
 };
 
 export type InfoBannerData = {
@@ -36,9 +37,8 @@ const defaultBannerCards: string[] = [
 
 const defaultIconItems: InfoBannerIcon[] = [
   { label: "By Laws", src: "/images/laws-aq.png", href: "https://drive.google.com/file/d/1xFQ6g0plhCzVIaCvglVPC1nykuICqRWL/view?usp=sharing", external: true },
-  { label: "By Laws", src: "/images/laws-aq.png", href: "https://drive.google.com/file/d/1xFQ6g0plhCzVIaCvglVPC1nykuICqRWL/view?usp=sharing", external: true },
   { label: "Report a Death", src: "/images/phone-aq.png", href: "/report-death" },
-  { label: "Financial Assistance", src: "/images/financial-aq.png", href: "/resources#financial-assistance" },
+  { label: "Financial Assistance", src: "/images/financial-aq.png", href: "/resources#financial-assistance", drawer: "financialAssistance" },
   { label: "Request a Visit", src: "/images/request-aq.png", href: "/resources/request-a-visit" },
   { label: "Visitor Guide", src: "/images/visit-aq.png", href: "/resources/visitors-guide" },
   { label: "New Muslim", src: "/images/new-aq.png", href: "/new-musilm" },
@@ -55,9 +55,10 @@ export default function InfoBanner({ data }: InfoBannerProps) {
   const [isContactDrawerOpen, setIsContactDrawerOpen] = useState(false);
   const [isReserveBasementDrawerOpen, setIsReserveBasementDrawerOpen] = useState(false);
   const [isDoorAccessDrawerOpen, setIsDoorAccessDrawerOpen] = useState(false);
+  const [isFinancialDrawerOpen, setIsFinancialDrawerOpen] = useState(false);
   const scrollPositionRef = useRef(0);
 
-  const overlayActive = isMembershipDrawerOpen || isContactDrawerOpen || isReserveBasementDrawerOpen || isDoorAccessDrawerOpen;
+  const overlayActive = isMembershipDrawerOpen || isContactDrawerOpen || isReserveBasementDrawerOpen || isDoorAccessDrawerOpen || isFinancialDrawerOpen;
 
   // Disable body scroll when drawer is open
   useEffect(() => {
@@ -97,6 +98,8 @@ export default function InfoBanner({ data }: InfoBannerProps) {
         setIsReserveBasementDrawerOpen(true);
       } else if (item.drawer === "doorAccess") {
         setIsDoorAccessDrawerOpen(true);
+      } else if (item.drawer === "financialAssistance") {
+        setIsFinancialDrawerOpen(true);
       }
     }
   };
@@ -107,6 +110,8 @@ export default function InfoBanner({ data }: InfoBannerProps) {
     : defaultBannerCards;
 
   // Normalize icons: use quickLinks if available, otherwise icons, otherwise defaults
+  // IMPORTANT: Prefer `src` field over `iconPath` because `src` contains newly uploaded images
+  // `iconPath` is the old format for manually added images
   
   const icons = (
     data?.quickLinks && data.quickLinks.length
@@ -116,10 +121,11 @@ export default function InfoBanner({ data }: InfoBannerProps) {
       : defaultIconItems
   ).map((item) => {
     // Map Supabase structure to component structure.
+    // IMPORTANT: Prefer `src` (new uploaded images) over `iconPath` (old manually added images)
     // Support both legacy `href` / `src` and Supabase `url` / `iconPath`.
     return {
       label: item.label,
-      src: item.iconPath ?? item.src,
+      src: item.src ?? item.iconPath ?? "", // Prefer src (new) over iconPath (old)
       href: item.href ?? item.url,
       external: item.external,
       drawer: item.drawer,
@@ -143,6 +149,9 @@ export default function InfoBanner({ data }: InfoBannerProps) {
     if (href.includes("request-door-access") || href.includes("#request-door-access")) {
       return { ...item, drawer: "doorAccess" as const };
     }
+    if (href.includes("financial-assistance") || href.includes("#financial-assistance")) {
+      return { ...item, drawer: "financialAssistance" as const };
+    }
     return item;
   });
 
@@ -165,13 +174,21 @@ export default function InfoBanner({ data }: InfoBannerProps) {
         <div className="mx-auto grid max-w-6xl grid-cols-2 gap-x-4 gap-y-10 sm:grid-cols-3 sm:gap-x-6 md:grid-cols-4 lg:grid-cols-6">
           {iconsWithDrawers.map((item) => {
             if (!item.label || !item.href || !item.src) {
+              console.warn("[InfoBanner] Missing required fields:", { label: item.label, href: item.href, src: item.src });
               return null;
             }
 
-            const iconSrc = resolveStorageImageUrl(item.src);
+            const iconSrc = resolveStorageImageUrl(item.src, { bucket: "Public", folder: "Home" });
+            
+            console.log("[InfoBanner] Resolving icon:", { 
+              label: item.label, 
+              src: item.src, 
+              resolved: iconSrc 
+            });
 
             // If we can't resolve a Supabase URL, skip rendering the icon image
             if (!iconSrc) {
+              console.warn("[InfoBanner] Could not resolve image URL for:", item.label, "src:", item.src);
               return null;
             }
 
@@ -217,6 +234,10 @@ export default function InfoBanner({ data }: InfoBannerProps) {
           setIsDoorAccessDrawerOpen(false);
           setIsMembershipDrawerOpen(true);
         }}
+      />
+      <FinancialDrawer
+        isOpen={isFinancialDrawerOpen}
+        onClose={() => setIsFinancialDrawerOpen(false)}
       />
     </section>
   );

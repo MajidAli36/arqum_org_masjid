@@ -80,9 +80,18 @@ export async function POST(request: NextRequest) {
     const bucket = searchParams.get("bucket") || "Public";
     const folder = searchParams.get("folder") || "Home";
 
+    // Sanitize fieldId to remove invalid characters for file paths
+    // Replace brackets, dots, and other special chars with underscores
+    const sanitizedFieldId = fieldId
+      .replace(/[\[\](){}]/g, '_') // Replace brackets and parentheses
+      .replace(/\./g, '_') // Replace dots
+      .replace(/[^a-zA-Z0-9_-]/g, '_') // Replace any other non-alphanumeric chars (except - and _)
+      .replace(/_+/g, '_') // Replace multiple underscores with single
+      .replace(/^_|_$/g, ''); // Remove leading/trailing underscores
+
     // Generate unique filename
     const ext = file.name.split(".").pop() || "jpg";
-    const fileName = `${fieldId}-${Date.now()}.${ext}`;
+    const fileName = `${sanitizedFieldId}-${Date.now()}.${ext}`;
     const path = `${folder}/${fileName}`;
 
     console.log("[upload-image] Uploading file:", {

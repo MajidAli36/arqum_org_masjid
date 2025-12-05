@@ -194,29 +194,29 @@ export const getDefaultSections = (): Record<string, SectionField[]> => ({
         { label: "Reserve Basement", src: "/images/reserve-aq.png", href: "/resources#reserve-basement", external: "", drawer: "reserveBasement" },
         { label: "Request Door Access", src: "/images/door-aq.png", href: "/resources#request-door-access", external: "", drawer: "doorAccess" },
       ],
-      arrayItemSchema: [
-        { id: "label", label: "Label", type: "text" },
-        { id: "src", label: "Icon Image Path", type: "text" },
-        { id: "href", label: "Link URL", type: "url" },
-        { id: "external", label: "External Link (true/false)", type: "text" },
-        { id: "drawer", label: "Drawer Type (membership/contact/reserveBasement/doorAccess or empty)", type: "text" },
-      ],
+                arrayItemSchema: [
+                  { id: "label", label: "Label", type: "text" },
+                  { id: "src", label: "Icon Image", type: "image" },
+                  { id: "href", label: "Link URL", type: "url" },
+                  { id: "external", label: "External Link (true/false)", type: "text" },
+                  { id: "drawer", label: "Drawer Type (membership/contact/reserveBasement/doorAccess or empty)", type: "text" },
+                ],
     },
   ],
   calendar: [
     { 
-      id: "calendar-title", 
-      label: "Section Title", 
+      id: "stay-connected", 
+      label: "Stay Connected", 
       type: "text", 
-      value: "STAY CONNECTED Community Events Calendar",
-      placeholder: "STAY CONNECTED Community Events Calendar"
+      value: "Stay Connected",
+      placeholder: "Stay Connected"
     },
     { 
-      id: "calendar-description", 
-      label: "Description", 
-      type: "textarea", 
-      value: "View our calendar of events and activities",
-      placeholder: "View our calendar of events and activities"
+      id: "community-events-calendar", 
+      label: "Community Events Calendar", 
+      type: "text", 
+      value: "Community Events Calendar",
+      placeholder: "Community Events Calendar"
     },
   ],
 });

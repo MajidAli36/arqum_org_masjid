@@ -90,11 +90,38 @@ export const getRamzanDefaultSections = (): Record<string, SectionField[]> => ({
       value: "$10 per person",
     },
     {
+      id: "zakat-due-date",
+      label: "Due Date Text",
+      type: "text",
+      value: "Due by end of Taraweeh on Friday, March 28th",
+    },
+    {
       id: "zakat-description",
       label: "Description",
       type: "rich-text",
       value:
         "Please submit Zakat-ul-Fitr before Eid so we can distribute to families in need.",
+    },
+    {
+      id: "zakat-submission-methods",
+      label: "Accepted Submission Methods",
+      type: "array",
+      value: [
+        { label: "Online via Mohid", href: "https://www.mohid.com" },
+        { label: "Mohid kiosk in the main prayer hall", href: "" },
+        { label: "Labeled envelopes in both prayer halls (forthcoming)", href: "" },
+      ],
+      arrayItemSchema: [
+        { id: "label", label: "Method Label", type: "text" },
+        { id: "href", label: "Link URL (optional)", type: "url" },
+      ],
+    },
+    {
+      id: "zakat-disclaimer",
+      label: "Disclaimer Text",
+      type: "rich-text",
+      value:
+        "Prefer giving to a food distribution charity? Consider trusted partners such as the <a href='https://www.amoudfoundation.org/' target='_blank' class='font-medium text-amber-700 underline underline-offset-2'>Amoud Foundation</a>. DAIC does not endorse specific charities—please do your own due diligence.",
     },
   ],
   community_iftars: [

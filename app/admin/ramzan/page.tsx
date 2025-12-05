@@ -109,6 +109,52 @@ export default function RamzanPageEditor() {
             );
           }
 
+          // Map existing Zakat-ul-Fitr data from Supabase into editor fields
+          const zakatSource = sectionsSource.zakat_ul_fitr ?? null;
+          if (zakatSource?.data) {
+            const zakatData = zakatSource.data as any;
+            transformed.zakat_ul_fitr = transformed.zakat_ul_fitr.map(
+              (field) => {
+                switch (field.id) {
+                  case "zakat-title":
+                    return {
+                      ...field,
+                      value: zakatData.title || field.value,
+                    };
+                  case "zakat-amount":
+                    return {
+                      ...field,
+                      value: zakatData.amount || field.value,
+                    };
+                  case "zakat-due-date":
+                    return {
+                      ...field,
+                      value: zakatData.dueDate || field.value,
+                    };
+                  case "zakat-description":
+                    return {
+                      ...field,
+                      value: zakatData.description || field.value,
+                    };
+                  case "zakat-submission-methods":
+                    return {
+                      ...field,
+                      value: Array.isArray(zakatData.submissionMethods)
+                        ? zakatData.submissionMethods
+                        : field.value,
+                    };
+                  case "zakat-disclaimer":
+                    return {
+                      ...field,
+                      value: zakatData.disclaimer || field.value,
+                    };
+                  default:
+                    return field;
+                }
+              }
+            );
+          }
+
           setSections(transformed);
         }
       } catch (error) {
@@ -162,7 +208,12 @@ export default function RamzanPageEditor() {
       zakat_ul_fitr: (d) => ({
         title: d["zakat-title"] || "",
         amount: d["zakat-amount"] || "",
+        dueDate: d["zakat-due-date"] || "",
         description: d["zakat-description"] || "",
+        submissionMethods: Array.isArray(d["zakat-submission-methods"])
+          ? d["zakat-submission-methods"]
+          : [],
+        disclaimer: d["zakat-disclaimer"] || "",
       }),
       community_iftars: (d) => ({
         intro: d["iftar-intro"] || "",

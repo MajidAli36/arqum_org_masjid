@@ -214,6 +214,104 @@ export default function SectionEditor({
     handleFieldChange(fieldId, updatedArray);
   };
 
+  const handleArrayItemImageUpload = async (
+    fieldId: string,
+    index: number,
+    itemId: string,
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    // Validate file size (max 5MB)
+    const maxSize = 5 * 1024 * 1024; // 5MB in bytes
+    if (file.size > maxSize) {
+      alert(`Image size is too large. Maximum size is 5MB. Your file is ${(file.size / 1024 / 1024).toFixed(2)}MB.`);
+      return;
+    }
+
+    // Validate file type
+    if (!file.type.startsWith("image/")) {
+      alert("Please select a valid image file (JPG, PNG, WebP, etc.)");
+      return;
+    }
+
+    try {
+      console.log("[SectionEditor] Uploading array item image via API:", {
+        name: file.name,
+        size: file.size,
+        type: file.type,
+        fieldId,
+        index,
+        itemId,
+      });
+
+      // Use server-side API route for upload (better permissions)
+      const formData = new FormData();
+      formData.append("file", file);
+      formData.append("fieldId", `${fieldId}[${index}].${itemId}`);
+
+      const response = await fetch(
+        `/api/upload-image?bucket=${encodeURIComponent(
+          bucket
+        )}&folder=${encodeURIComponent(folder)}`,
+        {
+          method: "POST",
+          body: formData,
+        }
+      );
+
+      const result = await response.json();
+
+      if (!result.ok) {
+        console.error("[SectionEditor] Array item image upload failed:", result);
+        
+        let errorMessage = `${result.message || "Failed to upload image"}\n\n`;
+        
+        if (result.error) {
+          errorMessage += `Error: ${result.error}\n`;
+        }
+        if (result.details) {
+          errorMessage += `${result.details}\n`;
+        }
+        if (result.help) {
+          errorMessage += result.help;
+        } else {
+          errorMessage += "\nPlease check:\n";
+          errorMessage += "1. Supabase Storage bucket 'Public' exists\n";
+          errorMessage += "2. Server has proper credentials (SUPABASE_SERVICE_ROLE_KEY in .env.local)\n";
+          errorMessage += "3. File size is under 5MB\n";
+          errorMessage += "4. Check browser console and server logs for details";
+        }
+        
+        if (result.usingServiceRole === false) {
+          errorMessage += "\n\n⚠️ WARNING: Using ANON_KEY instead of SERVICE_ROLE_KEY. Add SUPABASE_SERVICE_ROLE_KEY to .env.local";
+        }
+        
+        alert(errorMessage);
+        return;
+      }
+
+      console.log("[SectionEditor] Array item image uploaded successfully:", result);
+      
+      // Prefer storing the storage path (e.g. "Home/abc.jpg"); fall back to filename
+      const storedValue: string = result.path || result.fileName;
+      console.log("[SectionEditor] Storing storage path/filename in array item:", storedValue);
+
+      // Make sure we're storing a real storage path / filename, not a blob URL
+      if (storedValue && !storedValue.startsWith("blob:")) {
+        handleArrayItemChange(fieldId, index, itemId, storedValue);
+        console.log("[SectionEditor] Array item updated with storage value:", storedValue);
+      } else {
+        console.error("[SectionEditor] Invalid image value from API:", storedValue);
+        alert("Error: Invalid image filename received from server. Please try uploading again.");
+      }
+    } catch (err: any) {
+      console.error("[SectionEditor] Unexpected array item upload error:", err);
+      alert(`Unexpected error while uploading image: ${err?.message || String(err)}\n\nCheck browser console for details.`);
+    }
+  };
+
   const handleAddArrayItem = (fieldId: string) => {
     const field = localFields.find((f) => f.id === fieldId);
     if (!field || !field.arrayItemSchema) return;
@@ -469,11 +567,93 @@ export default function SectionEditor({
                       </div>
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                         {field.arrayItemSchema?.map((schema) => (
-                          <div key={schema.id}>
+                          <div key={schema.id} className={schema.type === "image" ? "md:col-span-2" : ""}>
                             <label className="block text-xs font-medium text-gray-600 mb-1">
                               {schema.label}
                             </label>
-                            {schema.type === "textarea" ? (
+                            {schema.type === "image" ? (
+                              <div className="space-y-2">
+                                {item[schema.id] && typeof item[schema.id] === "string" && (
+                                  <div className="relative w-full h-32 border border-gray-300 rounded-md overflow-hidden bg-gray-100 flex items-center justify-center">
+                                    {(() => {
+                                      const previewSrc = resolveStorageImageUrl(item[schema.id], {
+                                        bucket,
+                                        folder,
+                                      });
+                                      
+                                      if (!previewSrc) {
+                                        if (item[schema.id].startsWith("blob:")) {
+                                          return (
+                                            <div className="p-2 text-center">
+                                              <p className="text-xs text-red-600 font-semibold">⚠️ Invalid Image</p>
+                                              <p className="text-xs text-gray-500 mt-1">Please upload again.</p>
+                                            </div>
+                                          );
+                                        }
+                                        
+                                        if (item[schema.id].startsWith("http://") || item[schema.id].startsWith("https://")) {
+                                          return (
+                                            <img
+                                              src={item[schema.id]}
+                                              alt={schema.label}
+                                              className="max-h-full max-w-full object-contain"
+                                              onError={(e) => {
+                                                e.currentTarget.style.display = "none";
+                                              }}
+                                            />
+                                          );
+                                        }
+                                        
+                                        return (
+                                          <div className="p-2 text-center">
+                                            <p className="text-xs text-gray-500">Image: {item[schema.id]}</p>
+                                          </div>
+                                        );
+                                      }
+                                      return (
+                                        <img
+                                          src={previewSrc}
+                                          alt={schema.label}
+                                          className="max-h-full max-w-full object-contain"
+                                          onError={(e) => {
+                                            e.currentTarget.style.display = "none";
+                                          }}
+                                        />
+                                      );
+                                    })()}
+                                  </div>
+                                )}
+                                <div className="flex items-center gap-2">
+                                  <label className="cursor-pointer px-3 py-1.5 bg-sky-800 text-white rounded-md hover:bg-sky-900 transition-colors font-semibold text-xs">
+                                    {item[schema.id] ? "Change Image" : "Upload Image"}
+                                    <input
+                                      type="file"
+                                      accept="image/*"
+                                      onChange={(e) => handleArrayItemImageUpload(field.id, index, schema.id, e)}
+                                      className="hidden"
+                                    />
+                                  </label>
+                                  {item[schema.id] && (
+                                    <button
+                                      type="button"
+                                      onClick={async () => {
+                                        const currentValue = item[schema.id];
+                                        if (currentValue && typeof currentValue === "string") {
+                                          await deleteImageFromStorage(`${field.id}[${index}].${schema.id}`, currentValue);
+                                        }
+                                        handleArrayItemChange(field.id, index, schema.id, "");
+                                      }}
+                                      className="px-3 py-1.5 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors font-semibold text-xs"
+                                    >
+                                      Remove
+                                    </button>
+                                  )}
+                                </div>
+                                <p className="text-xs text-gray-500">
+                                  JPG, PNG, or WebP. Max 5MB
+                                </p>
+                              </div>
+                            ) : schema.type === "textarea" ? (
                               isDescriptionField(schema.id, schema.label) ? (
                                 <RichTextEditor
                                   value={item[schema.id] || ""}

@@ -65,6 +65,112 @@ export default function RichTextEditor({
     if (url) applyCommand("insertImage", url);
   };
 
+  const removeBackgroundColor = () => {
+    if (typeof document === "undefined" || !editorRef.current) return;
+    editorRef.current.focus();
+    restoreSelection();
+    
+    const sel = window.getSelection();
+    const hasSelection = sel && sel.rangeCount > 0;
+    let range: Range | null = null;
+    
+    if (hasSelection) {
+      range = sel!.getRangeAt(0);
+    }
+    
+    // Collect all elements that need processing
+    const elementsToProcess = new Set<HTMLElement>();
+    
+    if (hasSelection && range && !range.collapsed) {
+      // If there's a text selection, process only selected elements
+      const container = range.commonAncestorContainer;
+      
+      if (container.nodeType === Node.ELEMENT_NODE) {
+        elementsToProcess.add(container as HTMLElement);
+      } else if (container.nodeType === Node.TEXT_NODE && container.parentElement) {
+        elementsToProcess.add(container.parentElement);
+      }
+      
+      // Find all elements in the selection
+      const walker = document.createTreeWalker(
+        editorRef.current,
+        NodeFilter.SHOW_ELEMENT,
+        null
+      );
+      
+      let node;
+      while ((node = walker.nextNode())) {
+        const element = node as HTMLElement;
+        if (range.intersectsNode(element)) {
+          elementsToProcess.add(element);
+        }
+      }
+    } else if (hasSelection && range && range.collapsed) {
+      // If cursor is positioned but nothing selected, check parent elements
+      let current: Node | null = range.startContainer;
+      while (current && current !== editorRef.current) {
+        if (current.nodeType === Node.ELEMENT_NODE) {
+          const el = current as HTMLElement;
+          if (el.style.backgroundColor || 
+              el.getAttribute("style")?.includes("background-color") ||
+              el.getAttribute("style")?.includes("background:")) {
+            elementsToProcess.add(el);
+          }
+        }
+        current = current.parentElement;
+      }
+    } else {
+      // If no selection, process all elements in the editor that have background
+      const allElements = editorRef.current.querySelectorAll("*");
+      allElements.forEach((el) => {
+        const htmlEl = el as HTMLElement;
+        if (htmlEl.style.backgroundColor || 
+            htmlEl.style.background ||
+            htmlEl.getAttribute("style")?.includes("background-color") ||
+            htmlEl.getAttribute("style")?.includes("background:")) {
+          elementsToProcess.add(htmlEl);
+        }
+      });
+    }
+    
+    // Remove background color from all found elements
+    elementsToProcess.forEach((element) => {
+      // Remove inline style background-color
+      element.style.backgroundColor = "";
+      element.style.background = "";
+      
+      // Process style attribute
+      const styleAttr = element.getAttribute("style");
+      if (styleAttr) {
+        // Remove background-color and background from style string
+        const styleParts = styleAttr.split(";").filter((part) => {
+          const trimmed = part.trim().toLowerCase();
+          return !trimmed.startsWith("background-color") && 
+                 !trimmed.startsWith("background:") &&
+                 trimmed !== "";
+        });
+        
+        const newStyle = styleParts.join(";").trim();
+        if (newStyle) {
+          element.setAttribute("style", newStyle);
+        } else {
+          element.removeAttribute("style");
+        }
+      }
+    });
+    
+    // Also try execCommand as a fallback for better browser compatibility
+    try {
+      if (hasSelection && range && !range.collapsed) {
+        document.execCommand("hiliteColor", false, "transparent");
+      }
+    } catch (e) {
+      // Ignore execCommand errors, manual removal should work
+    }
+    
+    handleInput();
+  };
+
   const isEmpty = !value || value.trim() === "" || value === "<p><br></p>";
 
   return (
@@ -117,6 +223,14 @@ export default function RichTextEditor({
         {/* Highlight Color */}
         <input type="color" className="h-4 w-4 border cursor-pointer"
           onChange={(e) => applyCommand("hiliteColor", e.target.value)} />
+        <button 
+          onMouseDown={(e) => e.preventDefault()} 
+          onClick={removeBackgroundColor}
+          className="px-2 py-1 rounded hover:bg-gray-200 text-xs"
+          title="Remove Background Color"
+        >
+          No BG
+        </button>
 
         <span className="mx-1 h-4 w-px bg-gray-300" />
 

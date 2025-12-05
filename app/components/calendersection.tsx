@@ -1,12 +1,24 @@
-export default function CalendarSection() {
+export type CalendarSectionData = {
+  stayConnected?: string;
+  communityEventsCalendar?: string;
+};
+
+export type CalendarSectionProps = {
+  data?: CalendarSectionData | null;
+};
+
+export default function CalendarSection({ data }: CalendarSectionProps) {
+  const stayConnected = data?.stayConnected || "Stay Connected";
+  const communityEventsCalendar = data?.communityEventsCalendar || "Community Events Calendar";
+
   return (
     <section className="mx-auto mt-16 mb-20 w-full max-w-6xl px-4 sm:px-6">
       <div className="mb-6 text-center">
         <p className="text-xs uppercase tracking-[0.3em] text-slate-500">
-          Stay Connected
+          {stayConnected}
         </p>
         <h2 className="mt-2 text-3xl font-semibold text-slate-800">
-          Community Events Calendar
+          {communityEventsCalendar}
         </h2>
       </div>
       <div className="rounded-xl border border-gray-200 bg-white p-2 shadow-md">

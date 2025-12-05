@@ -158,6 +158,28 @@ export default function HomePageEditor() {
           // Supabase historically uses "quickLinks" as the key, but we also support "infoBanner" for backwards compatibility.
           if (homeData.quickLinks?.data || homeData.infoBanner?.data) {
             const bannerData = homeData.quickLinks?.data || homeData.infoBanner?.data;
+            
+            console.log("[Admin Load] Banner data from DB:", JSON.stringify(bannerData, null, 2));
+            console.log("[Admin Load] Quick Links array from DB:", bannerData.quickLinks);
+            
+            // Normalize quick links: ensure "src" field exists (map from "iconPath" if needed)
+            const dbQuickLinks = bannerData.quickLinks || bannerData.icons || [];
+            console.log("[Admin Load] DB Quick Links count:", dbQuickLinks.length);
+            
+            const normalizedQuickLinks = dbQuickLinks.map((item: any, index: number) => {
+              const normalized = {
+                ...item,
+                src: item.src || item.iconPath || "", // Use src if available, otherwise iconPath
+                href: item.href || item.url || "", // Use href if available, otherwise url
+              };
+              console.log(`[Admin Load] Quick Link ${index}:`, {
+                label: normalized.label,
+                src: normalized.src,
+                href: normalized.href
+              });
+              return normalized;
+            });
+            
             transformedSections.infoBanner = [
               {
                 id: "banner-cards",
@@ -172,24 +194,26 @@ export default function HomePageEditor() {
                 id: "quick-links",
                 label: "Quick Links / Icon Items",
                 type: "array",
-                value: bannerData.quickLinks || bannerData.icons || [],
+                value: normalizedQuickLinks,
                 arrayItemSchema: [
                   { id: "label", label: "Label", type: "text" },
-                  { id: "src", label: "Icon Image Path", type: "text" },
+                  { id: "src", label: "Icon Image", type: "image" },
                   { id: "href", label: "Link URL", type: "url" },
                   { id: "external", label: "External Link (true/false)", type: "text" },
                   { id: "drawer", label: "Drawer Type", type: "text" },
                 ],
               },
             ];
+          } else {
+            console.log("[Admin Load] No quickLinks data found in DB, using defaults");
           }
           
           // Calendar
           if (homeData.calendar?.data) {
             const calendarData = homeData.calendar.data;
             transformedSections.calendar = [
-              { id: "calendar-title", label: "Section Title", type: "text", value: calendarData.title || "", placeholder: "STAY CONNECTED Community Events Calendar" },
-              { id: "calendar-description", label: "Description", type: "textarea", value: calendarData.description || "", placeholder: "View our calendar of events and activities" },
+              { id: "stay-connected", label: "Stay Connected", type: "text", value: calendarData.stayConnected || "", placeholder: "Stay Connected" },
+              { id: "community-events-calendar", label: "Community Events Calendar", type: "text", value: calendarData.communityEventsCalendar || "", placeholder: "Community Events Calendar" },
             ];
           }
           
@@ -265,13 +289,28 @@ export default function HomePageEditor() {
         quickActionsTitle: d["quick-actions-title"] || "",
         quickActionsDescription: d["quick-actions-description"] || "",
       }),
-      infoBanner: (d) => ({
-        bannerCards: d["banner-cards"] || [],
-        quickLinks: d["quick-links"] || [],
-      }),
+      infoBanner: (d) => {
+        // Ensure we're saving the actual array data, not nested structure
+        const quickLinksArray = Array.isArray(d["quick-links"]) ? d["quick-links"] : [];
+        const bannerCardsArray = Array.isArray(d["banner-cards"]) ? d["banner-cards"] : [];
+        
+        console.log("[Admin Save] infoBanner transform - quickLinks count:", quickLinksArray.length);
+        quickLinksArray.forEach((link: any, idx: number) => {
+          console.log(`[Admin Save] Quick Link ${idx}:`, {
+            label: link?.label,
+            src: link?.src,
+            href: link?.href
+          });
+        });
+        
+        return {
+          bannerCards: bannerCardsArray,
+          quickLinks: quickLinksArray,
+        };
+      },
       calendar: (d) => ({
-        title: d["calendar-title"] || "",
-        description: d["calendar-description"] || "",
+        stayConnected: d["stay-connected"] || "",
+        communityEventsCalendar: d["community-events-calendar"] || "",
       }),
     };
     
@@ -304,6 +343,18 @@ export default function HomePageEditor() {
       console.log("[Admin Save] Section ID:", sectionId);
       console.log("[Admin Save] Supabase Key:", supabaseKey);
       console.log("[Admin Save] Transformed Data:", sectionData);
+      
+      // Log quick links data specifically for debugging
+      if (sectionId === "infoBanner" && sectionData.quickLinks) {
+        console.log("[Admin Save] Quick Links Data:", JSON.stringify(sectionData.quickLinks, null, 2));
+        sectionData.quickLinks.forEach((link: any, index: number) => {
+          console.log(`[Admin Save] Quick Link ${index}:`, {
+            label: link.label,
+            src: link.src,
+            href: link.href
+          });
+        });
+      }
       
       const requestBody = {
         sectionKey: supabaseKey,
