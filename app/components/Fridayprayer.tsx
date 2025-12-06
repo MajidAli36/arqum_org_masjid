@@ -96,7 +96,7 @@ export default function FridayPrayers({ data }: FridayPrayersProps) {
           <div className="rounded-2xl border border-white/20 bg-white/10 px-6 py-4 text-sm shadow-sm">
             <div className="flex items-center gap-2 text-white">
               <LocationIcon />
-              <p className="font-semibold">Location</p>
+              <p className="font-semibold">Locations</p>
             </div>
             <p className="mt-1 text-slate-100/90">
               {data?.locationValue ?? "Main Prayer Hall"}
