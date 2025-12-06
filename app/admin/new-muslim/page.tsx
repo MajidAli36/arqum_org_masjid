@@ -39,7 +39,7 @@ export default function NewMuslimPageEditor() {
     foundations: [
       { id: "foundations-subtitle", label: "Section Subtitle", type: "text", value: "The Foundations" },
       { id: "foundations-title", label: "Section Title", type: "text", value: "Build steady knowledge roots" },
-      { id: "foundations-description", label: "Section Description", type: "textarea", value: "Start with reliable resources covering the Quran, the Sunnah, and the shining example of Prophet Muhammad ﷺ." },
+      { id: "foundations-description", label: "Section Description", type: "rich-text", value: "Start with reliable resources covering the Quran, the Sunnah, and the shining example of Prophet Muhammad ﷺ." },
       {
         id: "quranic-resources",
         label: "Quranic Resources",
@@ -74,7 +74,7 @@ export default function NewMuslimPageEditor() {
           { id: "title", label: "Resource Title", type: "text" },
           { id: "webUrl", label: "Web URL", type: "url" },
           { id: "mobileUrl", label: "Mobile App URL (optional)", type: "url" },
-          { id: "description", label: "Description (optional)", type: "textarea" },
+          { id: "description", label: "Description (optional)", type: "rich-text" },
         ],
       },
       {
@@ -96,7 +96,7 @@ export default function NewMuslimPageEditor() {
         arrayItemSchema: [
           { id: "title", label: "Resource Title", type: "text" },
           { id: "url", label: "URL (optional)", type: "url" },
-          { id: "description", label: "Description (optional)", type: "textarea" },
+          { id: "description", label: "Description (optional)", type: "rich-text" },
         ],
       },
     ],
@@ -627,7 +627,7 @@ export default function NewMuslimPageEditor() {
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id)}
                   className={`
-                    mr-2 flex items-center gap-2 whitespace-nowrap rounded-md px-4 py-2 text-xs sm:text-sm font-medium border-2 transition-colors last:mr-0
+                    cursor-pointer mr-2 flex items-center gap-2 whitespace-nowrap rounded-md px-4 py-2 text-xs sm:text-sm font-medium border-2 transition-colors last:mr-0
                     ${
                       activeTab === tab.id
                         ? "border-sky-600 bg-sky-50 text-sky-700"

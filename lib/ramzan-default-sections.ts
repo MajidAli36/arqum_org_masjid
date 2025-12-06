@@ -10,6 +10,19 @@ export const getRamzanDefaultSections = (): Record<string, SectionField[]> => ({
       // Admin can upload a real image which will be stored as "ramzan/....jpg".
       value: "",
     },
+    {
+      id: "hero-announcement-text",
+      label: "Announcement Text (below hero)",
+      type: "rich-text",
+      value:
+        'ISNA and the Fiqh Council of North America have <a href="https://www.fiqhcouncil.org" class="font-medium text-blue-700 underline" target="_blank">announced</a> the first day of Ramadan will be on <span class="font-semibold text-red-600">Saturday, March 1st</span>. Taraweeh will begin on Friday, February 28th.',
+    },
+    {
+      id: "hero-eid-text",
+      label: "Eid Date Text",
+      type: "rich-text",
+      value: "Eid is Sunday, March 30th.",
+    },
   ],
   daily_lessons: [
     {

@@ -62,9 +62,17 @@ export default function FridayPrayers({ data }: FridayPrayersProps) {
 
   // Normalize description to prevent hydration mismatch
   // Always ensure we have a non-empty string value
-  const descriptionHtml = (data?.description && data.description.trim())
-    ? data.description.trim()
-    : "Doors open 30 minutes before each Khutbah. Please arrive early to secure parking and seating.";
+  // Use a consistent default that matches between server and client
+  const defaultDescription = "Doors open 30 minutes before each Khutbah. Please arrive early to secure parking and seating.";
+  
+  // Normalize the description: handle null, undefined, empty string, or whitespace-only strings
+  let safeDescriptionHtml = defaultDescription;
+  if (data?.description) {
+    const trimmed = String(data.description).trim();
+    if (trimmed.length > 0) {
+      safeDescriptionHtml = trimmed;
+    }
+  }
 
   return (
     <section className="mx-auto mt-16 w-full max-w-5xl px-6">
@@ -77,11 +85,11 @@ export default function FridayPrayers({ data }: FridayPrayersProps) {
             <h2 className="mt-2 text-3xl font-semibold">
               {data?.title ?? "Friday Prayers"}
             </h2>
-            <p
+            <div
               className="mt-2 text-sm text-slate-100/90"
               // Render admin-entered HTML so bold/underline/color etc. appear on the frontend.
               dangerouslySetInnerHTML={{
-                __html: descriptionHtml,
+                __html: safeDescriptionHtml,
               }}
             />
           </div>

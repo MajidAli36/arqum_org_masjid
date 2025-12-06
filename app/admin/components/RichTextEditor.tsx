@@ -180,9 +180,9 @@ export default function RichTextEditor({
 
         {/* Undo / Redo */}
         <button onMouseDown={(e) => e.preventDefault()} onClick={() => applyCommand("undo")}
-          className="px-2 py-1 rounded hover:bg-gray-200">Undo</button>
+          className="cursor-pointer px-2 py-1 rounded hover:bg-gray-200">Undo</button>
         <button onMouseDown={(e) => e.preventDefault()} onClick={() => applyCommand("redo")}
-          className="px-2 py-1 rounded hover:bg-gray-200">Redo</button>
+          className="cursor-pointer px-2 py-1 rounded hover:bg-gray-200">Redo</button>
 
         <span className="mx-1 h-4 w-px bg-gray-300" />
 
@@ -226,7 +226,7 @@ export default function RichTextEditor({
         <button 
           onMouseDown={(e) => e.preventDefault()} 
           onClick={removeBackgroundColor}
-          className="px-2 py-1 rounded hover:bg-gray-200 text-xs"
+          className="cursor-pointer px-2 py-1 rounded hover:bg-gray-200 text-xs"
           title="Remove Background Color"
         >
           No BG
@@ -236,47 +236,47 @@ export default function RichTextEditor({
 
         {/* Basic Styles */}
         <button onMouseDown={(e) => e.preventDefault()} onClick={() => applyCommand("bold")}
-          className="px-2 py-1 rounded font-semibold hover:bg-gray-200">B</button>
+          className="cursor-pointer px-2 py-1 rounded font-semibold hover:bg-gray-200">B</button>
         <button onMouseDown={(e) => e.preventDefault()} onClick={() => applyCommand("italic")}
-          className="px-2 py-1 rounded italic hover:bg-gray-200">I</button>
+          className="cursor-pointer px-2 py-1 rounded italic hover:bg-gray-200">I</button>
         <button onMouseDown={(e) => e.preventDefault()} onClick={() => applyCommand("underline")}
-          className="px-2 py-1 rounded underline hover:bg-gray-200">U</button>
+          className="cursor-pointer px-2 py-1 rounded underline hover:bg-gray-200">U</button>
         <button onMouseDown={(e) => e.preventDefault()} onClick={() => applyCommand("strikeThrough")}
-          className="px-2 py-1 rounded line-through hover:bg-gray-200">S</button>
+          className="cursor-pointer px-2 py-1 rounded line-through hover:bg-gray-200">S</button>
 
         <span className="mx-1 h-4 w-px bg-gray-300" />
 
         {/* Lists */}
         <button onMouseDown={(e) => e.preventDefault()} onClick={() => applyCommand("insertUnorderedList")}
-          className="px-2 py-1 rounded hover:bg-gray-200">• List</button>
+          className="cursor-pointer px-2 py-1 rounded hover:bg-gray-200">• List</button>
         <button onMouseDown={(e) => e.preventDefault()} onClick={() => applyCommand("insertOrderedList")}
-          className="px-2 py-1 rounded hover:bg-gray-200">1. List</button>
+          className="cursor-pointer px-2 py-1 rounded hover:bg-gray-200">1. List</button>
 
         <span className="mx-1 h-4 w-px bg-gray-300" />
 
         {/* Alignment */}
         <button onMouseDown={(e) => e.preventDefault()} onClick={() => applyCommand("justifyLeft")}
-          className="px-2 py-1 rounded hover:bg-gray-200">Left</button>
+          className="cursor-pointer px-2 py-1 rounded hover:bg-gray-200">Left</button>
         <button onMouseDown={(e) => e.preventDefault()} onClick={() => applyCommand("justifyCenter")}
-          className="px-2 py-1 rounded hover:bg-gray-200">Center</button>
+          className="cursor-pointer px-2 py-1 rounded hover:bg-gray-200">Center</button>
         <button onMouseDown={(e) => e.preventDefault()} onClick={() => applyCommand("justifyRight")}
-          className="px-2 py-1 rounded hover:bg-gray-200">Right</button>
+          className="cursor-pointer px-2 py-1 rounded hover:bg-gray-200">Right</button>
         <button onMouseDown={(e) => e.preventDefault()} onClick={() => applyCommand("justifyFull")}
-          className="px-2 py-1 rounded hover:bg-gray-200">Justify</button>
+          className="cursor-pointer px-2 py-1 rounded hover:bg-gray-200">Justify</button>
 
         <span className="mx-1 h-4 w-px bg-gray-300" />
 
         {/* Link & Image */}
         <button onMouseDown={(e) => e.preventDefault()} onClick={handleLink}
-          className="px-2 py-1 rounded hover:bg-gray-200">Link</button>
+          className="cursor-pointer px-2 py-1 rounded hover:bg-gray-200">Link</button>
         <button onMouseDown={(e) => e.preventDefault()} onClick={() => applyCommand("unlink")}
-          className="px-2 py-1 rounded hover:bg-gray-200">Unlink</button>
+          className="cursor-pointer px-2 py-1 rounded hover:bg-gray-200">Unlink</button>
         <button onMouseDown={(e) => e.preventDefault()} onClick={handleImage}
-          className="px-2 py-1 rounded hover:bg-gray-200">Image</button>
+          className="cursor-pointer px-2 py-1 rounded hover:bg-gray-200">Image</button>
 
         {/* Clear formatting */}
         <button onMouseDown={(e) => e.preventDefault()} onClick={() => applyCommand("removeFormat")}
-          className="px-2 py-1 rounded hover:bg-gray-200">Clear</button>
+          className="cursor-pointer px-2 py-1 rounded hover:bg-gray-200">Clear</button>
       </div>
 
       {/* Editable Area */}

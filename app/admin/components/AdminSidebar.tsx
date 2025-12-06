@@ -81,7 +81,7 @@ export default function AdminSidebar({ isOpen, onClose }: AdminSidebarProps) {
           type="button"
           onClick={onClose}
           aria-label="Close admin menu"
-          className="rounded-md p-2 text-gray-600 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-sky-500"
+          className="cursor-pointer rounded-md p-2 text-gray-600 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-sky-500"
         >
           <svg
             className="h-4 w-4"
@@ -122,7 +122,7 @@ export default function AdminSidebar({ isOpen, onClose }: AdminSidebarProps) {
                     <button
                       type="button"
                       onClick={() => toggleDropdown(item.label)}
-                      className="ml-2 p-1 rounded hover:bg-gray-200 text-gray-700"
+                      className="cursor-pointer ml-2 p-1 rounded hover:bg-gray-200 text-gray-700"
                       aria-label={`Toggle ${item.label} submenu`}
                     >
                       <svg
@@ -178,4 +178,3 @@ export default function AdminSidebar({ isOpen, onClose }: AdminSidebarProps) {
     </aside>
   );
 }
-

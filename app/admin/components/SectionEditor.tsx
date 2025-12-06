@@ -132,6 +132,14 @@ export default function SectionEditor({
     }
 
     try {
+      // Delete old image from storage if it exists
+      const currentField = localFields.find((f) => f.id === fieldId);
+      const oldImageValue = currentField?.value;
+      if (oldImageValue && typeof oldImageValue === "string" && oldImageValue.trim()) {
+        console.log("[SectionEditor] Deleting old image before uploading new one:", oldImageValue);
+        await deleteImageFromStorage(fieldId, oldImageValue);
+      }
+
       console.log("[SectionEditor] Uploading image via API:", {
         name: file.name,
         size: file.size,
@@ -193,15 +201,26 @@ export default function SectionEditor({
 
       // Make sure we're storing a real storage path / filename, not a blob URL
       if (storedValue && !storedValue.startsWith("blob:")) {
+        // Update the field value immediately - this will trigger a re-render
         handleFieldChange(fieldId, storedValue);
         console.log("[SectionEditor] Field updated with storage value:", storedValue);
+        
+        // Small delay to ensure the image is accessible in storage (helps with first-time uploads)
+        await new Promise(resolve => setTimeout(resolve, 200));
+        
+        // Reset the file input so the same file can be uploaded again if needed
+        event.target.value = "";
       } else {
         console.error("[SectionEditor] Invalid image value from API:", storedValue);
         alert("Error: Invalid image filename received from server. Please try uploading again.");
+        // Reset the file input on error too
+        event.target.value = "";
       }
     } catch (err: any) {
       console.error("[SectionEditor] Unexpected upload error:", err);
       alert(`Unexpected error while uploading image: ${err?.message || String(err)}\n\nCheck browser console for details.`);
+      // Reset the file input on error
+      event.target.value = "";
     }
   };
 
@@ -237,6 +256,16 @@ export default function SectionEditor({
     }
 
     try {
+      // Delete old image from storage if it exists
+      const field = localFields.find((f) => f.id === fieldId);
+      if (field && Array.isArray(field.value) && field.value[index]) {
+        const oldImageValue = field.value[index][itemId];
+        if (oldImageValue && typeof oldImageValue === "string" && oldImageValue.trim()) {
+          console.log("[SectionEditor] Deleting old array item image before uploading new one:", oldImageValue);
+          await deleteImageFromStorage(`${fieldId}[${index}].${itemId}`, oldImageValue);
+        }
+      }
+
       console.log("[SectionEditor] Uploading array item image via API:", {
         name: file.name,
         size: file.size,
@@ -302,13 +331,23 @@ export default function SectionEditor({
       if (storedValue && !storedValue.startsWith("blob:")) {
         handleArrayItemChange(fieldId, index, itemId, storedValue);
         console.log("[SectionEditor] Array item updated with storage value:", storedValue);
+        
+        // Small delay to ensure the image is accessible in storage (helps with first-time uploads)
+        await new Promise(resolve => setTimeout(resolve, 200));
+        
+        // Reset the file input so the same file can be uploaded again if needed
+        event.target.value = "";
       } else {
         console.error("[SectionEditor] Invalid image value from API:", storedValue);
         alert("Error: Invalid image filename received from server. Please try uploading again.");
+        // Reset the file input on error too
+        event.target.value = "";
       }
     } catch (err: any) {
       console.error("[SectionEditor] Unexpected array item upload error:", err);
       alert(`Unexpected error while uploading image: ${err?.message || String(err)}\n\nCheck browser console for details.`);
+      // Reset the file input on error
+      event.target.value = "";
     }
   };
 
@@ -455,7 +494,7 @@ export default function SectionEditor({
 
               {field.type === "image" && (
                 <div className="space-y-3">
-                  {field.value && typeof field.value === "string" && (
+                  {field.value && typeof field.value === "string" && field.value.trim() && (
                     <div className="relative w-full h-48 border border-gray-300 rounded-md overflow-hidden bg-gray-100 flex items-center justify-center">
                       {/* Use resolved public URL from Supabase Storage for preview */}
                       {(() => {
@@ -482,6 +521,7 @@ export default function SectionEditor({
                           if (field.value.startsWith("http://") || field.value.startsWith("https://")) {
                             return (
                               <img
+                                key={field.value}
                                 src={field.value}
                                 alt={field.label}
                                 className="max-h-full max-w-full object-contain"
@@ -501,17 +541,30 @@ export default function SectionEditor({
                             </div>
                           );
                         }
+                        // Add cache-busting parameter to ensure fresh image loads, especially for newly uploaded images
+                        // Use a timestamp based on the field value to avoid constant re-renders
+                        const timestamp = field.value.length; // Simple hash-like value that changes when value changes
+                        const cacheBustUrl = previewSrc.includes('?') 
+                          ? `${previewSrc}&v=${timestamp}` 
+                          : `${previewSrc}?v=${timestamp}`;
+                        
                         return (
                           <img
-                            src={previewSrc}
+                            key={`${field.id}-${field.value}`}
+                            src={cacheBustUrl}
                             alt={field.label}
                             className="max-h-full max-w-full object-contain"
                             onError={(e) => {
-                              console.error("[SectionEditor] Failed to load image:", previewSrc);
-                              e.currentTarget.style.display = "none";
+                              console.error("[SectionEditor] Failed to load image:", cacheBustUrl);
+                              // Retry without cache-busting parameter as fallback
+                              if (cacheBustUrl !== previewSrc) {
+                                e.currentTarget.src = previewSrc;
+                              } else {
+                                e.currentTarget.style.display = "none";
+                              }
                             }}
                             onLoad={() => {
-                              console.log("[SectionEditor] Image loaded successfully:", previewSrc);
+                              console.log("[SectionEditor] Image loaded successfully:", cacheBustUrl);
                             }}
                           />
                         );
@@ -539,7 +592,7 @@ export default function SectionEditor({
                           }
                           handleFieldChange(field.id, "");
                         }}
-                        className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors font-semibold text-sm"
+                        className="cursor-pointer px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors font-semibold text-sm"
                       >
                         Remove Image
                       </button>
@@ -560,7 +613,7 @@ export default function SectionEditor({
                         <button
                           type="button"
                           onClick={() => handleRemoveArrayItem(field.id, index)}
-                          className="text-red-600 hover:text-red-800 text-sm font-medium"
+                          className="cursor-pointer text-red-600 hover:text-red-800 text-sm font-medium"
                         >
                           Remove
                         </button>
@@ -610,13 +663,29 @@ export default function SectionEditor({
                                           </div>
                                         );
                                       }
+                                      // Add cache-busting parameter to ensure fresh image loads
+                                      const timestamp = item[schema.id]?.length || 0;
+                                      const cacheBustUrl = previewSrc.includes('?') 
+                                        ? `${previewSrc}&v=${timestamp}` 
+                                        : `${previewSrc}?v=${timestamp}`;
+                                      
                                       return (
                                         <img
-                                          src={previewSrc}
+                                          key={`${field.id}-${index}-${schema.id}-${item[schema.id]}`}
+                                          src={cacheBustUrl}
                                           alt={schema.label}
                                           className="max-h-full max-w-full object-contain"
                                           onError={(e) => {
-                                            e.currentTarget.style.display = "none";
+                                            console.error("[SectionEditor] Failed to load array item image:", cacheBustUrl);
+                                            // Retry without cache-busting parameter as fallback
+                                            if (cacheBustUrl !== previewSrc) {
+                                              e.currentTarget.src = previewSrc;
+                                            } else {
+                                              e.currentTarget.style.display = "none";
+                                            }
+                                          }}
+                                          onLoad={() => {
+                                            console.log("[SectionEditor] Array item image loaded successfully:", cacheBustUrl);
                                           }}
                                         />
                                       );
@@ -643,7 +712,7 @@ export default function SectionEditor({
                                         }
                                         handleArrayItemChange(field.id, index, schema.id, "");
                                       }}
-                                      className="px-3 py-1.5 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors font-semibold text-xs"
+                                      className="cursor-pointer px-3 py-1.5 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors font-semibold text-xs"
                                     >
                                       Remove
                                     </button>
@@ -653,6 +722,14 @@ export default function SectionEditor({
                                   JPG, PNG, or WebP. Max 5MB
                                 </p>
                               </div>
+                            ) : schema.type === "rich-text" ? (
+                              <RichTextEditor
+                                value={item[schema.id] || ""}
+                                onChange={(value) =>
+                                  handleArrayItemChange(field.id, index, schema.id, value)
+                                }
+                                placeholder={schema.label}
+                              />
                             ) : schema.type === "textarea" ? (
                               isDescriptionField(schema.id, schema.label) ? (
                                 <RichTextEditor
@@ -689,7 +766,7 @@ export default function SectionEditor({
                   <button
                     type="button"
                     onClick={() => handleAddArrayItem(field.id)}
-                    className="w-full px-4 py-2 text-sm border-2 border-dashed border-gray-300 rounded-md text-gray-600 hover:border-sky-500 hover:text-sky-600 transition-colors"
+                    className="cursor-pointer w-full px-4 py-2 text-sm border-2 border-dashed border-gray-300 rounded-md text-gray-600 hover:border-sky-500 hover:text-sky-600 transition-colors"
                   >
                     + Add Item
                   </button>
@@ -727,7 +804,7 @@ export default function SectionEditor({
                               <button
                                 type="button"
                                 onClick={() => handleRemoveTableRow(field.id, index)}
-                                className="text-red-600 hover:text-red-800 text-sm font-medium"
+                                className="cursor-pointer text-red-600 hover:text-red-800 text-sm font-medium"
                               >
                                 Remove
                               </button>
@@ -740,7 +817,7 @@ export default function SectionEditor({
                   <button
                     type="button"
                     onClick={() => handleAddTableRow(field.id)}
-                    className="w-full px-4 py-2 text-sm border-2 border-dashed border-gray-300 rounded-md text-gray-600 hover:border-sky-500 hover:text-sky-600 transition-colors"
+                    className="cursor-pointer w-full px-4 py-2 text-sm border-2 border-dashed border-gray-300 rounded-md text-gray-600 hover:border-sky-500 hover:text-sky-600 transition-colors"
                   >
                     + Add Row
                   </button>
@@ -755,7 +832,7 @@ export default function SectionEditor({
               onClick={onSave}
               disabled={saving}
               className={`px-6 py-2 bg-sky-800 text-white rounded-md hover:bg-sky-900 transition-colors font-semibold ${
-                saving ? "opacity-50 cursor-not-allowed" : ""
+                saving ? "opacity-50 cursor-not-allowed" : "cursor-pointer"
               }`}
             >
               {saving ? "Saving..." : "Save Changes"}

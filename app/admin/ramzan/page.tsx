@@ -35,12 +35,25 @@ export default function RamzanPageEditor() {
 
           if (heroSource?.data) {
             const heroData = heroSource.data as any;
+            const defaultHero = transformed.hero;
             transformed.hero = [
               {
                 id: "hero-image",
                 label: "Hero Banner Image",
                 type: "image",
-                value: heroData.heroImage || "/images/ramzan-aq.png",
+                value: heroData.heroImage || defaultHero.find(f => f.id === "hero-image")?.value || "",
+              },
+              {
+                id: "hero-announcement-text",
+                label: "Announcement Text (below hero)",
+                type: "rich-text",
+                value: heroData.announcementText || defaultHero.find(f => f.id === "hero-announcement-text")?.value || "",
+              },
+              {
+                id: "hero-eid-text",
+                label: "Eid Date Text",
+                type: "rich-text",
+                value: heroData.eidText || defaultHero.find(f => f.id === "hero-eid-text")?.value || "",
               },
             ];
           }
@@ -192,6 +205,8 @@ export default function RamzanPageEditor() {
     const mapping: Record<string, (d: any) => any> = {
       hero: (d) => ({
         heroImage: d["hero-image"] || "",
+        announcementText: d["hero-announcement-text"] || "",
+        eidText: d["hero-eid-text"] || "",
       }),
       daily_lessons: (d) => ({
         image: d["lessons-image"] || "",
@@ -290,7 +305,7 @@ export default function RamzanPageEditor() {
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id)}
                   className={`
-                    mr-2 flex items-center gap-2 whitespace-nowrap rounded-md px-4 py-2 text-xs sm:text-sm font-medium border-2 transition-colors last:mr-0
+                    cursor-pointer mr-2 flex items-center gap-2 whitespace-nowrap rounded-md px-4 py-2 text-xs sm:text-sm font-medium border-2 transition-colors last:mr-0
                     ${
                       activeTab === tab.id
                         ? "border-sky-600 bg-sky-50 text-sky-700"

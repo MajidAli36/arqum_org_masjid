@@ -32,7 +32,7 @@ export default function PageEditorLayout({
           <button
             type="button"
             aria-label="Close sidebar"
-            className="fixed inset-0 z-30 bg-black/30 lg:hidden"
+            className="cursor-pointer fixed inset-0 z-30 bg-black/30 lg:hidden"
             onClick={() => setIsSidebarOpen(false)}
           />
         )}

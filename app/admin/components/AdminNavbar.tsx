@@ -18,7 +18,7 @@ export default function AdminNavbar({ onToggleSidebar }: AdminNavbarProps) {
           <button
             type="button"
             aria-label="Toggle admin menu"
-            className="inline-flex items-center justify-center rounded-md p-2 text-gray-700 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-sky-500 lg:hidden"
+            className="cursor-pointer inline-flex items-center justify-center rounded-md p-2 text-gray-700 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-sky-500 lg:hidden"
             onClick={onToggleSidebar}
           >
             <svg

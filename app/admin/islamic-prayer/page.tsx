@@ -262,7 +262,7 @@ export default function IslamicPrayerPageEditor() {
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id)}
                   className={`
-                    mr-2 flex items-center gap-2 whitespace-nowrap rounded-md px-4 py-2 text-xs sm:text-sm font-medium border-2 transition-colors last:mr-0
+                    cursor-pointer mr-2 flex items-center gap-2 whitespace-nowrap rounded-md px-4 py-2 text-xs sm:text-sm font-medium border-2 transition-colors last:mr-0
                     ${
                       activeTab === tab.id
                         ? "border-sky-600 bg-sky-50 text-sky-700"

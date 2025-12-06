@@ -105,8 +105,20 @@ export async function updateRamzanSection(
 
     if (hasNested) {
       const inner = currentData.data || {};
+      
+      // Remove the opposite hero key to avoid duplicate paths
+      // If saving heroSection, remove hero. If saving hero, remove heroSection.
+      let cleanedInner: any = { ...inner };
+      if (sectionKey === "heroSection") {
+        const { hero, ...rest } = cleanedInner;
+        cleanedInner = rest;
+      } else if (sectionKey === "hero") {
+        const { heroSection, ...rest } = cleanedInner;
+        cleanedInner = rest;
+      }
+      
       const updatedInner: NonNullable<RamzanContentJson["data"]> = {
-        ...inner,
+        ...cleanedInner,
         [sectionKey]: sectionData,
       };
 
@@ -116,8 +128,18 @@ export async function updateRamzanSection(
         data: updatedInner,
       };
     } else {
+      // Remove the opposite hero key to avoid duplicate paths
+      let cleanedData: any = { ...currentData };
+      if (sectionKey === "heroSection") {
+        const { hero, ...rest } = cleanedData;
+        cleanedData = rest;
+      } else if (sectionKey === "hero") {
+        const { heroSection, ...rest } = cleanedData;
+        cleanedData = rest;
+      }
+      
       updatedData = {
-        ...currentData,
+        ...cleanedData,
         page: "ramzan",
         [sectionKey]: sectionData,
       };

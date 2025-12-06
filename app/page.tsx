@@ -10,10 +10,12 @@ import HomeRealtimeSubscription from "./components/HomeRealtimeSubscription";
 
 import {
   getHomeContent,
+  updateHomeSection,
   HomeContent,
   HomeContentJson,
   HomeSectionConfig,
 } from "../lib/home.service";
+import { resolveStorageImageUrlAsync } from "../lib/storage.service";
 
 // Always fetch fresh data from Supabase on each request so admin updates show immediately.
 export const dynamic = "force-dynamic";
@@ -79,7 +81,30 @@ export default async function Home() {
   const infoBannerConfig = pickInfoBannerConfig(sections);
   const calendarConfig = sections.calendar ?? null;
 
-  const heroData = (heroConfig?.data ?? null) as HeroSectionData | null;
+  // Check if hero image exists in storage, if not, remove it from data and database
+  let heroData = (heroConfig?.data ?? null) as HeroSectionData | null;
+  if (heroData?.heroImage) {
+    const imageExists = await resolveStorageImageUrlAsync(heroData.heroImage, {
+      bucket: "Public",
+      folder: "Home",
+    });
+    if (!imageExists) {
+      console.warn("[Home] Hero image does not exist in storage, removing from database:", heroData.heroImage);
+      // Remove heroImage field completely from the data object
+      const { heroImage: removed, ...restHeroData } = heroData;
+      heroData = restHeroData as HeroSectionData;
+      // Update database to remove invalid image path
+      if (heroConfig) {
+        const updatedHeroConfig: HomeSectionConfig = {
+          ...heroConfig,
+          data: heroData,
+        };
+        await updateHomeSection("heroSection", updatedHeroConfig);
+        console.log("[Home] Successfully removed invalid hero image from database");
+      }
+    }
+  }
+
   const prayerTimesData = (prayerTimeConfig?.data ?? null) as PrayerTimesData | null;
   const fridayPrayersData = (fridayPrayersConfig?.data ?? null) as FridayPrayersData | null;
   const donationData = (donationConfig?.data ?? null) as DonationSectionData | null;

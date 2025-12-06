@@ -133,9 +133,10 @@ export default function FoundationsSection({ data }: FoundationsSectionProps) {
                     )}
                   </p>
                   {item.description && (
-                    <p className="mt-1 text-xs text-gray-500">
-                      {item.description}
-                    </p>
+                    <p
+                      className="mt-1 text-xs text-gray-500"
+                      dangerouslySetInnerHTML={{ __html: item.description }}
+                    />
                   )}
                 </li>
               ))}
@@ -175,9 +176,10 @@ export default function FoundationsSection({ data }: FoundationsSectionProps) {
                     </p>
                   )}
                   {item.description && (
-                    <p className="mt-1 text-xs text-gray-500">
-                      {item.description}
-                    </p>
+                    <p
+                      className="mt-1 text-xs text-gray-500"
+                      dangerouslySetInnerHTML={{ __html: item.description }}
+                    />
                   )}
                 </li>
               ))}
