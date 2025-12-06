@@ -9,8 +9,25 @@ import {
   RamzanContent,
   RamzanContentJson,
 } from "@/lib/ramzan.service";
+import { generateMetadata as generateSEOMetadata } from "@/lib/seo";
 
 export const dynamic = "force-dynamic";
+
+export const metadata = generateSEOMetadata({
+  title: "Ramadan",
+  description:
+    "Ramadan resources and programs at Fort Dodge Islamic Center. Find information about daily tafsir series, community iftars, zakat ul-fitr, and special Ramadan activities for the Muslim community in Fort Dodge, Iowa.",
+  path: "/ramzan",
+  keywords: [
+    "Ramadan Fort Dodge",
+    "Ramadan programs",
+    "iftar community",
+    "zakat ul-fitr",
+    "Ramadan tafsir",
+    "Islamic month of fasting",
+    "Ramadan activities Iowa",
+  ],
+});
 
 function getSections(ramzan: RamzanContent | null): RamzanContentJson {
   const root = (ramzan?.data ?? {}) as RamzanContentJson;

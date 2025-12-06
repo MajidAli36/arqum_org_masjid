@@ -15,11 +15,22 @@ import {
 
 export const dynamic = "force-dynamic";
 
-export const metadata = {
-  title: "About Us | Fort Dodge Islamic Center",
+import { generateMetadata as generateSEOMetadata } from "@/lib/seo";
+
+export const metadata = generateSEOMetadata({
+  title: "About Us",
   description:
-    "Learn about Fort Dodge Islamic Center, a non-profit organization founded in 2002, providing prayer, learning, and community services to Muslims in the area.",
-};
+    "Learn about Fort Dodge Islamic Center, a non-profit organization founded in 2002, providing prayer, learning, and community services to Muslims in Fort Dodge, Iowa. Discover our mission, governance structure, board of directors, and programs.",
+  path: "/about",
+  keywords: [
+    "about Fort Dodge Islamic Center",
+    "Islamic center history",
+    "board of directors",
+    "governance structure",
+    "Muslim organization Iowa",
+    "community programs",
+  ],
+});
 
 function getSections(about: AboutContent | null): AboutContentJson {
   const root = (about?.data ?? {}) as AboutContentJson;

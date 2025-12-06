@@ -14,11 +14,22 @@ import {
 
 export const dynamic = "force-dynamic";
 
-export const metadata = {
-  title: "New Muslim Resources | Fort Dodge Islamic Center",
+import { generateMetadata as generateSEOMetadata } from "@/lib/seo";
+
+export const metadata = generateSEOMetadata({
+  title: "New Muslim Resources",
   description:
-    "Guidance, classes, and curated resources to help new Muslims grow in faith with confidence.",
-};
+    "Guidance, classes, and curated resources to help new Muslims grow in faith with confidence. Fort Dodge Islamic Center provides support, education, and community for those new to Islam.",
+  path: "/new-musilm",
+  keywords: [
+    "new Muslim resources",
+    "revert to Islam",
+    "new Muslim support",
+    "Islamic education for beginners",
+    "Muslim conversion resources",
+    "learning Islam",
+  ],
+});
 
 function getSections(newMuslim: NewMuslimContent | null): NewMuslimContentJson {
   const root = (newMuslim?.data ?? {}) as NewMuslimContentJson;

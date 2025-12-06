@@ -16,9 +16,26 @@ import {
   HomeSectionConfig,
 } from "../lib/home.service";
 import { resolveStorageImageUrlAsync } from "../lib/storage.service";
+import { generateMetadata as generateSEOMetadata } from "@/lib/seo";
 
 // Always fetch fresh data from Supabase on each request so admin updates show immediately.
 export const dynamic = "force-dynamic";
+
+export const metadata = generateSEOMetadata({
+  title: "Home",
+  description:
+    "Fort Dodge Islamic Center - Daily prayer times, Friday prayers, Islamic education, community services, and spiritual guidance for Muslims in Fort Dodge, Iowa.",
+  path: "/",
+  keywords: [
+    "Fort Dodge masjid",
+    "Islamic center",
+    "Muslim community Fort Dodge",
+    "prayer times",
+    "Friday prayer",
+    "Islamic education",
+    "community services",
+  ],
+});
 
 /**
  * Helper to determine if a section should be rendered, with sensible defaults.

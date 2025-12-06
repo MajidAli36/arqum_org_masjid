@@ -11,8 +11,24 @@ import {
   ReportDeathContent,
   ReportDeathContentJson,
 } from "@/lib/report-death.service";
+import { generateMetadata as generateSEOMetadata } from "@/lib/seo";
 
 export const dynamic = "force-dynamic";
+
+export const metadata = generateSEOMetadata({
+  title: "Report a Death",
+  description:
+    "Guidance and procedures for reporting a death at Fort Dodge Islamic Center. Learn about Islamic funeral services, burial procedures, cost breakdown, and how to request assistance during this difficult time.",
+  path: "/report-death",
+  keywords: [
+    "report death Fort Dodge",
+    "Islamic funeral services",
+    "Muslim burial procedures",
+    "funeral services Iowa",
+    "Islamic death rites",
+    "funeral cost breakdown",
+  ],
+});
 
 function getSections(reportDeath: ReportDeathContent | null): ReportDeathContentJson {
   const root = (reportDeath?.data ?? {}) as ReportDeathContentJson;

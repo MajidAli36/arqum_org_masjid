@@ -3,11 +3,22 @@ import Footer from "@/app/components/Footer";
 import ResourcesHero from "../components/ResourcesHero";
 import { getRequestVisitContent, RequestVisitContent } from "@/lib/request-visit.service";
 
-export const metadata = {
-  title: "Request a Visit | Fort Dodge Islamic Center",
+import { generateMetadata as generateSEOMetadata } from "@/lib/seo";
+
+export const metadata = generateSEOMetadata({
+  title: "Request a Visit",
   description:
-    "Schedule a visit to Fort Dodge Islamic Center for your school, college, faith group, or community organization to learn more about Islam and Muslims.",
-};
+    "Schedule a visit to Fort Dodge Islamic Center for your school, college, faith group, or community organization. Tour our facilities, learn about Islam, and participate in Q&A sessions.",
+  path: "/resources/request-a-visit",
+  keywords: [
+    "visit Islamic center",
+    "mosque tour",
+    "school field trip",
+    "Islamic center visit",
+    "learn about Islam",
+    "community visit",
+  ],
+});
 
 type RequestVisitContentJson = {
   page?: string;

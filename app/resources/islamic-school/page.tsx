@@ -7,11 +7,23 @@ import {
   type IslamicSchoolContentJson,
 } from "@/lib/islamic-school.service";
 
-export const metadata = {
-  title: "Islamic School | Fort Dodge Islamic Center",
+import { generateMetadata as generateSEOMetadata } from "@/lib/seo";
+
+export const metadata = generateSEOMetadata({
+  title: "Islamic School",
   description:
-    "Vision, mission, and administration information for Fort Dodge Islamic School, including principal position details and contact information.",
-};
+    "Fort Dodge Islamic School (DAIS) - Weekend Islamic education program for children. Learn about our vision, mission, curriculum, and how to enroll or apply for the principal position.",
+  path: "/resources/islamic-school",
+  keywords: [
+    "Islamic school Fort Dodge",
+    "DAIS",
+    "Islamic education for children",
+    "weekend Islamic school",
+    "Quran classes",
+    "Arabic classes",
+    "Islamic studies",
+  ],
+});
 
 function getSections(
   islamicSchool: IslamicSchoolContent | null
