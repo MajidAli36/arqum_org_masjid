@@ -11,21 +11,22 @@ type HeroBannerProps = {
 };
 
 export default function HeroBanner({ data }: HeroBannerProps) {
-  const imageValue = data?.heroImage || "/images/ramzan-aq.png";
+  // Use home page hero image
+  const imageValue = data?.heroImage || "/images/ramadan-aq.png";
 
   return (
     <header className="w-full bg-white">
       <div className="relative w-full overflow-hidden">
-        <div className="relative aspect-[1925/500] w-full">
+        <div className="relative aspect-[1925/700] w-full">
           {resolveStorageImageUrl(imageValue, {
             bucket: "Public",
-            folder: "ramzan",
+            folder: "Home",
           }) && (
             <Image
               src={
                 resolveStorageImageUrl(imageValue, {
                   bucket: "Public",
-                  folder: "ramzan",
+                  folder: "Home",
                 }) as string
               }
               alt="Ramadan Kareem banner"
@@ -69,4 +70,5 @@ export default function HeroBanner({ data }: HeroBannerProps) {
     </header>
   );
 }
+
 

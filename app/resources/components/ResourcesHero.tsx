@@ -10,6 +10,7 @@ type ResourcesHeroProps = {
 };
 
 export default function ResourcesHero({ data, folder = "resources" }: ResourcesHeroProps) {
+  // Use home page hero image
   const heroImage =
     data?.["hero-image"] ||
     data?.heroImage ||
@@ -17,7 +18,7 @@ export default function ResourcesHero({ data, folder = "resources" }: ResourcesH
 
   const resolvedImage = resolveStorageImageUrl(heroImage, {
     bucket: "Public",
-    folder: folder,
+    folder: "Home",
   }) ?? null;
 
   return (

@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import PageEditorLayout from "../components/PageEditorLayout";
 import SectionEditor from "../components/SectionEditor";
+import VisibilityToggle from "../components/VisibilityToggle";
 import { ResourcesSectionConfig } from "@/lib/resources.service";
 
 type SectionField = {
@@ -17,9 +18,6 @@ type SectionField = {
 
 export default function ResourcesPageEditor() {
   const [sections, setSections] = useState<Record<string, SectionField[]>>({
-    hero: [
-      { id: "hero-image", label: "Hero Image", type: "image", value: "/images/fortdoge-masjid.jpg" },
-    ],
     mainContent: [
       { id: "content-subtitle", label: "Section Subtitle", type: "text", value: "Community Resources" },
       { id: "content-title", label: "Section Title", type: "text", value: "Helpful information, forms, and policies in one place" },
@@ -79,7 +77,7 @@ export default function ResourcesPageEditor() {
     ],
   });
 
-  const [activeTab, setActiveTab] = useState<string>("hero");
+  const [activeTab, setActiveTab] = useState<string>("mainContent");
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState<Record<string, boolean>>({});
 
@@ -277,7 +275,6 @@ export default function ResourcesPageEditor() {
   };
 
   const tabs = [
-    { id: "hero", label: "Hero Section", icon: "🖼️" },
     { id: "mainContent", label: "Main Content", icon: "📝" },
     { id: "requestSpeaker", label: "Request a Speaker", icon: "🎤" },
     { id: "requestVisit", label: "Request a Visit", icon: "📍" },
@@ -296,7 +293,6 @@ export default function ResourcesPageEditor() {
 
   const getSectionTitle = (sectionId: string) => {
     const titles: Record<string, string> = {
-      hero: "Hero Section",
       mainContent: "Main Content Section",
       requestSpeaker: "Request a Speaker Section",
       requestVisit: "Request a Visit Section",
@@ -320,6 +316,7 @@ export default function ResourcesPageEditor() {
       pageTitle="Edit Resources Page"
       pageDescription="Edit all sections of the resources page including hero, main content, and all resource sections."
     >
+      <VisibilityToggle pageName="resources" apiEndpoint="/api/resources" />
       <div className="bg-white rounded-lg border border-gray-200 shadow-sm">
         {/* Tab Navigation */}
         <div className="border-b border-gray-200">
@@ -354,20 +351,6 @@ export default function ResourcesPageEditor() {
             </div>
           ) : (
             <>
-              {activeTab === "hero" && (
-                <SectionEditor
-                  sectionId="hero"
-                  sectionTitle={getSectionTitle("hero")}
-                  fields={sections.hero}
-                  onUpdate={handleSectionUpdate}
-                  onSave={() => handleSave("hero")}
-                  saving={saving["hero"] || false}
-                  alwaysExpanded={true}
-                  bucket="Public"
-                  folder="resources"
-                />
-              )}
-
               {activeTab === "mainContent" && (
                 <SectionEditor
                   sectionId="mainContent"

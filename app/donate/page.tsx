@@ -10,6 +10,7 @@ import {
   DonateContent,
   DonateContentJson,
 } from "@/lib/donate.service";
+import { getHomeHeroData } from "@/lib/hero-utils";
 import { generateMetadata as generateSEOMetadata } from "@/lib/seo";
 
 export const dynamic = "force-dynamic";
@@ -44,9 +45,9 @@ function getSections(donate: DonateContent | null): DonateContentJson {
 
 export default async function DonatePage() {
   const donate = await getDonateContent();
+  const homeHeroData = await getHomeHeroData();
   const sections = getSections(donate);
 
-  const heroConfig = sections.hero ?? null;
   const introConfig = sections.intro ?? null;
   // Use need_for_donations as the primary key
   const needConfig = (sections as any).need_for_donations ?? sections.need ?? null;
@@ -54,7 +55,6 @@ export default async function DonatePage() {
   const closingConfig = sections.closing ?? null;
   const giveTodayConfig = sections.giveToday ?? null;
 
-  const heroData = (heroConfig?.data ?? null) as any;
   const introData = (introConfig?.data ?? null) as any;
   const needData = (needConfig?.data ?? null) as any;
   const optionsData = (optionsConfig?.data ?? null) as any;
@@ -64,7 +64,7 @@ export default async function DonatePage() {
   return (
     <div className="min-h-screen bg-slate-50">
       <Navbar />
-      <DonationHero data={heroData} />
+      <DonationHero data={homeHeroData} />
       <main className="mx-auto w-full max-w-5xl space-y-8 px-4 py-10 sm:space-y-10 sm:px-6 lg:space-y-12 lg:px-8 lg:py-14">
         <DonationIntro data={introData} />
         <NeedForDonations data={needData} />

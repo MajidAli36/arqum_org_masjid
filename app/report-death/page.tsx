@@ -11,6 +11,7 @@ import {
   ReportDeathContent,
   ReportDeathContentJson,
 } from "@/lib/report-death.service";
+import { getHomeHeroData } from "@/lib/hero-utils";
 import { generateMetadata as generateSEOMetadata } from "@/lib/seo";
 
 export const dynamic = "force-dynamic";
@@ -44,15 +45,14 @@ function getSections(reportDeath: ReportDeathContent | null): ReportDeathContent
 
 export default async function ReportDeathPage() {
   const reportDeath = await getReportDeathContent();
+  const homeHeroData = await getHomeHeroData();
   const sections = getSections(reportDeath);
 
-  const heroConfig = sections.hero ?? null;
   const introConfig = sections.intro ?? null;
   const guidanceConfig = sections.guidance ?? null;
   const procedureConfig = sections.procedure ?? null;
   const costConfig = sections.costBreakdown ?? null;
 
-  const heroData = (heroConfig?.data ?? null) as any;
   const introData = (introConfig?.data ?? null) as any;
   const guidanceData = (guidanceConfig?.data ?? null) as any;
   const procedureData = (procedureConfig?.data ?? null) as any;
@@ -62,7 +62,7 @@ export default async function ReportDeathPage() {
     <>
       <Navbar />
       <main className="bg-white">
-        <ReportDeathHero data={heroData} />
+        <ReportDeathHero data={homeHeroData} />
         <HeroIntroContent data={introData} />
         <SectionDivider />
         <GuidanceSection data={guidanceData} />

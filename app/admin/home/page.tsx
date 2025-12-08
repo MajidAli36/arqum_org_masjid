@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import PageEditorLayout from "../components/PageEditorLayout";
 import SectionEditor from "../components/SectionEditor";
+import VisibilityToggle from "../components/VisibilityToggle";
 import { getDefaultSections, SectionField } from "@/lib/home-default-sections";
 
 export default function HomePageEditor() {
@@ -420,6 +421,7 @@ export default function HomePageEditor() {
       pageTitle="Edit Home Page"
       pageDescription="Edit all sections of the homepage including hero, prayer times, donations, and more."
     >
+      <VisibilityToggle pageName="home" apiEndpoint="/api/test-home" />
       <div className="bg-white rounded-lg border border-gray-200 shadow-sm">
         {/* Tab Navigation */}
         <div className="border-b border-gray-200">

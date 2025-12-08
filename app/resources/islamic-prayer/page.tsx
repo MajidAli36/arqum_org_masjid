@@ -6,6 +6,7 @@ import {
   type IslamicPrayerContent,
   type IslamicPrayerContentJson,
 } from "@/lib/islamic-prayer.service";
+import { getHomeHeroData } from "@/lib/hero-utils";
 
 import { generateMetadata as generateSEOMetadata } from "@/lib/seo";
 
@@ -40,25 +41,20 @@ function getSections(
 
 export default async function IslamicPrayerPage() {
   const islamicPrayer = await getIslamicPrayerContent();
+  const homeHeroData = await getHomeHeroData();
   const sections = getSections(islamicPrayer);
 
-  const heroConfig = sections.hero || sections.data?.hero;
   const introConfig = sections.intro || sections.data?.intro;
   const standingConfig = sections.standing || sections.data?.standing;
   const bowingConfig = sections.bowing || sections.data?.bowing;
   const prostratingConfig = sections.prostrating || sections.data?.prostrating;
   const sittingConfig = sections.sitting || sections.data?.sitting;
 
-  const heroData = heroConfig?.data as any;
   const introData = introConfig?.data as any;
   const standingData = standingConfig?.data as any;
   const bowingData = bowingConfig?.data as any;
   const prostratingData = prostratingConfig?.data as any;
   const sittingData = sittingConfig?.data as any;
-
-  // Hero image (from Supabase storage path or fallback)
-  const heroImage =
-    heroData?.["hero-image"] || heroData?.heroImage || "/images/fortdoge-masjid.jpg";
 
   // Intro content
   const introContent =
@@ -92,10 +88,9 @@ export default async function IslamicPrayerPage() {
       <Navbar />
 
       <main className="bg-white">
-        {/* Hero image using Supabase storage (folder: islamic-prayer) */}
+        {/* Hero image from home page */}
         <ResourcesHero
-          data={heroData ? { "hero-image": heroImage, heroImage } : undefined}
-          folder="islamic-prayer"
+          data={homeHeroData}
         />
 
         <section className="bg-white">

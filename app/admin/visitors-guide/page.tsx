@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import PageEditorLayout from "../components/PageEditorLayout";
 import SectionEditor from "../components/SectionEditor";
+import VisibilityToggle from "../components/VisibilityToggle";
 import { VisitorGuideSectionConfig } from "@/lib/visitor-guide.service";
 
 type SectionField = {
@@ -17,9 +18,6 @@ type SectionField = {
 
 export default function VisitorsGuidePageEditor() {
   const [sections, setSections] = useState<Record<string, SectionField[]>>({
-    hero: [
-      { id: "hero-image", label: "Hero Image", type: "image", value: "/images/fortdoge-masjid.jpg" },
-    ],
     intro: [
       { id: "intro-content", label: "Introduction Content", type: "rich-text", value: "Thank you for your interest in visiting Fort Dodge Islamic Center. Our center welcomes all visitors and request that the following guidelines are closely followed:" },
     ],
@@ -103,21 +101,6 @@ export default function VisitorsGuidePageEditor() {
             data.data && typeof data.data === "object" ? data.data : data;
 
           const transformed = { ...sections };
-
-          // Hero
-          if (sectionsSource.hero?.data) {
-            const heroData = sectionsSource.hero.data as any;
-            transformed.hero = [
-              {
-                id: "hero-image",
-                label: "Hero Image",
-                type: "image",
-                value:
-                  heroData["hero-image"] ||
-                  transformed.hero[0].value,
-              },
-            ];
-          }
 
           // Intro
           if (sectionsSource.intro?.data) {
@@ -486,7 +469,6 @@ export default function VisitorsGuidePageEditor() {
   };
 
   const tabs = [
-    { id: "hero", label: "Hero Section", icon: "🖼️" },
     { id: "intro", label: "Introduction", icon: "📝" },
     { id: "dressCode", label: "Dress Code", icon: "👔" },
     { id: "enteringCenter", label: "Entering Center", icon: "🚪" },
@@ -497,7 +479,6 @@ export default function VisitorsGuidePageEditor() {
 
   const getSectionTitle = (sectionId: string) => {
     const titles: Record<string, string> = {
-      hero: "Hero Section",
       intro: "Introduction Section",
       dressCode: "Dress Code Section",
       enteringCenter: "Entering the Center Section",
@@ -513,6 +494,7 @@ export default function VisitorsGuidePageEditor() {
       pageTitle="Edit Visitors Guide Page"
       pageDescription="Edit all sections of the visitors guide page including hero, introduction, dress code, behavior, and prayer hall information."
     >
+      <VisibilityToggle pageName="visitors-guide" apiEndpoint="/api/visitor-guide" />
       <div className="bg-white rounded-lg border border-gray-200 shadow-sm">
         {/* Tab Navigation */}
         <div className="border-b border-gray-200">
@@ -547,20 +529,6 @@ export default function VisitorsGuidePageEditor() {
             </div>
           ) : (
             <>
-              {activeTab === "hero" && (
-                <SectionEditor
-                  sectionId="hero"
-                  sectionTitle={getSectionTitle("hero")}
-                  fields={sections.hero}
-                  onUpdate={handleSectionUpdate}
-                  onSave={() => handleSave("hero")}
-                  saving={saving["hero"] || false}
-                  alwaysExpanded={true}
-                  bucket="Public"
-                  folder="visitor-guide"
-                />
-              )}
-
               {activeTab === "intro" && (
                 <SectionEditor
                   sectionId="intro"

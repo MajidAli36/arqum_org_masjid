@@ -1,25 +1,25 @@
 import { NextResponse } from "next/server";
-import { getRamzanContent } from "@/lib/ramzan.service";
+import { getRamadanContent } from "@/lib/ramadan.service";
 
 export async function GET() {
   try {
-    const ramzan = await getRamzanContent();
+    const ramadan = await getRamadanContent();
 
     return NextResponse.json(
       {
         ok: true,
-        message: "Fetched Ramzan row.",
-        ramzan,
+        message: "Fetched Ramadan row.",
+        ramadan,
       },
       { status: 200 }
     );
   } catch (error: any) {
-    console.error("[ramzan] Error fetching Ramzan content:", error);
+    console.error("[ramadan] Error fetching Ramadan content:", error);
 
     return NextResponse.json(
       {
         ok: false,
-        message: "Failed to fetch Ramzan content.",
+        message: "Failed to fetch Ramadan content.",
         error: error?.message ?? String(error),
       },
       { status: 500 }

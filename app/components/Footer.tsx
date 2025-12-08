@@ -7,7 +7,7 @@ import ContactDrawer from "./ContactDrawer";
 
 const quickLinks = [
   { label: "Home", href: "/" },
-  { label: "Ramadan", href: "/ramzan" },
+  { label: "Ramadan", href: "/ramadan" },
   { label: "New Muslims", href: "/new-musilm" },
   { label: "Resources", href: "/resources" },
 ];

@@ -1,35 +1,35 @@
 import { supabase } from "./supabase";
 
-export type RamzanSectionConfig<TData = any> = {
+export type RamadanSectionConfig<TData = any> = {
   enabled?: boolean | null;
   data?: TData | null;
 };
 
-export type RamzanContentJson = {
+export type RamadanContentJson = {
   // We support two shapes to stay compatible with existing rows:
   // 1) Flat:   { page, hero, daily_lessons, ... }
   // 2) Nested: { page, data: { hero, daily_lessons, ... } }
   page?: string;
-  heroSection?: RamzanSectionConfig;
-  hero?: RamzanSectionConfig;
-  daily_lessons?: RamzanSectionConfig;
-  zakat_ul_fitr?: RamzanSectionConfig;
-  community_iftars?: RamzanSectionConfig;
+  heroSection?: RamadanSectionConfig;
+  hero?: RamadanSectionConfig;
+  daily_lessons?: RamadanSectionConfig;
+  zakat_ul_fitr?: RamadanSectionConfig;
+  community_iftars?: RamadanSectionConfig;
   data?: {
-    heroSection?: RamzanSectionConfig;
-    hero?: RamzanSectionConfig;
-    daily_lessons?: RamzanSectionConfig;
-    zakat_ul_fitr?: RamzanSectionConfig;
-    community_iftars?: RamzanSectionConfig;
+    heroSection?: RamadanSectionConfig;
+    hero?: RamadanSectionConfig;
+    daily_lessons?: RamadanSectionConfig;
+    zakat_ul_fitr?: RamadanSectionConfig;
+    community_iftars?: RamadanSectionConfig;
     [key: string]: unknown;
   } | null;
 
   [key: string]: unknown;
 };
 
-export type RamzanContent = {
+export type RamadanContent = {
   id: number;
-  data: RamzanContentJson | null;
+  data: RamadanContentJson | null;
   created_at?: string | null;
   updated_at?: string | null;
 
@@ -38,70 +38,70 @@ export type RamzanContent = {
 
 const HOME_TABLE = "Home";
 
-export async function getRamzanContent(): Promise<RamzanContent | null> {
+export async function getRamadanContent(): Promise<RamadanContent | null> {
   const { data, error } = await supabase
     .from(HOME_TABLE)
     .select("*")
     // Prefer the new dedicated `page_name` column, but fall back to JSON `data->>page`
     // for backwards compatibility with older rows.
-    .or("page_name.eq.ramzan,data->>page.eq.ramzan")
+    .or("page_name.eq.ramadan,data->>page.eq.ramadan")
     .single();
 
   if (error) {
-    console.error("[ramzan.service] Failed to fetch Ramzan content:", error);
+    console.error("[ramadan.service] Failed to fetch Ramadan content:", error);
     return null;
   }
 
-  return (data as RamzanContent) ?? null;
+  return (data as RamadanContent) ?? null;
 }
 
-export async function updateRamzanSection(
+export async function updateRamadanSection(
   sectionKey: string,
-  sectionData: RamzanSectionConfig
-): Promise<{ success: boolean; error?: string; data?: RamzanContent }> {
+  sectionData: RamadanSectionConfig
+): Promise<{ success: boolean; error?: string; data?: RamadanContent }> {
   try {
-    console.log("[ramzan.service] updateRamzanSection called:", {
+    console.log("[ramadan.service] updateRamadanSection called:", {
       sectionKey,
       sectionData,
     });
 
-    const current = await getRamzanContent();
+    const current = await getRamadanContent();
 
     if (!current) {
-      // If no Ramzan row yet, create one using the nested { data: { ... } } shape
-      const newInner: NonNullable<RamzanContentJson["data"]> = {
+      // If no Ramadan row yet, create one using the nested { data: { ... } } shape
+      const newInner: NonNullable<RamadanContentJson["data"]> = {
         [sectionKey]: sectionData,
       };
-      const newData: RamzanContentJson = {
-        page: "ramzan",
+      const newData: RamadanContentJson = {
+        page: "ramadan",
         data: newInner,
       };
 
       const { data: insertData, error: insertError } = await supabase
         .from(HOME_TABLE)
         // Also persist the page identifier in the dedicated column for easier querying.
-        .insert({ data: newData, page_name: "ramzan" })
+        .insert({ data: newData, page_name: "ramadan" })
         .select()
         .single();
 
       if (insertError) {
         console.error(
-          "[ramzan.service] Failed to create Ramzan row:",
+          "[ramadan.service] Failed to create Ramadan row:",
           insertError
         );
         return { success: false, error: insertError.message };
       }
 
-      return { success: true, data: insertData as RamzanContent };
+      return { success: true, data: insertData as RamadanContent };
     }
 
-    const currentData: RamzanContentJson = (current.data || {}) as RamzanContentJson;
+    const currentData: RamadanContentJson = (current.data || {}) as RamadanContentJson;
 
     // Prefer nested `data` object if it exists; otherwise, fall back to flat model.
     const hasNested =
       currentData.data && typeof currentData.data === "object";
 
-    let updatedData: RamzanContentJson;
+    let updatedData: RamadanContentJson;
 
     if (hasNested) {
       const inner = currentData.data || {};
@@ -117,14 +117,14 @@ export async function updateRamzanSection(
         cleanedInner = rest;
       }
       
-      const updatedInner: NonNullable<RamzanContentJson["data"]> = {
+      const updatedInner: NonNullable<RamadanContentJson["data"]> = {
         ...cleanedInner,
         [sectionKey]: sectionData,
       };
 
       updatedData = {
         ...currentData,
-        page: "ramzan",
+        page: "ramadan",
         data: updatedInner,
       };
     } else {
@@ -140,7 +140,7 @@ export async function updateRamzanSection(
       
       updatedData = {
         ...cleanedData,
-        page: "ramzan",
+        page: "ramadan",
         [sectionKey]: sectionData,
       };
     }
@@ -157,17 +157,16 @@ export async function updateRamzanSection(
 
     if (updateError) {
       console.error(
-        "[ramzan.service] Failed to update Ramzan section:",
+        "[ramadan.service] Failed to update Ramadan section:",
         updateError
       );
       return { success: false, error: updateError.message };
     }
 
-    return { success: true, data: updateData as RamzanContent };
+    return { success: true, data: updateData as RamadanContent };
   } catch (error: any) {
-    console.error("[ramzan.service] Error updating Ramzan section:", error);
+    console.error("[ramadan.service] Error updating Ramadan section:", error);
     return { success: false, error: error?.message ?? String(error) };
   }
 }
-
 

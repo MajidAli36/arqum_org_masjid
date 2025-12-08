@@ -32,7 +32,7 @@ export default function TafsirSeries({ data }: TafsirSeriesProps) {
   const lessonsImageValue = data?.image || "/images/quran-aq.jpg";
   const lessonsImageUrl = resolveStorageImageUrl(lessonsImageValue, {
     bucket: "Public",
-    folder: "ramzan",
+    folder: "ramadan",
   }) as string | null;
 
   const title = data?.title || "A Tour of the Qur'an";

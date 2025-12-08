@@ -3,60 +3,33 @@
 import { useEffect, useState } from "react";
 import PageEditorLayout from "../components/PageEditorLayout";
 import SectionEditor from "../components/SectionEditor";
+import VisibilityToggle from "../components/VisibilityToggle";
 import { SectionField } from "@/lib/home-default-sections";
-import { getRamzanDefaultSections } from "@/lib/ramzan-default-sections";
+import { getRamadanDefaultSections } from "@/lib/ramadan-default-sections";
 
-export default function RamzanPageEditor() {
+export default function RamadanPageEditor() {
   const [sections, setSections] = useState<Record<string, SectionField[]>>(
-    getRamzanDefaultSections()
+    getRamadanDefaultSections()
   );
-  const [activeTab, setActiveTab] = useState<string>("hero");
+  const [activeTab, setActiveTab] = useState<string>("daily_lessons");
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState<Record<string, boolean>>({});
 
   useEffect(() => {
-    async function fetchRamzanData() {
+    async function fetchRamadanData() {
       try {
-        const response = await fetch("/api/ramzan");
+        const response = await fetch("/api/ramadan");
         const result = await response.json();
 
-        if (result.ok && result.ramzan?.data) {
-          const data = result.ramzan.data;
+        if (result.ok && result.ramadan?.data) {
+          const data = result.ramadan.data;
 
           // Support both shapes:
           // 1) { page, hero, ... }
           // 2) { page, data: { hero, ... } }
           const sectionsSource =
             data.data && typeof data.data === "object" ? data.data : data;
-          const transformed = getRamzanDefaultSections();
-
-          const heroSource =
-            sectionsSource.heroSection ?? sectionsSource.hero ?? null;
-
-          if (heroSource?.data) {
-            const heroData = heroSource.data as any;
-            const defaultHero = transformed.hero;
-            transformed.hero = [
-              {
-                id: "hero-image",
-                label: "Hero Banner Image",
-                type: "image",
-                value: heroData.heroImage || defaultHero.find(f => f.id === "hero-image")?.value || "",
-              },
-              {
-                id: "hero-announcement-text",
-                label: "Announcement Text (below hero)",
-                type: "rich-text",
-                value: heroData.announcementText || defaultHero.find(f => f.id === "hero-announcement-text")?.value || "",
-              },
-              {
-                id: "hero-eid-text",
-                label: "Eid Date Text",
-                type: "rich-text",
-                value: heroData.eidText || defaultHero.find(f => f.id === "hero-eid-text")?.value || "",
-              },
-            ];
-          }
+          const transformed = getRamadanDefaultSections();
 
           // Map existing Daily Lessons data from Supabase into editor fields
           const lessonsSource = sectionsSource.daily_lessons ?? null;
@@ -171,13 +144,13 @@ export default function RamzanPageEditor() {
           setSections(transformed);
         }
       } catch (error) {
-        console.error("Failed to fetch ramzan data:", error);
+        console.error("Failed to fetch ramadan data:", error);
       } finally {
         setLoading(false);
       }
     }
 
-    fetchRamzanData();
+    fetchRamadanData();
   }, []);
 
   const handleSectionUpdate = (sectionId: string, fields: SectionField[]) => {
@@ -247,8 +220,7 @@ export default function RamzanPageEditor() {
       const fields = sections[sectionId];
       const sectionData = transformFieldsToSupabase(sectionId, fields);
 
-      // Match Home page structure: hero uses "heroSection" key in Supabase JSON.
-      const supabaseKey = sectionId === "hero" ? "heroSection" : sectionId;
+      const supabaseKey = sectionId;
 
       const requestBody = {
         sectionKey: supabaseKey,
@@ -258,7 +230,7 @@ export default function RamzanPageEditor() {
         },
       };
 
-      const response = await fetch("/api/ramzan/update-section", {
+      const response = await fetch("/api/ramadan/update-section", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -282,7 +254,6 @@ export default function RamzanPageEditor() {
   };
 
   const tabs = [
-    { id: "hero", label: "Hero Banner", icon: "🕌" },
     { id: "daily_lessons", label: "Daily Lessons", icon: "📖" },
     { id: "zakat_ul_fitr", label: "Zakat-ul-Fitr", icon: "💝" },
     { id: "community_iftars", label: "Community Iftars", icon: "🥘" },
@@ -290,9 +261,10 @@ export default function RamzanPageEditor() {
 
   return (
     <PageEditorLayout
-      pageTitle="Edit Ramzan Page"
+      pageTitle="Edit Ramadan Page"
       pageDescription="Manage hero banner, lessons, zakat, and community iftars."
     >
+      <VisibilityToggle pageName="ramadan" apiEndpoint="/api/ramadan" />
       <div className="bg-white rounded-lg border border-gray-200 shadow-sm">
         <div className="border-b border-gray-200">
           <div className="w-full overflow-x-auto horizontal-scroll">
@@ -340,7 +312,7 @@ export default function RamzanPageEditor() {
                       saving={saving[tab.id] || false}
                       alwaysExpanded={true}
                       bucket="Public"
-                      folder="ramzan"
+                      folder="ramadan"
                     />
                   )}
                 </div>

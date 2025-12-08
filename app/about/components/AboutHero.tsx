@@ -9,13 +9,14 @@ type AboutHeroProps = {
 };
 
 export default function AboutHero({ data }: AboutHeroProps) {
+  // Use home page hero image
   const imagePath =
     data?.["hero-image"] || data?.heroImage || "/images/fortdoge-masjid.jpg";
   
   const resolvedImage =
     resolveStorageImageUrl(imagePath, {
       bucket: "Public",
-      folder: "about",
+      folder: "Home",
     }) ?? null;
 
   return (

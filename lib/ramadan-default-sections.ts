@@ -1,13 +1,13 @@
 import { SectionField } from "./home-default-sections";
 
-export const getRamzanDefaultSections = (): Record<string, SectionField[]> => ({
+export const getRamadanDefaultSections = (): Record<string, SectionField[]> => ({
   hero: [
     {
       id: "hero-image",
       label: "Hero Banner Image",
       type: "image",
       // Start empty so we don't try to load a non‑existent Supabase file path.
-      // Admin can upload a real image which will be stored as "ramzan/....jpg".
+      // Admin can upload a real image which will be stored as "ramadan/....jpg".
       value: "",
     },
     {
@@ -168,5 +168,4 @@ export const getRamzanDefaultSections = (): Record<string, SectionField[]> => ({
     },
   ],
 });
-
 

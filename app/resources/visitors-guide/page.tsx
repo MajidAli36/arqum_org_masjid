@@ -6,6 +6,7 @@ import {
   type VisitorGuideContent,
   type VisitorGuideContentJson,
 } from "@/lib/visitor-guide.service";
+import { getHomeHeroData } from "@/lib/hero-utils";
 
 import { generateMetadata as generateSEOMetadata } from "@/lib/seo";
 
@@ -40,9 +41,9 @@ function getSections(
 
 export default async function VisitorsGuidePage() {
   const visitorGuide = await getVisitorGuideContent();
+  const homeHeroData = await getHomeHeroData();
   const sections = getSections(visitorGuide);
 
-  const heroConfig = sections.hero || sections.data?.hero;
   const introConfig = sections.intro || sections.data?.intro;
   const dressCodeConfig = sections.dressCode || sections.data?.dressCode;
   const enteringCenterConfig =
@@ -52,17 +53,12 @@ export default async function VisitorsGuidePage() {
   const prayerHallConfig = sections.prayerHall || sections.data?.prayerHall;
   const closingConfig = sections.closing || sections.data?.closing;
 
-  const heroData = heroConfig?.data as any;
   const introData = introConfig?.data as any;
   const dressCodeData = dressCodeConfig?.data as any;
   const enteringCenterData = enteringCenterConfig?.data as any;
   const multipurposeRoomData = multipurposeRoomConfig?.data as any;
   const prayerHallData = prayerHallConfig?.data as any;
   const closingData = closingConfig?.data as any;
-
-  // Hero image (from Supabase storage path or fallback)
-  const heroImage =
-    heroData?.["hero-image"] || heroData?.heroImage || "/images/fortdoge-masjid.jpg";
 
   // Intro content
   const introContent =
@@ -146,10 +142,9 @@ export default async function VisitorsGuidePage() {
       <Navbar />
 
       <main className="bg-white">
-        {/* Hero image using Supabase storage (folder: visitor-guide) */}
+        {/* Hero image from home page */}
         <ResourcesHero
-          data={heroData ? { "hero-image": heroImage, heroImage } : undefined}
-          folder="visitor-guide"
+          data={homeHeroData}
         />
 
         <section className="bg-white">

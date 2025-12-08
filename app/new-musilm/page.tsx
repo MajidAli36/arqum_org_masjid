@@ -11,6 +11,7 @@ import {
   NewMuslimContent,
   NewMuslimContentJson,
 } from "@/lib/new-muslim.service";
+import { getHomeHeroData } from "@/lib/hero-utils";
 
 export const dynamic = "force-dynamic";
 
@@ -43,16 +44,15 @@ function getSections(newMuslim: NewMuslimContent | null): NewMuslimContentJson {
 
 export default async function NewMuslimPage() {
   const newMuslim = await getNewMuslimContent();
+  const homeHeroData = await getHomeHeroData();
   const sections = getSections(newMuslim);
 
-  const heroConfig = sections.hero ?? null;
   const journeyIntroConfig = sections.journeyIntro ?? null;
   const foundationsConfig = sections.foundations ?? null;
   const supportConfig = sections.support ?? null;
   const resourcesConfig = sections.resources ?? null;
   const exploreConfig = sections.explore ?? null;
 
-  const heroData = (heroConfig?.data ?? null) as any;
   const journeyIntroData = (journeyIntroConfig?.data ?? null) as any;
   const foundationsData = (foundationsConfig?.data ?? null) as any;
   const supportData = (supportConfig?.data ?? null) as any;
@@ -63,7 +63,7 @@ export default async function NewMuslimPage() {
     <div className="min-h-screen bg-zinc-50">
       <Navbar />
       <main>
-        <NewMuslimHero data={heroData} />
+        <NewMuslimHero data={homeHeroData} />
         <JourneyIntro data={journeyIntroData} />
         <FoundationsSection data={foundationsData} />
         <SupportAndCommunitySection data={supportData} />

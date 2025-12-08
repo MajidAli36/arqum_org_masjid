@@ -25,7 +25,7 @@ type ResourceMenuItem = {
 
 const menuItems: MenuItem[] = [
   { label: "Home", href: "/" },
-  { label: "Ramadan", href: "/ramzan" },
+  { label: "Ramadan", href: "/ramadan" },
   { label: "Donate", href: "/donate", isButton: true },
   { label: "New Muslims", href: "/new-musilm" },
   { label: "Report A Death", href: "/report-death" },
@@ -67,7 +67,61 @@ export default function Navbar() {
   const [isDoorAccessDrawerOpen, setIsDoorAccessDrawerOpen] = useState(false);
   const [isReserveBasementDrawerOpen, setIsReserveBasementDrawerOpen] = useState(false);
   const [isContactDrawerOpen, setIsContactDrawerOpen] = useState(false);
+  const [pageVisibility, setPageVisibility] = useState<Record<string, boolean>>({});
+  const [visibilityLoaded, setVisibilityLoaded] = useState<boolean>(false);
   const pathname = usePathname();
+
+  // Fetch page visibility status - use single API call for faster loading
+  useEffect(() => {
+    async function fetchPageVisibility() {
+      try {
+        // Single API call to get all visibility data at once
+        const response = await fetch("/api/page-visibility");
+        const result = await response.json();
+        
+        if (result.ok && result.visibility) {
+          // Map page names to hrefs
+          const hrefMap: Record<string, string> = {
+            "home": "/",
+            "ramadan": "/ramadan",
+            "donate": "/donate",
+            "new-muslim": "/new-musilm",
+            "report-death": "/report-death",
+            "resources": "/resources",
+            "about": "/about",
+            "request-a-speaker": "/resources/request-a-speaker",
+            "request-a-visit": "/resources/request-a-visit",
+            "visitors-guide": "/resources/visitors-guide",
+            "islamic-prayer": "/resources/islamic-prayer",
+            "islamic-school": "/resources/islamic-school",
+            "elections-nominations": "/resources/elections-nominations",
+          };
+
+          const visibility: Record<string, boolean> = {};
+          
+          // Convert page names to hrefs
+          Object.entries(result.visibility).forEach(([pageName, isVisible]) => {
+            const href = hrefMap[pageName];
+            if (href) {
+              visibility[href] = isVisible as boolean;
+            }
+          });
+
+          setPageVisibility(visibility);
+          setVisibilityLoaded(true);
+        } else {
+          // On error, set all to visible and mark as loaded
+          setVisibilityLoaded(true);
+        }
+      } catch (error) {
+        console.error("Failed to fetch page visibility:", error);
+        // On error, set all to visible and mark as loaded
+        setVisibilityLoaded(true);
+      }
+    }
+
+    fetchPageVisibility();
+  }, []);
 
   const isResourceActive = (href: string) => {
     const basePath = href.split("#")[0];
@@ -261,6 +315,11 @@ export default function Navbar() {
           {/* Desktop Menu */}
           <div className="hidden lg:flex flex-wrap items-center gap-x-4 gap-y-2">
             {menuItems.map((item) => {
+              // Check visibility - show by default, hide only if explicitly false
+              // Single API call loads fast, so flash is minimal
+              const isVisible = pageVisibility[item.href] !== undefined ? pageVisibility[item.href] : true;
+              if (!isVisible) return null; // Hide if explicitly false
+              
               const active = isActive(item.href);
 
               if (item.label === "Resources") {
@@ -293,6 +352,13 @@ export default function Navbar() {
 
                     <div className="invisible absolute left-1/2 z-50 mt-2 w-72 -translate-x-1/2 transform rounded-none border border-gray-200 bg-white/98 py-1.5 text-sm text-gray-800 opacity-0 shadow-lg shadow-gray-300 ring-1 ring-black/5 transition-all duration-150 group-hover:visible group-hover:opacity-100">
                       {resourcesMenuItems.map((resource) => {
+                        // Check visibility for resource items (skip drawers and external links)
+                        if (!resource.drawer && !resource.external) {
+                          // Show by default, hide only if explicitly false
+                          const isVisible = pageVisibility[resource.href] !== undefined ? pageVisibility[resource.href] : true;
+                          if (!isVisible) return null;
+                        }
+                        
                         const activeResource = isResourceActive(resource.href);
                         return (
                           <Link
@@ -440,6 +506,10 @@ export default function Navbar() {
         <div className="px-6 py-4 bg-white border-t border-gray-200">
           <div className="flex flex-col space-y-4">
             {menuItems.map((item) => {
+              // Check visibility - show by default, hide only if explicitly false
+              const isVisible = pageVisibility[item.href] !== undefined ? pageVisibility[item.href] : true;
+              if (!isVisible) return null; // Hide if explicitly false
+              
               const active = isActive(item.href);
 
               if (item.label === "Resources") {
@@ -489,6 +559,13 @@ export default function Navbar() {
                         View all resources
                       </Link>
                       {resourcesMenuItems.map((resource) => {
+                        // Check visibility for resource items (skip drawers and external links)
+                        if (!resource.drawer && !resource.external) {
+                          // Show by default, hide only if explicitly false
+                          const isVisible = pageVisibility[resource.href] !== undefined ? pageVisibility[resource.href] : true;
+                          if (!isVisible) return null;
+                        }
+                        
                         const activeResource = isResourceActive(resource.href);
                         return (
                           <Link

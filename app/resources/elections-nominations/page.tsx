@@ -6,6 +6,7 @@ import {
   type ElectionNominationContent,
   type ElectionNominationContentJson,
 } from "@/lib/election-nomination.service";
+import { getHomeHeroData } from "@/lib/hero-utils";
 
 import { generateMetadata as generateSEOMetadata } from "@/lib/seo";
 
@@ -39,21 +40,16 @@ function getSections(
 
 export default async function ElectionsNominationsPage() {
   const electionNomination = await getElectionNominationContent();
+  const homeHeroData = await getHomeHeroData();
   const sections = getSections(electionNomination);
 
-  const heroConfig = sections.hero || sections.data?.hero;
   const electionConfig = sections.election || sections.data?.election;
   const membershipConfig = sections.membership || sections.data?.membership;
   const questionsConfig = sections.questions || sections.data?.questions;
 
-  const heroData = heroConfig?.data as any;
   const electionData = electionConfig?.data as any;
   const membershipData = membershipConfig?.data as any;
   const questionsData = questionsConfig?.data as any;
-
-  // Hero image (from Supabase storage path or fallback)
-  const heroImage =
-    heroData?.["hero-image"] || heroData?.heroImage || "/images/fortdoge-masjid.jpg";
 
   // Election section
   const electionTitle =
@@ -125,10 +121,9 @@ export default async function ElectionsNominationsPage() {
       <Navbar />
 
       <main className="bg-white">
-        {/* Hero image using Supabase storage (folder: election-nomination) */}
+        {/* Hero image from home page */}
         <ResourcesHero
-          data={heroData ? { "hero-image": heroImage, heroImage } : undefined}
-          folder="election-nomination"
+          data={homeHeroData}
         />
 
         <section className="bg-white">

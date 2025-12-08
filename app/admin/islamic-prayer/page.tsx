@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import PageEditorLayout from "../components/PageEditorLayout";
 import SectionEditor from "../components/SectionEditor";
+import VisibilityToggle from "../components/VisibilityToggle";
 import { IslamicPrayerSectionConfig } from "@/lib/islamic-prayer.service";
 
 type SectionField = {
@@ -17,9 +18,6 @@ type SectionField = {
 
 export default function IslamicPrayerPageEditor() {
   const [sections, setSections] = useState<Record<string, SectionField[]>>({
-    hero: [
-      { id: "hero-image", label: "Hero Image", type: "image", value: "/images/fortdoge-masjid.jpg" },
-    ],
     intro: [
       { id: "intro-content", label: "Introduction Content", type: "rich-text", value: "Muslims pray five times a day. The salah (Arabic word for prayer) generally lasts five to ten minutes and is led by the Imam. He leads the congregation from the front and faces towards the direction of Makkah, as does the rest of the congregation. The congregation will form straight lines and act in unison during the entire prayer and follow the motions of the Imam. Here are translations to what's being said during salah:" },
     ],
@@ -46,7 +44,7 @@ export default function IslamicPrayerPageEditor() {
     ],
   });
 
-  const [activeTab, setActiveTab] = useState<string>("hero");
+  const [activeTab, setActiveTab] = useState<string>("intro");
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState<Record<string, boolean>>({});
 
@@ -95,18 +93,6 @@ export default function IslamicPrayerPageEditor() {
           };
 
           // Map existing data from Supabase into editor fields
-          if (sectionsSource.hero?.data) {
-            const heroData = sectionsSource.hero.data as any;
-            transformed.hero = [
-              {
-                id: "hero-image",
-                label: "Hero Image",
-                type: "image",
-                value: heroData["hero-image"] || heroData.heroImage || transformed.hero[0].value,
-              },
-            ];
-          }
-
           if (sectionsSource.intro?.data) {
             const introData = sectionsSource.intro.data as any;
             transformed.intro = [
@@ -227,7 +213,6 @@ export default function IslamicPrayerPageEditor() {
   };
 
   const tabs = [
-    { id: "hero", label: "Hero Section", icon: "🖼️" },
     { id: "intro", label: "Introduction", icon: "📝" },
     { id: "standing", label: "While Standing", icon: "🧍" },
     { id: "bowing", label: "While Bowing", icon: "🙇" },
@@ -237,7 +222,6 @@ export default function IslamicPrayerPageEditor() {
 
   const getSectionTitle = (sectionId: string) => {
     const titles: Record<string, string> = {
-      hero: "Hero Section",
       intro: "Introduction Section",
       standing: "While Standing Section",
       bowing: "While Bowing Section",
@@ -252,6 +236,7 @@ export default function IslamicPrayerPageEditor() {
       pageTitle="Edit Islamic Prayer Page"
       pageDescription="Edit all sections of the Islamic Prayer page including hero, introduction, and prayer postures."
     >
+      <VisibilityToggle pageName="islamic-prayer" apiEndpoint="/api/islamic-prayer" />
       <div className="bg-white rounded-lg border border-gray-200 shadow-sm">
         {/* Tab Navigation */}
         <div className="border-b border-gray-200">

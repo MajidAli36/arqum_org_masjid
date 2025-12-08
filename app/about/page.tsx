@@ -12,6 +12,7 @@ import {
   AboutContent,
   AboutContentJson,
 } from "@/lib/about.service";
+import { getHomeHeroData } from "@/lib/hero-utils";
 
 export const dynamic = "force-dynamic";
 
@@ -44,9 +45,9 @@ function getSections(about: AboutContent | null): AboutContentJson {
 
 export default async function AboutPage() {
   const about = await getAboutContent();
+  const homeHeroData = await getHomeHeroData();
   const sections = getSections(about);
 
-  const heroConfig = sections.hero ?? null;
   const introductionConfig = sections.introduction ?? null;
   const programsConfig = sections.programs ?? null;
   const governanceConfig = sections.governance ?? null;
@@ -54,7 +55,6 @@ export default async function AboutPage() {
   const boardTrusteesConfig = sections.boardTrustees ?? null;
   const formationConfig = sections.formation ?? null;
 
-  const heroData = (heroConfig?.data ?? null) as any;
   const introductionData = (introductionConfig?.data ?? null) as any;
   const programsData = (programsConfig?.data ?? null) as any;
   const governanceData = (governanceConfig?.data ?? null) as any;
@@ -67,7 +67,7 @@ export default async function AboutPage() {
       <Navbar />
 
       <main className="bg-white">
-        <AboutHero data={heroData} />
+        <AboutHero data={homeHeroData} />
 
         <section className="bg-gray-50">
           <div className="mx-auto max-w-6xl px-4 py-10 sm:px-6 sm:py-14 lg:py-16">

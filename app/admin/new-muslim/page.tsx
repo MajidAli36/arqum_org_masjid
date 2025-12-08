@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import PageEditorLayout from "../components/PageEditorLayout";
 import SectionEditor from "../components/SectionEditor";
+import VisibilityToggle from "../components/VisibilityToggle";
 import { NewMuslimSectionConfig } from "@/lib/new-muslim.service";
 
 type SectionField = {
@@ -25,9 +26,6 @@ type SectionField = {
 
 export default function NewMuslimPageEditor() {
   const [sections, setSections] = useState<Record<string, SectionField[]>>({
-    hero: [
-      { id: "hero-image", label: "Hero Image", type: "image", value: "/images/fortdoge-masjid.jpg" },
-    ],
     journeyIntro: [
       { id: "intro-subtitle", label: "Section Subtitle", type: "text", value: "Fort Dodge Islamic Center" },
       { id: "intro-title", label: "Section Title", type: "text", value: "Welcome to Your Islamic Journey" },
@@ -235,7 +233,7 @@ export default function NewMuslimPageEditor() {
     ],
   });
 
-  const [activeTab, setActiveTab] = useState<string>("hero");
+  const [activeTab, setActiveTab] = useState<string>("journeyIntro");
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState<Record<string, boolean>>({});
 
@@ -255,22 +253,6 @@ export default function NewMuslimPageEditor() {
             data.data && typeof data.data === "object" ? data.data : data;
 
           const transformed = { ...sections };
-
-          // Hero
-          if (sectionsSource.hero?.data) {
-            const heroData = sectionsSource.hero.data as any;
-            transformed.hero = [
-              {
-                id: "hero-image",
-                label: "Hero Image",
-                type: "image",
-                value:
-                  heroData["hero-image"] ||
-                  heroData.heroImage ||
-                  transformed.hero[0].value,
-              },
-            ];
-          }
 
           // Journey Intro
           if (sectionsSource.journeyIntro?.data) {
@@ -592,7 +574,6 @@ export default function NewMuslimPageEditor() {
   };
 
   const tabs = [
-    { id: "hero", label: "Hero Section", icon: "🖼️" },
     { id: "journeyIntro", label: "Journey Introduction", icon: "📖" },
     { id: "foundations", label: "Foundations", icon: "🏛️" },
     { id: "support", label: "Support & Community", icon: "🤝" },
@@ -602,7 +583,6 @@ export default function NewMuslimPageEditor() {
 
   const getSectionTitle = (sectionId: string) => {
     const titles: Record<string, string> = {
-      hero: "Hero Section",
       journeyIntro: "Journey Introduction Section",
       foundations: "Foundations Section",
       support: "Support and Community Section",
@@ -617,6 +597,7 @@ export default function NewMuslimPageEditor() {
       pageTitle="Edit New Muslim Page"
       pageDescription="Edit all sections of the new Muslim page including journey introduction, foundations, support, and resources."
     >
+      <VisibilityToggle pageName="new-muslim" apiEndpoint="/api/new-muslim" />
       <div className="bg-white rounded-lg border border-gray-200 shadow-sm">
         {/* Tab Navigation */}
         <div className="border-b border-gray-200">
@@ -651,21 +632,7 @@ export default function NewMuslimPageEditor() {
             </div>
           ) : (
             <>
-              {activeTab === "hero" && (
-            <SectionEditor
-              sectionId="hero"
-              sectionTitle={getSectionTitle("hero")}
-              fields={sections.hero}
-              onUpdate={handleSectionUpdate}
-              onSave={() => handleSave("hero")}
-              saving={saving["hero"] || false}
-              alwaysExpanded={true}
-              bucket="Public"
-              folder="newmuslim"
-            />
-          )}
-
-          {activeTab === "journeyIntro" && (
+              {activeTab === "journeyIntro" && (
             <SectionEditor
               sectionId="journeyIntro"
               sectionTitle={getSectionTitle("journeyIntro")}

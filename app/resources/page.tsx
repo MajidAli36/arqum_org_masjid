@@ -8,6 +8,7 @@ import {
   ResourcesContentJson,
   ResourcesSectionConfig,
 } from "@/lib/resources.service";
+import { getHomeHeroData } from "@/lib/hero-utils";
 
 // Icon components for visual enhancement
 const SpeakerIcon = () => (
@@ -239,12 +240,11 @@ function getSections(resources: ResourcesContent | null): ResourcesContentJson {
 
 export default async function ResourcesPage() {
   const resources = await getResourcesContent();
+  const homeHeroData = await getHomeHeroData();
   const sections = getSections(resources);
 
-  const heroConfig = sections.hero ?? null;
   const mainContentConfig = sections.mainContent ?? null;
 
-  const heroData = (heroConfig?.data ?? null) as any;
   const mainContentData = (mainContentConfig?.data ?? null) as any;
 
   // Map kebab-case section IDs to camelCase database keys
@@ -284,7 +284,7 @@ export default async function ResourcesPage() {
       <Navbar />
 
       <main className="bg-transparent">
-        <ResourcesHero data={heroData} />
+        <ResourcesHero data={homeHeroData} />
 
         <section className="bg-transparent">
           <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 sm:py-20">

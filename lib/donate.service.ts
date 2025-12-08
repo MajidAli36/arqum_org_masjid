@@ -40,21 +40,86 @@ export type DonateContent = {
 
 const HOME_TABLE = "Home";
 
+/**
+ * Retry a Supabase query with exponential backoff on timeout errors
+ */
+async function retrySupabaseQuery<T>(
+  queryFn: () => Promise<{ data: T | null; error: any }>,
+  maxRetries: number = 3,
+  initialDelay: number = 1000
+): Promise<{ data: T | null; error: any }> {
+  let lastError: any = null;
+  
+  for (let attempt = 0; attempt < maxRetries; attempt++) {
+    const result = await queryFn();
+    
+    // If no error, return the result
+    if (!result.error) {
+      return result;
+    }
+    
+    lastError = result.error;
+    
+    // Check if it's a timeout or connection error
+    const isTimeoutError = 
+      result.error?.message?.includes("timeout") ||
+      result.error?.message?.includes("ConnectTimeoutError") ||
+      result.error?.message?.includes("fetch failed") ||
+      result.error?.details?.includes("timeout") ||
+      result.error?.details?.includes("ConnectTimeoutError");
+    
+    // Don't retry on the last attempt or if it's not a timeout error
+    if (attempt === maxRetries - 1 || !isTimeoutError) {
+      return result;
+    }
+    
+    // Exponential backoff: wait longer between retries
+    const delay = initialDelay * Math.pow(2, attempt);
+    console.warn(
+      `[donate.service] Retry attempt ${attempt + 1}/${maxRetries} after ${delay}ms delay`,
+      { error: result.error?.message || result.error?.details }
+    );
+    await new Promise(resolve => setTimeout(resolve, delay));
+  }
+  
+  return { data: null, error: lastError };
+}
+
 export async function getDonateContent(): Promise<DonateContent | null> {
-  const { data, error } = await supabase
-    .from(HOME_TABLE)
-    .select("*")
-    // Prefer the new dedicated `page_name` column, but fall back to JSON `data->>page`
-    // for backwards compatibility with older rows.
-    .or("page_name.eq.donate,data->>page.eq.donate")
-    .single();
+  const { data, error } = await retrySupabaseQuery(async () => {
+    return await supabase
+      .from(HOME_TABLE)
+      .select("*")
+      // Prefer the new dedicated `page_name` column, but fall back to JSON `data->>page`
+      // for backwards compatibility with older rows.
+      .or("page_name.eq.donate,data->>page.eq.donate")
+      .single();
+  });
 
   if (error) {
-    console.error("[donate.service] Failed to fetch Donate content:", error);
+    // Check if it's a timeout error specifically
+    const isTimeoutError = 
+      error?.message?.includes("timeout") ||
+      error?.message?.includes("ConnectTimeoutError") ||
+      error?.message?.includes("fetch failed") ||
+      error?.details?.includes("timeout") ||
+      error?.details?.includes("ConnectTimeoutError");
+    
+    if (isTimeoutError) {
+      console.error(
+        "[donate.service] Connection timeout after retries. This may indicate network issues or Supabase service problems.",
+        {
+          message: error?.message,
+          details: error?.details,
+        }
+      );
+    } else {
+      console.error("[donate.service] Failed to fetch Donate content:", error);
+    }
     return null;
   }
 
-  return (data as DonateContent) ?? null;
+  return data ? (data as DonateContent) : null;
 }
 
 export async function updateDonateSection(

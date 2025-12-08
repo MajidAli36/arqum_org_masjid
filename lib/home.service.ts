@@ -51,7 +51,7 @@ const HOME_TABLE = "Home";
  * Fetch the single "Home" row from Supabase.
  *
  * IMPORTANT:
- * - Table `Home` can now contain multiple rows (e.g. Ramzan page row with page: "ramzan").
+ * - Table `Home` can now contain multiple rows (e.g. Ramadan page row with page: "ramadan").
  * - This function should only return the row that belongs to the main Home page.
  *
  * Strategy:
@@ -116,7 +116,7 @@ export async function updateHomeSection(
     if (!current) {
       // If no row exists, create one
       const newData: HomeContentJson = {
-        page: "home", // Explicitly set page identifier to prevent mixing with Ramzan data
+        page: "home", // Explicitly set page identifier to prevent mixing with Ramadan data
         [sectionKey]: sectionData,
       };
       
@@ -141,7 +141,7 @@ export async function updateHomeSection(
     // Merge the new section with existing data
     const updatedData: HomeContentJson = {
       ...(current.data || {}),
-      page: "home", // Ensure page identifier is always set to prevent mixing with Ramzan data
+      page: "home", // Ensure page identifier is always set to prevent mixing with Ramadan data
       [sectionKey]: sectionData,
     };
 

@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import PageEditorLayout from "../components/PageEditorLayout";
 import SectionEditor from "../components/SectionEditor";
+import VisibilityToggle from "../components/VisibilityToggle";
 import { RequestVisitSectionConfig } from "@/lib/request-visit.service";
 
 type SectionField = {
@@ -17,9 +18,6 @@ type SectionField = {
 
 export default function RequestVisitPageEditor() {
   const [sections, setSections] = useState<Record<string, SectionField[]>>({
-    hero: [
-      { id: "hero-image", label: "Hero Image", type: "image", value: "/images/fortdoge-masjid.jpg" },
-    ],
     content: [
       { id: "greeting", label: "Greeting", type: "text", value: "Peace!" },
       { id: "intro-paragraph", label: "Introduction Paragraph", type: "rich-text", value: "The members of Fort Dodge Islamic Center are available to present programs to you, your school or college, church or faith group, or civil organization about Islam. We hope that our programs about Islam and Muslims will be informative, build understanding, correct misconceptions, and promote tolerance and diversity within the community." },
@@ -35,7 +33,7 @@ export default function RequestVisitPageEditor() {
     ],
   });
 
-  const [activeTab, setActiveTab] = useState<string>("hero");
+  const [activeTab, setActiveTab] = useState<string>("content");
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState<Record<string, boolean>>({});
 
@@ -55,22 +53,6 @@ export default function RequestVisitPageEditor() {
             data.data && typeof data.data === "object" ? data.data : data;
 
           const transformed = { ...sections };
-
-          // Hero
-          if (sectionsSource.hero?.data) {
-            const heroData = sectionsSource.hero.data as any;
-            transformed.hero = [
-              {
-                id: "hero-image",
-                label: "Hero Image",
-                type: "image",
-                value:
-                  heroData["hero-image"] ||
-                  heroData.heroImage ||
-                  transformed.hero[0].value,
-              },
-            ];
-          }
 
           // Content
           if (sectionsSource.content?.data) {
@@ -173,9 +155,6 @@ export default function RequestVisitPageEditor() {
     });
 
     const mapping: Record<string, (d: any) => any> = {
-      hero: (d) => ({
-        heroImage: d["hero-image"] || "",
-      }),
       content: (d) => ({
         greeting: d.greeting || "",
         "intro-paragraph": d["intro-paragraph"] || "",
@@ -234,13 +213,11 @@ export default function RequestVisitPageEditor() {
   };
 
   const tabs = [
-    { id: "hero", label: "Hero Section", icon: "🖼️" },
     { id: "content", label: "Content Section", icon: "📝" },
   ];
 
   const getSectionTitle = (sectionId: string) => {
     const titles: Record<string, string> = {
-      hero: "Hero Section",
       content: "Content Section",
     };
     return titles[sectionId] || sectionId;
@@ -251,6 +228,7 @@ export default function RequestVisitPageEditor() {
       pageTitle="Edit Request a Visit Page"
       pageDescription="Edit all sections of the request a visit page including hero and content sections."
     >
+      <VisibilityToggle pageName="request-a-visit" apiEndpoint="/api/request-a-visit" />
       <div className="bg-white rounded-lg border border-gray-200 shadow-sm">
         {/* Tab Navigation */}
         <div className="border-b border-gray-200">
@@ -285,20 +263,6 @@ export default function RequestVisitPageEditor() {
             </div>
           ) : (
             <>
-              {activeTab === "hero" && (
-                <SectionEditor
-                  sectionId="hero"
-                  sectionTitle={getSectionTitle("hero")}
-                  fields={sections.hero}
-                  onUpdate={handleSectionUpdate}
-                  onSave={() => handleSave("hero")}
-                  saving={saving["hero"] || false}
-                  alwaysExpanded={true}
-                  bucket="Public"
-                  folder="request-a-visit"
-                />
-              )}
-
               {activeTab === "content" && (
                 <SectionEditor
                   sectionId="content"

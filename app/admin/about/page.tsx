@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import PageEditorLayout from "../components/PageEditorLayout";
 import SectionEditor from "../components/SectionEditor";
+import VisibilityToggle from "../components/VisibilityToggle";
 import { AboutSectionConfig } from "@/lib/about.service";
 
 type SectionField = {
@@ -17,9 +18,6 @@ type SectionField = {
 
 export default function AboutPageEditor() {
   const [sections, setSections] = useState<Record<string, SectionField[]>>({
-    hero: [
-      { id: "hero-image", label: "Hero Image", type: "image", value: "/images/fortdoge-masjid.jpg" },
-    ],
     introduction: [
       { id: "intro-subtitle", label: "Section Subtitle", type: "text", value: "About Us" },
       { id: "intro-title", label: "Section Title", type: "text", value: "Welcome to Fort Dodge Islamic Center" },
@@ -111,7 +109,7 @@ export default function AboutPageEditor() {
     ],
   });
 
-  const [activeTab, setActiveTab] = useState<string>("hero");
+  const [activeTab, setActiveTab] = useState<string>("introduction");
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState<Record<string, boolean>>({});
 
@@ -465,7 +463,6 @@ export default function AboutPageEditor() {
   };
 
   const tabs = [
-    { id: "hero", label: "Hero Section", icon: "🖼️" },
     { id: "introduction", label: "Introduction", icon: "📝" },
     { id: "programs", label: "Programs & Services", icon: "🕌" },
     { id: "governance", label: "Governance Structure", icon: "🏛️" },
@@ -476,7 +473,6 @@ export default function AboutPageEditor() {
 
   const getSectionTitle = (sectionId: string) => {
     const titles: Record<string, string> = {
-      hero: "Hero Section",
       introduction: "Introduction Section",
       programs: "Programs & Services Section",
       governance: "Governance Structure Section",
@@ -492,6 +488,7 @@ export default function AboutPageEditor() {
       pageTitle="Edit About Page"
       pageDescription="Edit all sections of the about page including introduction, programs, governance, and board information."
     >
+      <VisibilityToggle pageName="about" apiEndpoint="/api/about" />
       <div className="bg-white rounded-lg border border-gray-200 shadow-sm">
         {/* Tab Navigation */}
         <div className="border-b border-gray-200">
@@ -526,20 +523,6 @@ export default function AboutPageEditor() {
             </div>
           ) : (
             <>
-              {activeTab === "hero" && (
-                <SectionEditor
-                  sectionId="hero"
-                  sectionTitle={getSectionTitle("hero")}
-                  fields={sections.hero}
-                  onUpdate={handleSectionUpdate}
-                  onSave={() => handleSave("hero")}
-                  saving={saving["hero"] || false}
-                  alwaysExpanded={true}
-                  bucket="Public"
-                  folder="about"
-                />
-              )}
-
               {activeTab === "introduction" && (
                 <SectionEditor
                   sectionId="introduction"

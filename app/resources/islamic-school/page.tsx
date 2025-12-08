@@ -6,6 +6,7 @@ import {
   type IslamicSchoolContent,
   type IslamicSchoolContentJson,
 } from "@/lib/islamic-school.service";
+import { getHomeHeroData } from "@/lib/hero-utils";
 
 import { generateMetadata as generateSEOMetadata } from "@/lib/seo";
 
@@ -41,25 +42,20 @@ function getSections(
 
 export default async function IslamicSchoolPage() {
   const islamicSchool = await getIslamicSchoolContent();
+  const homeHeroData = await getHomeHeroData();
   const sections = getSections(islamicSchool);
 
-  const heroConfig = sections.hero || sections.data?.hero;
   const introConfig = sections.intro || sections.data?.intro;
   const visionConfig = sections.vision || sections.data?.vision;
   const missionConfig = sections.mission || sections.data?.mission;
   const principalConfig = sections.principal || sections.data?.principal;
   const administrationConfig = sections.administration || sections.data?.administration;
 
-  const heroData = heroConfig?.data as any;
   const introData = introConfig?.data as any;
   const visionData = visionConfig?.data as any;
   const missionData = missionConfig?.data as any;
   const principalData = principalConfig?.data as any;
   const adminData = administrationConfig?.data as any;
-
-  // Hero image (from Supabase storage path or fallback)
-  const heroImage =
-    heroData?.["hero-image"] || heroData?.heroImage || "/images/fortdoge-masjid.jpg";
 
   // Intro section
   const introTitle =
@@ -130,10 +126,9 @@ export default async function IslamicSchoolPage() {
       <Navbar />
 
       <main className="bg-white">
-        {/* Hero image using Supabase storage (folder: islamic-school) */}
+        {/* Hero image from home page */}
         <ResourcesHero
-          data={heroData ? { "hero-image": heroImage, heroImage } : undefined}
-          folder="islamic-school"
+          data={homeHeroData}
         />
 
         <section className="bg-white">

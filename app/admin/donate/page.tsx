@@ -3,15 +3,11 @@
 import { useEffect, useState } from "react";
 import PageEditorLayout from "../components/PageEditorLayout";
 import SectionEditor from "../components/SectionEditor";
+import VisibilityToggle from "../components/VisibilityToggle";
 import { SectionField } from "@/lib/home-default-sections";
 
 export default function DonatePageEditor() {
   const [sections, setSections] = useState<Record<string, SectionField[]>>({
-    hero: [
-      // Start empty so we don't try to load a non-existent Supabase file path.
-      // Admin can upload a real image which will be stored as "donate/....jpg".
-      { id: "hero-image", label: "Hero Image", type: "image", value: "" },
-    ],
     intro: [
       { id: "quote", label: "Quranic Quote", type: "textarea", value: "Those who give charity night and day, secretly and openly, have their reward with their Lord. They will have no fear, and they will not grieve." },
       { id: "quote-reference", label: "Quote Reference", type: "text", value: "-Quran 2:274" },
@@ -123,7 +119,7 @@ export default function DonatePageEditor() {
     ],
   });
 
-  const [activeTab, setActiveTab] = useState<string>("hero");
+  const [activeTab, setActiveTab] = useState<string>("intro");
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState<Record<string, boolean>>({});
 
@@ -372,7 +368,6 @@ export default function DonatePageEditor() {
   };
 
   const tabs = [
-    { id: "hero", label: "Hero Section", icon: "🖼️" },
     { id: "intro", label: "Introduction", icon: "📝" },
     { id: "need_for_donations", label: "Need for Donations", icon: "💝" },
     { id: "options", label: "Donation Options", icon: "💳" },
@@ -382,7 +377,6 @@ export default function DonatePageEditor() {
 
   const getSectionTitle = (sectionId: string) => {
     const titles: Record<string, string> = {
-      hero: "Hero Section",
       intro: "Introduction Section",
       need_for_donations: "Need for Donations Section",
       options: "Donation Options Section",
@@ -397,6 +391,7 @@ export default function DonatePageEditor() {
       pageTitle="Edit Donate Page"
       pageDescription="Edit all sections of the donation page including hero, introduction, donation options, and closing message."
     >
+      <VisibilityToggle pageName="donate" apiEndpoint="/api/donate" />
       <div className="bg-white rounded-lg border border-gray-200 shadow-sm">
         {/* Tab Navigation */}
         <div className="border-b border-gray-200">

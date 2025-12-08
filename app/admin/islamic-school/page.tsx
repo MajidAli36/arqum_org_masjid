@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import PageEditorLayout from "../components/PageEditorLayout";
 import SectionEditor from "../components/SectionEditor";
+import VisibilityToggle from "../components/VisibilityToggle";
 import { IslamicSchoolSectionConfig } from "@/lib/islamic-school.service";
 
 type SectionField = {
@@ -17,9 +18,6 @@ type SectionField = {
 
 export default function IslamicSchoolPageEditor() {
   const [sections, setSections] = useState<Record<string, SectionField[]>>({
-    hero: [
-      { id: "hero-image", label: "Hero Image", type: "image", value: "/images/fortdoge-masjid.jpg" },
-    ],
     intro: [
       { id: "intro-title", label: "Title", type: "text", value: "Islamic School" },
       { id: "intro-content", label: "Content", type: "rich-text", value: "Fort Dodge Islamic School (DAIS) is our weekend educational program dedicated to providing quality Islamic education to children in our community." },
@@ -48,7 +46,7 @@ export default function IslamicSchoolPageEditor() {
     ],
   });
 
-  const [activeTab, setActiveTab] = useState<string>("hero");
+  const [activeTab, setActiveTab] = useState<string>("intro");
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState<Record<string, boolean>>({});
 
@@ -99,18 +97,6 @@ export default function IslamicSchoolPageEditor() {
           };
 
           // Map existing data from Supabase into editor fields
-          if (sectionsSource.hero?.data) {
-            const heroData = sectionsSource.hero.data as any;
-            transformed.hero = [
-              {
-                id: "hero-image",
-                label: "Hero Image",
-                type: "image",
-                value: heroData["hero-image"] || heroData.heroImage || transformed.hero[0].value,
-              },
-            ];
-          }
-
           if (sectionsSource.intro?.data) {
             const introData = sectionsSource.intro.data as any;
             transformed.intro = [
@@ -233,7 +219,6 @@ export default function IslamicSchoolPageEditor() {
   };
 
   const tabs = [
-    { id: "hero", label: "Hero Section", icon: "🖼️" },
     { id: "intro", label: "Introduction", icon: "📝" },
     { id: "vision", label: "Vision", icon: "👁️" },
     { id: "mission", label: "Mission", icon: "🎯" },
@@ -243,7 +228,6 @@ export default function IslamicSchoolPageEditor() {
 
   const getSectionTitle = (sectionId: string) => {
     const titles: Record<string, string> = {
-      hero: "Hero Section",
       intro: "Introduction Section",
       vision: "Vision Section",
       mission: "Mission Section",
@@ -258,6 +242,7 @@ export default function IslamicSchoolPageEditor() {
       pageTitle="Edit Islamic School Page"
       pageDescription="Edit all sections of the Islamic School page including hero, vision, mission, principal hiring, and administration."
     >
+      <VisibilityToggle pageName="islamic-school" apiEndpoint="/api/islamic-school" />
       <div className="bg-white rounded-lg border border-gray-200 shadow-sm">
         {/* Tab Navigation */}
         <div className="border-b border-gray-200">

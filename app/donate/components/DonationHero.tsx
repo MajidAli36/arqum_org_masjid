@@ -9,12 +9,12 @@ type DonationHeroProps = {
 };
 
 export default function DonationHero({ data }: DonationHeroProps) {
-  // Support both field name formats: "hero-image" (from admin) or "heroImage" (legacy)
+  // Use home page hero image - support both field name formats
   const imageValue = data?.["hero-image"] || data?.heroImage || "";
 
   const resolvedImage = resolveStorageImageUrl(imageValue, {
     bucket: "Public",
-    folder: "donate",
+    folder: "Home",
   });
 
   return (

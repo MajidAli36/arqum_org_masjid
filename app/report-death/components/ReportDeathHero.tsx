@@ -9,13 +9,14 @@ type ReportDeathHeroProps = {
 };
 
 export default function ReportDeathHero({ data }: ReportDeathHeroProps) {
+  // Use home page hero image
   const imagePath =
     data?.["hero-image"] || data?.heroImage || "/images/fortdoge-masjid.jpg";
 
   const resolvedImage =
     resolveStorageImageUrl(imagePath, {
       bucket: "Public",
-      folder: "report-death",
+      folder: "Home",
     }) ?? null;
 
   return (

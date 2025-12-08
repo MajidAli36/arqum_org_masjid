@@ -1,12 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
-import { updateRamzanSection, RamzanSectionConfig } from "@/lib/ramzan.service";
+import { updateRamadanSection, RamadanSectionConfig } from "@/lib/ramadan.service";
 
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
     const { sectionKey, sectionData } = body as {
       sectionKey: string;
-      sectionData: RamzanSectionConfig;
+      sectionData: RamadanSectionConfig;
     };
 
     if (!sectionKey) {
@@ -26,13 +26,13 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const result = await updateRamzanSection(sectionKey, sectionData);
+    const result = await updateRamadanSection(sectionKey, sectionData);
 
     if (!result.success) {
       return NextResponse.json(
         {
           ok: false,
-          message: "Failed to update ramzan section",
+          message: "Failed to update ramadan section",
           error: result.error,
         },
         { status: 500 }
@@ -42,18 +42,18 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(
       {
         ok: true,
-        message: "Ramzan section updated successfully",
+        message: "Ramadan section updated successfully",
         data: result.data,
       },
       { status: 200 }
     );
   } catch (error: any) {
-    console.error("[ramzan/update-section] Exception:", error);
+    console.error("[ramadan/update-section] Exception:", error);
 
     return NextResponse.json(
       {
         ok: false,
-        message: "Failed to update ramzan section",
+        message: "Failed to update ramadan section",
         error: error?.message ?? String(error),
       },
       { status: 500 }

@@ -8,12 +8,13 @@ type NewMuslimHeroProps = {
 };
 
 export default function NewMuslimHero({ data }: NewMuslimHeroProps) {
+  // Use home page hero image
   const heroImageValue = data?.heroImage || "/images/fortdoge-masjid.jpg";
 
   const resolvedImage =
     resolveStorageImageUrl(heroImageValue, {
       bucket: "Public",
-      folder: "newmuslim",
+      folder: "Home",
     }) ?? null;
 
   return (

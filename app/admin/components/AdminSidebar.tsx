@@ -16,7 +16,7 @@ const menuItems: MenuItem[] = [
   { label: "About", href: "/admin/about" },
   { label: "Donate", href: "/admin/donate" },
   { label: "New Muslim", href: "/admin/new-muslim" },
-  { label: "Ramadan", href: "/admin/ramzan" },
+  { label: "Ramadan", href: "/admin/ramadan" },
   { label: "Report a Death", href: "/admin/report-death" },
   {
     label: "Resources",

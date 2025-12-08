@@ -2,6 +2,7 @@ import Navbar from "@/app/components/Navbar";
 import Footer from "@/app/components/Footer";
 import ResourcesHero from "../components/ResourcesHero";
 import { getRequestVisitContent, RequestVisitContent } from "@/lib/request-visit.service";
+import { getHomeHeroData } from "@/lib/hero-utils";
 
 import { generateMetadata as generateSEOMetadata } from "@/lib/seo";
 
@@ -43,15 +44,12 @@ function getSections(requestVisit: RequestVisitContent | null): RequestVisitCont
 
 export default async function RequestVisitPage() {
   const requestVisit = await getRequestVisitContent();
+  const homeHeroData = await getHomeHeroData();
   const sections = getSections(requestVisit);
 
-  const heroConfig = sections.hero || sections.data?.hero;
   const contentConfig = sections.content || sections.data?.content;
 
-  const heroData = heroConfig?.data as any;
   const contentData = contentConfig?.data as any;
-
-  const heroImage = heroData?.["hero-image"] || heroData?.heroImage || "/images/fortdoge-masjid.jpg";
   const greeting = contentData?.greeting || "Peace!";
   const introParagraph = contentData?.["intro-paragraph"] || contentData?.introParagraph || "The members of Fort Dodge Islamic Center are available to present programs to you, your school or college, church or faith group, or civil organization about Islam. We hope that our programs about Islam and Muslims will be informative, build understanding, correct misconceptions, and promote tolerance and diversity within the community.";
   const programsParagraph = contentData?.["programs-paragraph"] || contentData?.programsParagraph || "Members of the Public Relations Committee would be happy to speak with you about several types of programs about Islam we can present to you. A wide variety of program subjects are available, including Islam as it relates to history, political science, social studies, world religions, or any other relevant subject headings.";
@@ -69,10 +67,9 @@ export default async function RequestVisitPage() {
       <Navbar />
 
       <main className="bg-white">
-        {/* Hero image */}
+        {/* Hero image from home page */}
         <ResourcesHero 
-          data={heroData ? { "hero-image": heroImage, heroImage } : undefined}
-          folder="request-a-visit"
+          data={homeHeroData}
         />
 
         {/* Content */}

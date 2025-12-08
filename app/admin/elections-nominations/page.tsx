@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import PageEditorLayout from "../components/PageEditorLayout";
 import SectionEditor from "../components/SectionEditor";
+import VisibilityToggle from "../components/VisibilityToggle";
 import { ElectionNominationSectionConfig } from "@/lib/election-nomination.service";
 
 type SectionField = {
@@ -17,9 +18,6 @@ type SectionField = {
 
 export default function ElectionsNominationsPageEditor() {
   const [sections, setSections] = useState<Record<string, SectionField[]>>({
-    hero: [
-      { id: "hero-image", label: "Hero Image", type: "image", value: "/images/fortdoge-masjid.jpg" },
-    ],
     election: [
       { id: "election-title", label: "Section Title", type: "text", value: "DAIC Board of Directors Election" },
       { id: "election-intro", label: "Introduction", type: "rich-text", value: "The DAIC Board of Directors Election will be held on Sunday, September 28th 2025 after Dhuhr Prayer. Nomination forms are available on the DAIC bulletin boards and via the link below:" },
@@ -109,18 +107,6 @@ export default function ElectionsNominationsPageEditor() {
           };
 
           // Map existing data from Supabase into editor fields
-          if (sectionsSource.hero?.data) {
-            const heroData = sectionsSource.hero.data as any;
-            transformed.hero = [
-              {
-                id: "hero-image",
-                label: "Hero Image",
-                type: "image",
-                value: heroData["hero-image"] || heroData.heroImage || transformed.hero[0].value,
-              },
-            ];
-          }
-
           if (sectionsSource.election?.data) {
             const electionData = sectionsSource.election.data as any;
             transformed.election = [
@@ -327,7 +313,6 @@ export default function ElectionsNominationsPageEditor() {
   };
 
   const tabs = [
-    { id: "hero", label: "Hero Section", icon: "🖼️" },
     { id: "election", label: "Election Section", icon: "🗳️" },
     { id: "membership", label: "Membership & Voting", icon: "👥" },
     { id: "questions", label: "Questions", icon: "❓" },
@@ -335,7 +320,6 @@ export default function ElectionsNominationsPageEditor() {
 
   const getSectionTitle = (sectionId: string) => {
     const titles: Record<string, string> = {
-      hero: "Hero Section",
       election: "Election Section",
       membership: "Membership & Voting Section",
       questions: "Questions Section",
@@ -348,6 +332,7 @@ export default function ElectionsNominationsPageEditor() {
       pageTitle="Edit Elections & Nominations Page"
       pageDescription="Edit all sections of the Elections & Nominations page including hero and content sections."
     >
+      <VisibilityToggle pageName="elections-nominations" apiEndpoint="/api/election-nomination" />
       <div className="bg-white rounded-lg border border-gray-200 shadow-sm">
         {/* Tab Navigation */}
         <div className="border-b border-gray-200">

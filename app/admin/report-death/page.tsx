@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import PageEditorLayout from "../components/PageEditorLayout";
 import SectionEditor from "../components/SectionEditor";
+import VisibilityToggle from "../components/VisibilityToggle";
 import { ReportDeathSectionConfig } from "@/lib/report-death.service";
 
 type SectionField = {
@@ -17,9 +18,6 @@ type SectionField = {
 
 export default function ReportDeathPageEditor() {
   const [sections, setSections] = useState<Record<string, SectionField[]>>({
-    hero: [
-      { id: "hero-image", label: "Hero Image", type: "image", value: "/images/fortdoge-masjid.jpg" },
-    ],
     intro: [
       { id: "intro-subtitle", label: "Section Subtitle", type: "text", value: "Fort Dodge Islamic Center" },
       { id: "intro-title", label: "Section Title", type: "text", value: "Report a Death" },
@@ -126,7 +124,7 @@ export default function ReportDeathPageEditor() {
     ],
   });
 
-  const [activeTab, setActiveTab] = useState<string>("hero");
+  const [activeTab, setActiveTab] = useState<string>("intro");
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState<Record<string, boolean>>({});
 
@@ -146,21 +144,6 @@ export default function ReportDeathPageEditor() {
             data.data && typeof data.data === "object" ? data.data : data;
 
           const transformed = { ...sections };
-
-          if (sectionsSource.hero?.data) {
-            const heroData = sectionsSource.hero.data as any;
-            transformed.hero = [
-              {
-                id: "hero-image",
-                label: "Hero Image",
-                type: "image",
-                value:
-                  heroData["hero-image"] ||
-                  heroData.heroImage ||
-                  transformed.hero[0].value,
-              },
-            ];
-          }
 
           if (sectionsSource.intro?.data) {
             const intro = sectionsSource.intro.data as any;
@@ -481,7 +464,6 @@ export default function ReportDeathPageEditor() {
   };
 
   const tabs = [
-    { id: "hero", label: "Hero Section", icon: "🖼️" },
     { id: "intro", label: "Introduction", icon: "📝" },
     { id: "guidance", label: "Guidance", icon: "📖" },
     { id: "procedure", label: "Procedure", icon: "📋" },
@@ -490,7 +472,6 @@ export default function ReportDeathPageEditor() {
 
   const getSectionTitle = (sectionId: string) => {
     const titles: Record<string, string> = {
-      hero: "Hero Section",
       intro: "Introduction Section",
       guidance: "Guidance Section",
       procedure: "Procedure Section",
@@ -504,6 +485,7 @@ export default function ReportDeathPageEditor() {
       pageTitle="Edit Report a Death Page"
       pageDescription="Edit all sections of the report a death page including hero, introduction, guidance, procedure, and cost breakdown."
     >
+      <VisibilityToggle pageName="report-death" apiEndpoint="/api/report-death" />
       <div className="bg-white rounded-lg border border-gray-200 shadow-sm">
         {/* Tab Navigation */}
         <div className="border-b border-gray-200">
@@ -538,20 +520,6 @@ export default function ReportDeathPageEditor() {
             </div>
           ) : (
             <>
-              {activeTab === "hero" && (
-                <SectionEditor
-                  sectionId="hero"
-                  sectionTitle={getSectionTitle("hero")}
-                  fields={sections.hero}
-                  onUpdate={handleSectionUpdate}
-                  onSave={() => handleSave("hero")}
-                  saving={saving["hero"] || false}
-                  alwaysExpanded={true}
-                  bucket="Public"
-                  folder="report-death"
-                />
-              )}
-
               {activeTab === "intro" && (
                 <SectionEditor
                   sectionId="intro"
