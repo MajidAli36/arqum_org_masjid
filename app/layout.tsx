@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import PageLoader from "./components/PageLoader";
@@ -32,12 +32,6 @@ export const metadata: Metadata = {
       "community services",
     ],
   }),
-  viewport: {
-    width: "device-width",
-    initialScale: 1,
-    maximumScale: 5,
-  },
-  themeColor: "#075985",
   manifest: "/manifest.json",
   appleWebApp: {
     capable: true,
@@ -47,6 +41,13 @@ export const metadata: Metadata = {
   formatDetection: {
     telephone: false,
   },
+};
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 5,
+  themeColor: "#075985",
 };
 
 export default function RootLayout({
