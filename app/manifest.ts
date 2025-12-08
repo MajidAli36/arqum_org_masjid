@@ -18,7 +18,7 @@ export default function manifest(): MetadataRoute.Manifest {
         src: "/images/fortlogos.png",
         sizes: "any",
         type: "image/png",
-        purpose: "any maskable",
+        purpose: "maskable",
       },
       {
         src: "/favicon.ico",
