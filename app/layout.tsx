@@ -17,20 +17,37 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-export const metadata: Metadata = generateSEOMetadata({
-  title: "Home",
-  description:
-    "Fort Dodge Islamic Center - Serving the Muslim community in Fort Dodge, Iowa with daily prayers, Friday prayers, Islamic education, community services, and spiritual guidance.",
-  keywords: [
-    "Fort Dodge masjid",
-    "Islamic center",
-    "Muslim community",
-    "prayer times",
-    "Friday prayer",
-    "Islamic school",
-    "community services",
-  ],
-});
+export const metadata: Metadata = {
+  ...generateSEOMetadata({
+    title: "Home",
+    description:
+      "Fort Dodge Islamic Center - Serving the Muslim community in Fort Dodge, Iowa with daily prayers, Friday prayers, Islamic education, community services, and spiritual guidance.",
+    keywords: [
+      "Fort Dodge masjid",
+      "Islamic center",
+      "Muslim community",
+      "prayer times",
+      "Friday prayer",
+      "Islamic school",
+      "community services",
+    ],
+  }),
+  viewport: {
+    width: "device-width",
+    initialScale: 1,
+    maximumScale: 5,
+  },
+  themeColor: "#075985",
+  manifest: "/manifest.json",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "default",
+    title: "Fort Dodge Islamic Center",
+  },
+  formatDetection: {
+    telephone: false,
+  },
+};
 
 export default function RootLayout({
   children,
@@ -38,7 +55,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" dir="ltr">
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
