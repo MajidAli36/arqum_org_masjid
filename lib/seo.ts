@@ -57,9 +57,9 @@ export function generateMetadata({
 
   const allKeywords = [...defaultKeywords, ...keywords];
 
-  const openGraph: Metadata["openGraph"] = {
-    type: type === "article" ? "article" : "website",
-    locale: "en_US",
+  const openGraphBase = {
+    type: type === "article" ? ("article" as const) : ("website" as const),
+    locale: "en_US" as const,
     url,
     siteName,
     title: fullTitle,
@@ -74,13 +74,17 @@ export function generateMetadata({
     ],
   };
 
-  if (type === "article") {
-    openGraph.article = {};
-    if (publishedTime) openGraph.article.publishedTime = publishedTime;
-    if (modifiedTime) openGraph.article.modifiedTime = modifiedTime;
-    if (author) openGraph.article.authors = [author];
-    if (category) openGraph.article.section = category;
-  }
+  const openGraph: NonNullable<Metadata["openGraph"]> = (type === "article"
+    ? {
+        ...openGraphBase,
+        article: {
+          ...(publishedTime && { publishedTime }),
+          ...(modifiedTime && { modifiedTime }),
+          ...(author && { authors: [author] }),
+          ...(category && { section: category }),
+        },
+      }
+    : openGraphBase) as NonNullable<Metadata["openGraph"]>;
 
   return {
     title: fullTitle,
