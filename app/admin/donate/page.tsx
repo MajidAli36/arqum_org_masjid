@@ -370,7 +370,7 @@ export default function DonatePageEditor() {
   const tabs = [
     { id: "intro", label: "Introduction", icon: "📝" },
     { id: "need_for_donations", label: "Need for Donations", icon: "💝" },
-    { id: "options", label: "Donation Options", icon: "💳" },
+    { id: "options", label: "Donations Options", icon: "💳" },
     { id: "closing", label: "Closing Message", icon: "✍️" },
     { id: "giveToday", label: "Give Today", icon: "📱" },
   ];
